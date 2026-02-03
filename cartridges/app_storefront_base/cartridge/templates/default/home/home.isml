@@ -1,0 +1,6 @@
+<isdecorate template="common/layout/page">
+    <isreplace name="body">
+        <h1>${pdict.message}</h1>
+        <p>This SFRA cartridge provides a starting point for storefront development.</p>
+    </isreplace>
+</isdecorate>

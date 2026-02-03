@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-01">
+    <field formid="firstName" type="string" mandatory="false"/>
+    <field formid="lastName" type="string" mandatory="false"/>
+    <field formid="email" type="string" mandatory="false"/>
+    <field formid="message" type="string" mandatory="false"/>
+</form>
