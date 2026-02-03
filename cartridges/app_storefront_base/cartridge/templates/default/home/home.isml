@@ -1,6 +1,14 @@
-<isdecorate template="common/layout/page">
-    <isreplace name="body">
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>SFRA Storefront</title>
+</head>
+<body>
+    <main>
         <h1>${pdict.message}</h1>
         <p>This SFRA cartridge provides a starting point for storefront development.</p>
-    </isreplace>
-</isdecorate>
+    </main>
+</body>
+</html>
