@@ -1,0 +1,20 @@
+<isdecorate template="common/layout/page">
+    <isreplace name="body">
+        <h1>Contact Us</h1>
+        <form method="post" action="#">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" value="${pdict.contact.firstName}" />
+
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" value="${pdict.contact.lastName}" />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="${pdict.contact.email}" />
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message">${pdict.contact.message}</textarea>
+
+            <button type="submit">Send message</button>
+        </form>
+    </isreplace>
+</isdecorate>
