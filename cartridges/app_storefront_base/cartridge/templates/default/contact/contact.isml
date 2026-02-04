@@ -1,0 +1,35 @@
+<isdecorate template="common/layout/page">
+    <isreplace name="body">
+        <h1>Contact Us</h1>
+        <isif condition="${pdict.submitted}">
+            <p>Thanks for reaching out. We'll get back to you soon.</p>
+        </isif>
+        <form method="post" action="${URLUtils.url('Contact-Submit')}">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" value="${pdict.contact.firstName}" />
+            <isif condition="${pdict.errors.firstName}">
+                <span>${pdict.errors.firstName}</span>
+            </isif>
+
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" value="${pdict.contact.lastName}" />
+            <isif condition="${pdict.errors.lastName}">
+                <span>${pdict.errors.lastName}</span>
+            </isif>
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="${pdict.contact.email}" />
+            <isif condition="${pdict.errors.email}">
+                <span>${pdict.errors.email}</span>
+            </isif>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message">${pdict.contact.message}</textarea>
+            <isif condition="${pdict.errors.message}">
+                <span>${pdict.errors.message}</span>
+            </isif>
+
+            <button type="submit">Send message</button>
+        </form>
+    </isreplace>
+</isdecorate>
