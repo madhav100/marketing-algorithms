@@ -1,8 +1,9 @@
 # Admin Console Panel
 
-Use this folder for the admin-facing UI layer.
+This folder contains a standalone, plain HTML/CSS/JS admin demo page:
 
-Typical responsibilities:
-- Authentication and session handling for internal users.
-- Dashboard and management views.
-- Calling backend endpoints from `../node-express-backend`.
+- `admin.html`
+- `admin.css`
+- `admin.js`
+
+Open `admin.html` directly in a browser to view the Walmart-style commerce back office panel.
