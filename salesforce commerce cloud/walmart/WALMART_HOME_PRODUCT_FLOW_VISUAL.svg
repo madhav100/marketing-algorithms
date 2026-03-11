@@ -1,0 +1,101 @@
+<svg width="1400" height="940" viewBox="0 0 1400 940" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Walmart SFRA Home and Product Flow Visual">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1e3a"/>
+      <stop offset="100%" stop-color="#072650"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f4f8ff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#1f4f95"/>
+    </marker>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; fill: #ffffff; }
+      .subtitle { font: 500 18px Arial, sans-serif; fill: #d9e8ff; }
+      .section { font: 700 24px Arial, sans-serif; fill: #072650; }
+      .label { font: 700 16px Arial, sans-serif; fill: #1b3b6f; }
+      .text { font: 500 14px Arial, sans-serif; fill: #2a3c59; }
+      .chip { font: 700 13px Arial, sans-serif; fill: #0e2b57; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="940" fill="url(#bg)"/>
+  <text x="700" y="58" text-anchor="middle" class="title">Walmart SFRA Flow Visual Explanation</text>
+  <text x="700" y="88" text-anchor="middle" class="subtitle">Home Flow first, then Product Flow with model + helper + client layers.</text>
+
+  <!-- Home flow card -->
+  <rect x="70" y="130" width="1260" height="330" rx="16" fill="url(#card)" stroke="#cfe0ff"/>
+  <text x="100" y="175" class="section">1) Home Flow</text>
+
+  <rect x="100" y="200" width="230" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="115" y="228" class="label">controllers/Home.js</text>
+  <text x="115" y="250" class="text">accept request</text>
+  <text x="115" y="270" class="text">prepare homepage shell data</text>
+
+  <line x1="330" y1="248" x2="420" y2="248" stroke="#1f4f95" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="430" y="200" width="240" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="445" y="228" class="label">templates/default/home/</text>
+  <text x="445" y="250" class="text">render homePage.html</text>
+  <text x="445" y="270" class="text">hero + categories + products</text>
+
+  <line x1="670" y1="248" x2="760" y2="248" stroke="#1f4f95" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="770" y="200" width="220" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="785" y="228" class="label">Browser view</text>
+  <text x="785" y="250" class="text">homepage shell output</text>
+  <text x="785" y="270" class="text">ready for interaction</text>
+
+  <rect x="1000" y="200" width="300" height="95" rx="10" fill="#fff8df" stroke="#f3d98a"/>
+  <text x="1015" y="228" class="label">Suggested Home sections</text>
+  <text x="1015" y="250" class="text">hero, featured categories</text>
+  <text x="1015" y="270" class="text">featured products, promotion banner</text>
+
+  <rect x="100" y="320" width="1140" height="110" rx="10" fill="#f7fbff" stroke="#dbe9ff"/>
+  <text x="120" y="348" class="label">Home Goal</text>
+  <text x="120" y="372" class="text">Build homepage shell first using only Home controller + home template.</text>
+  <text x="120" y="395" class="text">Optional later: homepage model, homepage client JS, homepage SCSS.</text>
+
+  <!-- Product flow card -->
+  <rect x="70" y="500" width="1260" height="370" rx="16" fill="url(#card)" stroke="#cfe0ff"/>
+  <text x="100" y="545" class="section">2) Product Flow</text>
+
+  <rect x="100" y="575" width="180" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="115" y="603" class="label">Product.js</text>
+  <text x="115" y="625" class="text">route handler</text>
+  <text x="115" y="645" class="text">request entry</text>
+
+  <line x1="280" y1="623" x2="350" y2="623" stroke="#1f4f95" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="360" y="575" width="200" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="375" y="603" class="label">models/product/</text>
+  <text x="375" y="625" class="text">shape product data</text>
+  <text x="375" y="645" class="text">for rendering</text>
+
+  <line x1="560" y1="623" x2="630" y2="623" stroke="#1f4f95" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="640" y="575" width="210" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="655" y="603" class="label">scripts/helpers/</text>
+  <text x="655" y="625" class="text">reusable product logic</text>
+  <text x="655" y="645" class="text">variants, lookup, mapping</text>
+
+  <line x1="850" y1="623" x2="920" y2="623" stroke="#1f4f95" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="930" y="575" width="220" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="945" y="603" class="label">templates/default/product/</text>
+  <text x="945" y="625" class="text">product detail layout</text>
+  <text x="945" y="645" class="text">title, image, price, stock</text>
+
+  <rect x="1160" y="575" width="150" height="95" rx="10" fill="#e8f2ff" stroke="#c8dcff"/>
+  <text x="1175" y="603" class="label">Browser</text>
+  <text x="1175" y="625" class="text">product page</text>
+  <text x="1175" y="645" class="text">rendered</text>
+
+  <rect x="100" y="700" width="1210" height="145" rx="10" fill="#f7fbff" stroke="#dbe9ff"/>
+  <text x="120" y="728" class="label">Suggested Product sections</text>
+  <text x="120" y="752" class="text">product title, image, price, stock, variant selector, add to cart button, product description.</text>
+  <text x="120" y="776" class="text">Plus client/js for product interactions and client/scss for product styling after structure is ready.</text>
+  <text x="120" y="800" class="chip">Flow: request → controller → model → helper/scripts → template → client</text>
+</svg>
