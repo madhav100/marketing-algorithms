@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmart Home</title>
+</head>
+<body>
+  <header>
+    <h1>{{storeName}}</h1>
+    <form action="#" method="get">
+      <label for="search">Search</label>
+      <input id="search" name="q" type="text" placeholder="Search products" />
+      <button type="submit">Search</button>
+    </form>
+    <nav>
+      <a href="#">Cart</a>
+      <a href="#">Account</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Welcome to {{storeName}}</h2>
+      <p>{{welcomeMessage}}</p>
+      <button type="button">Shop Now</button>
+    </section>
+
+    <section>
+      <h2>Main Categories</h2>
+      <ul>
+        <li><a href="{{categories[0].url}}">{{categories[0].name}}</a></li>
+        <li><a href="{{categories[1].url}}">{{categories[1].name}}</a></li>
+        <li><a href="{{categories[2].url}}">{{categories[2].name}}</a></li>
+        <li><a href="{{categories[3].url}}">{{categories[3].name}}</a></li>
+        <li><a href="{{categories[4].url}}">{{categories[4].name}}</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Featured Products</h2>
+      <article>
+        <img src="{{featuredProducts[0].image}}" alt="{{featuredProducts[0].title}}" width="220" height="146" />
+        <h3>{{featuredProducts[0].title}}</h3>
+        <p>{{featuredProducts[0].price}}</p>
+        <button type="button">Add to Cart</button>
+      </article>
+      <article>
+        <img src="{{featuredProducts[1].image}}" alt="{{featuredProducts[1].title}}" width="220" height="146" />
+        <h3>{{featuredProducts[1].title}}</h3>
+        <p>{{featuredProducts[1].price}}</p>
+        <button type="button">Add to Cart</button>
+      </article>
+      <article>
+        <img src="{{featuredProducts[2].image}}" alt="{{featuredProducts[2].title}}" width="220" height="146" />
+        <h3>{{featuredProducts[2].title}}</h3>
+        <p>{{featuredProducts[2].price}}</p>
+        <button type="button">Add to Cart</button>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <a href="#">Help</a>
+    <a href="#">Contact</a>
+    <a href="#">Policies</a>
+  </footer>
+</body>
+</html>

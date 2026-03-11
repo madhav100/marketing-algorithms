@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart Page</title>
+</head>
+<body>
+  <header>
+    <h1>Your Cart</h1>
+    <a href="#">Continue Shopping</a>
+  </header>
+
+  <main>
+    <section>
+      <h2>Items</h2>
+      <article>
+        <img src="{{items[0].image}}" alt="{{items[0].title}}" width="160" height="106" />
+        <h3>{{items[0].title}}</h3>
+        <p>Quantity: {{items[0].quantity}}</p>
+        <p>Price: {{items[0].price}}</p>
+        <button type="button">Remove</button>
+      </article>
+    </section>
+
+    <section>
+      <h2>Summary</h2>
+      <p>Subtotal: {{subtotal}}</p>
+      <button type="button">Checkout</button>
+    </section>
+  </main>
+</body>
+</html>
