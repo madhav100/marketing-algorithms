@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart - Walmart</title>
+  <style>
+    :root { --wm-blue:#0071ce; --wm-blue-dark:#004c91; --wm-yellow:#ffc220; --bg:#f5f7fb; --line:#e5edf6; --card:#fff; }
+    *{box-sizing:border-box;} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:#1f2a37;}
+    .top{background:var(--wm-blue);padding:14px 0;color:#fff;} .container{width:min(1120px,94vw);margin:0 auto;}
+    .top a{color:#fff;text-decoration:none;font-weight:700;} .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin:20px 0;}
+    .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;} .item{display:grid;grid-template-columns:160px 1fr auto;gap:12px;align-items:center;}
+    .item img{width:160px;border-radius:10px;background:#eef4ff;} .price{font-weight:700;color:var(--wm-blue-dark);} .qty{color:#5b6b80;}
+    .btn{border:0;border-radius:999px;padding:10px 14px;font-weight:700;} .btn-remove{background:#eef4ff;color:#1f3c5f;} .btn-checkout{width:100%;background:var(--wm-blue);color:#fff;margin-top:10px;} .btn-pay{width:100%;background:var(--wm-yellow);color:#142433;margin-top:8px;}
+    @media (max-width:900px){.grid{grid-template-columns:1fr;} .item{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="container"><a href="#">← Continue shopping</a></div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="panel">
+        <h1>Your Cart</h1>
+        <article class="item">
+          <img src="{{items[0].image}}" alt="{{items[0].title}}" width="160" height="106" />
+          <div>
+            <h3>{{items[0].title}}</h3>
+            <p class="qty">Quantity: {{items[0].quantity}}</p>
+            <p class="price">{{items[0].price}}</p>
+          </div>
+          <button class="btn btn-remove" type="button">Remove</button>
+        </article>
+      </section>
+
+      <aside class="panel">
+        <h2>Order Summary</h2>
+        <p>Subtotal: <strong>{{subtotal}}</strong></p>
+        <button class="btn btn-checkout" type="button">Checkout</button>
+        <button class="btn btn-pay" type="button">Express Pay</button>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

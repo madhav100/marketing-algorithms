@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmart SFRA Architecture Map</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #111a2c;
+      --panel: #111a2a;
+      --panel-2: #0f1727;
+      --text: #dbe6ff;
+      --muted: #9fb0cf;
+      --blue: #4ea1ff;
+      --teal: #3dd9c3;
+      --gold: #f2c66d;
+      --line: #21314f;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 0% -20%, rgba(78, 161, 255, 0.16), transparent 60%),
+        radial-gradient(1000px 600px at 100% -10%, rgba(61, 217, 195, 0.14), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1200px, 92vw);
+      margin: 0 auto;
+      padding: 2.2rem 0 3rem;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, rgba(78, 161, 255, 0.08), rgba(61, 217, 195, 0.04) 35%, rgba(242, 198, 109, 0.06));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0.8rem 0 1.2rem;
+      max-width: 80ch;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      color: #d5e2ff;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .panel {
+      background: linear-gradient(165deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .panel h2 {
+      margin: 0 0 0.8rem;
+      font-size: 1.2rem;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tree {
+      background: #0b1322;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .tree .root { color: var(--gold); font-weight: 700; }
+    .tree .folder { color: var(--teal); }
+    .tree .file { color: var(--blue); }
+
+    .tip {
+      margin-top: 0.75rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-top: 1px dashed var(--line);
+      padding-top: 0.75rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.01);
+      padding: 0.9rem;
+    }
+
+    .card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+    }
+
+    .card p {
+      margin: 0 0 0.45rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #0a1220;
+      background: linear-gradient(120deg, var(--gold), #ffd88e);
+      border-radius: 999px;
+      padding: 0.22rem 0.58rem;
+      font-weight: 600;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.65rem;
+      align-items: stretch;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.8rem;
+      background: rgba(255,255,255,0.015);
+      position: relative;
+      min-height: 128px;
+    }
+
+    .step h3 {
+      margin: 0 0 0.3rem;
+      font-size: 0.96rem;
+      color: #dff1ff;
+    }
+
+    .step p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -0.48rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--teal);
+      font-weight: 700;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.9rem;
+      background: rgba(255,255,255,0.015);
+    }
+
+    .mini h3 {
+      margin: 0 0 0.4rem;
+      font-size: 0.98rem;
+    }
+
+    .mini p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 1rem 0 0.2rem;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 1024px) {
+      .two-col { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .step::after { display: none !important; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .container { width: min(1200px, 94vw); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Walmart SFRA Architecture Map</h1>
+      <p class="subtitle">This page is a study-focused map of an SFRA-style storefront structure, showing how folders connect from request handling to rendered commerce pages.</p>
+      <div class="chips">
+        <span class="chip">Request → Controller → Model → Template → Browser</span>
+        <span class="chip">Server-side storefront architecture</span>
+        <span class="chip">Folder-by-folder reference</span>
+        <span class="chip">No platform code required to read</span>
+      </div>
+    </section>
+
+    <section class="two-col">
+      <article class="panel">
+        <h2>Folder Tree</h2>
+        <pre class="tree"><span class="root">walmart/</span>
+├── <span class="file">package.json</span>
+└── <span class="folder">cartridge/</span>
+    ├── <span class="folder">client/</span>
+    │   ├── <span class="folder">default/</span>
+    │   ├── <span class="folder">js/</span>
+    │   └── <span class="folder">scss/</span>
+    ├── <span class="folder">controllers/</span>
+    │   ├── <span class="file">Home.js</span>
+    │   ├── <span class="file">Product.js</span>
+    │   └── <span class="file">Cart.js</span>
+    ├── <span class="folder">forms/</span>
+    │   └── <span class="file">contactus.xml</span>
+    ├── <span class="folder">models/</span>
+    │   ├── <span class="folder">product/</span>
+    │   └── <span class="folder">account/</span>
+    ├── <span class="folder">scripts/</span>
+    │   ├── <span class="folder">helpers/</span>
+    │   ├── <span class="folder">middleware/</span>
+    │   └── <span class="folder">util/</span>
+    ├── <span class="folder">templates/</span>
+    │   └── <span class="folder">default/</span>
+    │       ├── <span class="folder">home/</span>
+    │       ├── <span class="folder">product/</span>
+    │       ├── <span class="folder">cart/</span>
+    │       └── <span class="folder">account/</span>
+    └── <span class="folder">experience/</span>
+        ├── <span class="folder">components/</span>
+        └── <span class="folder">pages/</span></pre>
+        <p class="tip">Reading tip: the browser calls routes in controllers, controllers use models and scripts, templates render output, and client assets style and enhance the browser experience.</p>
+      </article>
+
+      <article class="panel">
+        <h2>What Each Part Does</h2>
+        <div class="card-grid">
+          <section class="card">
+            <h3>package.json</h3>
+            <p>Project metadata and local tooling entry point.</p>
+            <ul>
+              <li>Can hold local scripts for build, lint, or asset tasks</li>
+              <li>Supports local developer workflow</li>
+            </ul>
+            <span class="badge">Project setup</span>
+          </section>
+
+          <section class="card">
+            <h3>cartridge/</h3>
+            <p>Main storefront code container.</p>
+            <ul>
+              <li>Groups routes, models, scripts, templates, forms, and assets</li>
+              <li>Acts as one deployable storefront unit in SFRA thinking</li>
+            </ul>
+            <span class="badge">Storefront unit</span>
+          </section>
+
+          <section class="card">
+            <h3>client/</h3>
+            <p>Browser-facing assets.</p>
+            <ul>
+              <li><strong>default/</strong> holds general static client assets or shared front-end structure</li>
+              <li><strong>js/</strong> contains front-end interactions like click handlers, AJAX, mini-cart behavior</li>
+              <li><strong>scss/</strong> holds styling for layout, buttons, forms, and page design</li>
+            </ul>
+            <span class="badge">Browser layer</span>
+          </section>
+
+          <section class="card">
+            <h3>controllers/</h3>
+            <p>Request and route handling.</p>
+            <ul>
+              <li>Home.js serves landing or homepage flows</li>
+              <li>Product.js handles product detail and product-related requests</li>
+              <li>Cart.js manages cart pages and cart actions</li>
+            </ul>
+            <span class="badge">Route layer</span>
+          </section>
+
+          <section class="card">
+            <h3>forms/</h3>
+            <p>Structured form definitions.</p>
+            <ul>
+              <li>contactus.xml defines a contact form structure</li>
+              <li>Helps describe expected inputs and validation shape</li>
+              <li>Supports storefront form workflows</li>
+            </ul>
+            <span class="badge">Input layer</span>
+          </section>
+
+          <section class="card">
+            <h3>models/</h3>
+            <p>Data shaping for views.</p>
+            <ul>
+              <li><strong>product/</strong> prepares product-related view data</li>
+              <li><strong>account/</strong> prepares customer/account data for rendering</li>
+              <li>Turns raw commerce data into cleaner page-ready structures</li>
+            </ul>
+            <span class="badge">View-model layer</span>
+          </section>
+
+          <section class="card">
+            <h3>scripts/</h3>
+            <p>Reusable server-side helpers and logic.</p>
+            <ul>
+              <li><strong>helpers/</strong> contains shared business helpers</li>
+              <li><strong>middleware/</strong> contains reusable request processing steps</li>
+              <li><strong>util/</strong> holds low-level utilities used across the storefront</li>
+            </ul>
+            <span class="badge">Reusable backend logic</span>
+          </section>
+
+          <section class="card">
+            <h3>templates/default/</h3>
+            <p>Display layer for storefront pages.</p>
+            <ul>
+              <li><strong>home/</strong> page templates for the homepage</li>
+              <li><strong>product/</strong> templates for product pages</li>
+              <li><strong>cart/</strong> templates for cart pages</li>
+              <li><strong>account/</strong> templates for account pages</li>
+            </ul>
+            <span class="badge">Render layer</span>
+          </section>
+
+          <section class="card">
+            <h3>experience/</h3>
+            <p>Page Designer style content structure.</p>
+            <ul>
+              <li><strong>components/</strong> reusable page blocks</li>
+              <li><strong>pages/</strong> page type definitions</li>
+              <li>Supports flexible page assembly by content teams</li>
+            </ul>
+            <span class="badge">Experience layer</span>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>How the Pieces Connect to Create Commerce</h2>
+      <div class="flow">
+        <article class="step">
+          <h3>1. Browser request</h3>
+          <p>A shopper opens a route like home, product, or cart.</p>
+        </article>
+        <article class="step">
+          <h3>2. Controller handles the route</h3>
+          <p>Home.js, Product.js, or Cart.js decides what page or action is needed.</p>
+        </article>
+        <article class="step">
+          <h3>3. Scripts and models prepare data</h3>
+          <p>helpers, middleware, utilities, and models collect or shape the needed data.</p>
+        </article>
+        <article class="step">
+          <h3>4. Template renders the page</h3>
+          <p>templates/default turns that data into visible page output.</p>
+        </article>
+        <article class="step">
+          <h3>5. Client assets complete the experience</h3>
+          <p>front-end JavaScript adds interaction and SCSS controls style.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Commerce Example Flows</h2>
+      <div class="mini-grid">
+        <article class="mini">
+          <h3>Homepage flow</h3>
+          <p>Home.js receives the request, homepage data is prepared, the home template renders the page, then client assets enhance banners and navigation.</p>
+        </article>
+        <article class="mini">
+          <h3>Product page flow</h3>
+          <p>Product.js handles the request, product models shape data like title, price, images, and availability, then the product template displays the product detail page.</p>
+        </article>
+        <article class="mini">
+          <h3>Cart flow</h3>
+          <p>Cart.js manages cart view or updates, scripts help process cart actions, and the cart template displays the current basket experience.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Folder Roles by Layer</h2>
+      <div class="mini-grid">
+        <article class="mini">
+          <h3>Display layer</h3>
+          <p>templates/default, client/js, and client/scss shape what the shopper sees and how the page behaves.</p>
+        </article>
+        <article class="mini">
+          <h3>Request layer</h3>
+          <p>controllers receive the request and decide which path to execute.</p>
+        </article>
+        <article class="mini">
+          <h3>Logic layer</h3>
+          <p>models and scripts shape and reuse commerce logic so templates stay focused on display.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>Prepared as a local SFRA architecture explainer for study and preview.</footer>
+  </div>
+</body>
+</html>

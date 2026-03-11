@@ -1,0 +1,7 @@
+<svg width="360" height="240" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cotton T-Shirt">
+  <rect width="360" height="240" fill="#fff8ef"/>
+  <ellipse cx="180" cy="212" rx="100" ry="12" fill="#f0e4d4"/>
+  <path d="M130 80l30-20h40l30 20 26-10 20 36-30 16v62h-132v-62l-30-16 20-36z" fill="#42a5f5"/>
+  <path d="M160 60h40v24h-40z" fill="#1e88e5"/>
+  <text x="180" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#5a3b24">Cotton T-Shirt</text>
+</svg>
