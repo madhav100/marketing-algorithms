@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmart SFCC Networking Simulation</title>
+  <style>
+    :root {
+      --bg: #0b1320;
+      --panel: #121d2f;
+      --panel2: #0f192a;
+      --line: #28405f;
+      --text: #dde9ff;
+      --muted: #9cb0cf;
+      --blue: #4ea1ff;
+      --teal: #2fd4c5;
+      --gold: #f0c46d;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(1000px 700px at 5% -20%, rgba(78,161,255,0.18), transparent 65%),
+        radial-gradient(1000px 680px at 95% -20%, rgba(47,212,197,0.16), transparent 65%),
+        var(--bg);
+    }
+
+    .container {
+      width: min(1250px, 94vw);
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+    }
+
+    .hero, .panel {
+      background: linear-gradient(165deg, var(--panel), var(--panel2));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 2.5vw, 2.1rem); }
+    h2 { margin: 0 0 0.8rem; font-size: 1.1rem; }
+    p { margin: 0; color: var(--muted); }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      color: #d6e9ff;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .grid-arch {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
+
+    .node {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.015);
+      padding: 0.9rem;
+    }
+
+    .node h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+    .node ul { margin: 0; padding-left: 1rem; color: var(--muted); font-size: 0.9rem; }
+
+    .center { text-align: center; }
+    .arrow { text-align: center; color: var(--teal); font-weight: 700; padding: 0.25rem 0; }
+
+    .tier-2, .tier-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 0.45rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      color: #0b1320;
+      background: linear-gradient(125deg, var(--gold), #ffd98f);
+      font-weight: 600;
+    }
+
+    .title-accent { color: var(--blue); }
+
+    @media (max-width: 900px) {
+      .tier-2, .tier-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Walmart SFCC Networking Simulation</h1>
+      <p>Salesforce-style local architecture mockup for Business Manager-like admin operations, shared commerce data, and SFRA storefront rendering.</p>
+      <div class="chips">
+        <span class="chip">Merchant/Admin → Admin Server</span>
+        <span class="chip">Shared Commerce Data</span>
+        <span class="chip">Storefront + Support/Ops</span>
+        <span class="chip">Templates/UI → Shopper</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Network and Server Architecture</h2>
+      <div class="grid-arch">
+        <article class="node center">
+          <h3><span class="title-accent">MERCHANT / ADMIN</span></h3>
+          <p>Local Business Console</p>
+          <span class="badge">Business Manager simulation</span>
+        </article>
+
+        <div class="arrow">↓ manage ↓</div>
+
+        <article class="node">
+          <h3><span class="title-accent">ADMIN SERVER</span></h3>
+          <ul>
+            <li>Products Module</li>
+            <li>Categories Module</li>
+            <li>Inventory Module</li>
+            <li>Promotions Module</li>
+            <li>Orders Module</li>
+            <li>Customers Module</li>
+            <li>Content / Pages Module</li>
+            <li>Settings Module</li>
+          </ul>
+        </article>
+
+        <div class="arrow">↓ reads / writes ↓</div>
+
+        <article class="node">
+          <h3><span class="title-accent">SHARED COMMERCE DATA</span></h3>
+          <ul>
+            <li>products, categories, inventory, price_books</li>
+            <li>promotions, customers, carts, orders</li>
+            <li>content_blocks, pages, settings</li>
+          </ul>
+        </article>
+
+        <div class="arrow">↓ reads commerce data ↓</div>
+
+        <div class="tier-2">
+          <article class="node">
+            <h3><span class="title-accent">STOREFRONT SERVER</span></h3>
+            <p>SFRA-like local backend</p>
+            <ul>
+              <li>Home Controller</li>
+              <li>Product Controller</li>
+              <li>Cart Controller</li>
+              <li>Checkout Controller</li>
+              <li>Order Controller</li>
+            </ul>
+          </article>
+
+          <article class="node">
+            <h3><span class="title-accent">SUPPORT / OPS PANEL</span></h3>
+            <p>Optional internal tools</p>
+            <ul>
+              <li>Order lookup</li>
+              <li>Customer lookup</li>
+              <li>Refund / return tools</li>
+              <li>Inventory checks</li>
+              <li>Manual adjustments</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="arrow">↓ renders ↓</div>
+
+        <article class="node">
+          <h3><span class="title-accent">TEMPLATES / FRONTEND UI</span></h3>
+          <ul>
+            <li>Home Page</li>
+            <li>Product Page</li>
+            <li>Cart Page</li>
+            <li>Checkout Page</li>
+            <li>Order Confirmation</li>
+            <li>Account Page</li>
+          </ul>
+        </article>
+
+        <div class="arrow">↓ shown to ↓</div>
+
+        <article class="node center">
+          <h3><span class="title-accent">SHOPPER</span></h3>
+          <p>Final customer-facing storefront experience</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<svg width="360" height="240" viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wireless Earbuds">
+  <rect width="360" height="240" fill="#eefbff"/>
+  <ellipse cx="180" cy="212" rx="100" ry="12" fill="#d9edf5"/>
+  <rect x="115" y="82" width="130" height="90" rx="22" fill="#263238"/>
+  <circle cx="155" cy="127" r="26" fill="#90caf9"/>
+  <circle cx="205" cy="127" r="26" fill="#80deea"/>
+  <circle cx="155" cy="127" r="10" fill="#1a237e"/>
+  <circle cx="205" cy="127" r="10" fill="#004d40"/>
+  <text x="180" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#243b5a">Wireless Earbuds</text>
+</svg>

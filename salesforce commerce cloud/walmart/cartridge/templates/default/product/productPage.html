@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{title}} - Walmart</title>
+  <link rel="stylesheet" href="../../../client/scss/productPage.css" />
+</head>
+<body class="product-page">
+  <header class="top">
+    <div class="container"><a href="#">← Back to Home</a></div>
+  </header>
+
+  <main class="container">
+    <section class="layout">
+      <article class="panel">
+        <img src="{{image}}" alt="{{title}}" width="500" height="330" />
+      </article>
+      <article class="panel">
+        <h1>{{title}}</h1>
+        <p class="price">{{price}}</p>
+        <p class="stock">{{stock}}</p>
+
+        <label for="variant">Variant</label>
+        <select id="variant" name="variant">
+          <option value="{{variants[0].id}}">{{variants[0].label}}</option>
+          <option value="{{variants[1].id}}">{{variants[1].label}}</option>
+          <option value="{{variants[2].id}}">{{variants[2].label}}</option>
+        </select>
+
+        <p>{{description}}</p>
+        <button id="product-add-to-cart" class="cta" type="button">Add to cart</button>
+      </article>
+    </section>
+  </main>
+  <script src="../../../client/js/productPage.js"></script>
+</body>
+</html>

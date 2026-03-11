@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cart - Walmart</title>
+  <link rel="stylesheet" href="../../../client/scss/cartPage.css" />
+</head>
+<body class="cart-page">
+  <header class="top">
+    <div class="container"><a href="#">← Continue shopping</a></div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <section class="panel">
+        <h1>Your Cart</h1>
+        <article class="item" data-cart-item>
+          <img src="{{items[0].image}}" alt="{{items[0].title}}" width="160" height="106" />
+          <div>
+            <h3>{{items[0].title}}</h3>
+            <p class="qty">Quantity: {{items[0].quantity}}</p>
+            <p class="price">{{items[0].price}}</p>
+          </div>
+          <button id="cart-remove-item" class="btn btn-remove" type="button">Remove</button>
+        </article>
+      </section>
+
+      <aside class="panel">
+        <h2>Order Summary</h2>
+        <p>Subtotal: <strong id="cart-subtotal">{{subtotal}}</strong></p>
+        <button class="btn btn-checkout wm-checkout" type="button">Checkout</button>
+        <button class="btn btn-pay" type="button">Express Pay</button>
+      </aside>
+    </div>
+  </main>
+  <script src="../../../client/js/cartPage.js"></script>
+</body>
+</html>
