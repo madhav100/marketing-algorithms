@@ -1,30 +1,24 @@
 # marketing-algorithms
 
-## SFRA architecture starter
+## SFCC project structure
 
-This repository now includes a minimal Salesforce Commerce Cloud (SFRA) storefront cartridge
-structure to serve as a foundation for development.
+This repository includes a Salesforce Commerce Cloud setup with:
 
-### Layout
+- A storefront implementation in SFRA style (`salesforce commerce cloud/walmart`).
+- A separate Admin Console architecture skeleton (`salesforce commerce cloud/admin-console`).
+
+### Admin Console architecture
 
 ```
-cartridges/
-  app_storefront_base/
-    cartridge/
-      controllers/
-        Home.js
-      templates/
-        default/
-          home/
-            home.isml
+Admin Console Panel
+  ↓
+Node/Express Backend
+  ↓
+Database
 ```
 
-### Usage
+### Usage direction
 
-* Add `app_storefront_base` to your cartridge path in Business Manager.
-* Navigate to `Home-Show` to verify the storefront renders.
-
-### Next steps
-
-* Add models, scripts, and additional controllers as the storefront grows.
-* Introduce client-side assets, pipelines, and integration cartridges as needed.
+- Keep storefront pages, controllers, and cartridge code inside `walmart/`.
+- Build internal admin functionality inside `admin-console/`.
+- Connect the two through backend APIs/services as needed.
