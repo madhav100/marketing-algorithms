@@ -1,7 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-const dataDir = path.join(__dirname, '../../data');
+const dataDir = path.join(__dirname, '../../admin-console/database/data');
 
 // Safely read JSON data from a shared file.
 async function readJsonFile(fileName) {

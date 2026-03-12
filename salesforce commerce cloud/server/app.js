@@ -23,7 +23,7 @@ app.set('view engine', 'njk');
 app.use(express.json());
 
 // Serve static assets for admin and storefront UIs.
-app.use(express.static(path.join(__dirname, '../console')));
+app.use('/admin', express.static(path.join(__dirname, '../admin-console/admin-console-panel')));
 app.use('/storefront', express.static(path.join(__dirname, '../storefront/public')));
 
 // Register application routes.
