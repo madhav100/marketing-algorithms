@@ -11,20 +11,20 @@ const orderRoutes = require('./routes/api/orders');
 const app = express();
 const PORT = 3000;
 
-// Configure Nunjucks to render .njk templates from storefront views.
-nunjucks.configure(path.join(__dirname, '../storefront/views'), {
+// Configure Nunjucks to render canonical Walmart storefront templates.
+nunjucks.configure(path.join(__dirname, '../walmart/cartridge/templates/default'), {
   autoescape: true,
   express: app,
   noCache: true,
 });
-app.set('view engine', 'njk');
+app.set('view engine', 'html');
 
 // Parse JSON bodies for API requests.
 app.use(express.json());
 
-// Serve static assets for admin and storefront UIs.
-app.use(express.static(path.join(__dirname, '../console')));
-app.use('/storefront', express.static(path.join(__dirname, '../storefront/public')));
+// Serve static assets for admin and Walmart storefront UIs.
+app.use('/admin', express.static(path.join(__dirname, '../admin-console/admin-console-panel')));
+app.use('/client', express.static(path.join(__dirname, '../walmart/cartridge/client')));
 
 // Register application routes.
 app.use('/admin', adminRoutes);

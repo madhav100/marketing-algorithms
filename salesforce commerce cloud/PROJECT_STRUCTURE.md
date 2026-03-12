@@ -1,0 +1,154 @@
+# Salesforce Commerce Cloud Project Structure
+
+This document lists the current file/folder structure under `salesforce commerce cloud/`.
+
+```text
+salesforce commerce cloud
+- .DS_Store
+- PROJECT_STRUCTURE.md
+- RUNNING_INSTRUCTIONS.md
+- admin-console
+  - README.md
+  - admin-console-panel
+    - README.md
+    - admin.css
+    - admin.html
+    - admin.js
+  - database
+    - README.md
+    - data
+      - categories.json
+      - orders.json
+      - products.json
+    - fileDatabase.js
+  - node-express-backend
+    - README.md
+    - src
+      - app.js
+      - routes
+        - adminApiRoutes.js
+      - server.js
+      - services
+        - adminDataService.js
+- package.json
+- server
+  - app.js
+  - controllers
+    - api
+      - categoryApiController.js
+      - orderApiController.js
+      - productApiController.js
+    - storefront
+      - Cart.js
+      - Home.js
+      - Product.js
+  - routes
+    - adminRoutes.js
+    - api
+      - categories.js
+      - orders.js
+      - products.js
+    - storefrontRoutes.js
+  - server-structure.svg
+  - services
+    - categoryService.js
+    - orderService.js
+    - productService.js
+  - utils
+    - fileStore.js
+- storefront
+  - README.md
+  - public
+    - css
+      - site.css
+  - views
+    - cart.njk
+    - home.njk
+    - product.njk
+- walmart
+  - .DS_Store
+  - README.md
+  - WALMART_FLOW_VISUAL_EXPLANATION.md
+  - WALMART_HOME_PAGE_WORKFLOW_CHECKLIST.md
+  - WALMART_HOME_PRODUCT_FLOW_VISUAL.svg
+  - WALMART_SFCC_NETWORKING_SIMULATION.html
+  - WALMART_SFRA_WORKFLOW.md
+  - cartridge
+    - .DS_Store
+    - README.md
+    - client
+      - README.md
+      - default
+        - README.md
+        - images
+          - products
+            - cotton-tshirt.svg
+            - fresh-apples.svg
+            - wireless-earbuds.svg
+      - js
+        - README.md
+        - cartPage.js
+        - homePage.js
+        - productPage.js
+      - scss
+        - README.md
+        - _variables.scss
+        - cartPage.css
+        - cartPage.scss
+        - homePage.css
+        - homePage.scss
+        - productPage.css
+        - productPage.scss
+    - controllers
+      - Cart.js
+      - Home.js
+      - Product.js
+      - README.md
+    - experience
+      - README.md
+      - components
+        - README.md
+      - pages
+        - README.md
+    - forms
+      - README.md
+      - contactus.xml
+    - models
+      - README.md
+      - account
+        - README.md
+      - cartPage.js
+      - homePage.js
+      - product
+        - README.md
+        - productDetail.js
+      - productPage.js
+    - scripts
+      - README.md
+      - helpers
+        - README.md
+        - catalogHelpers.js
+        - homePageHelpers.js
+        - productHelpers.js
+      - middleware
+        - README.md
+      - util
+        - README.md
+        - formatting.js
+    - templates
+      - README.md
+      - default
+        - README.md
+        - account
+          - README.md
+        - cart
+          - README.md
+          - cartPage.html
+        - home
+          - README.md
+          - homePage.html
+        - product
+          - README.md
+          - productPage.html
+  - package.json
+```
