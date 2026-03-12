@@ -4,7 +4,8 @@
   "description": "Local SFRA simulation runtime with shared server layer",
   "main": "server/app.js",
   "scripts": {
-    "start": "node server/app.js"
+    "start": "node server/app.js",
+    "start:admin-backend": "node admin-console/node-express-backend/src/server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
