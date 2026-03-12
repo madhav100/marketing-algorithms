@@ -1,0 +1,21 @@
+[
+  {
+    "id": "o9001",
+    "customer": "Ava Martinez",
+    "total": 218.99,
+    "status": "processing",
+    "items": [
+      { "productId": "p1001", "quantity": 1 },
+      { "productId": "p1004", "quantity": 2 }
+    ]
+  },
+  {
+    "id": "o9002",
+    "customer": "Noah Johnson",
+    "total": 89.99,
+    "status": "shipped",
+    "items": [
+      { "productId": "p1006", "quantity": 1 }
+    ]
+  }
+]

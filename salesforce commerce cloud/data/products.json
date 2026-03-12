@@ -1,0 +1,50 @@
+[
+  {
+    "id": "p1001",
+    "name": "Trail Running Shoes",
+    "description": "Lightweight trail shoes with extra grip for uneven terrain.",
+    "price": 129.99,
+    "category": "Footwear",
+    "inventory": 45
+  },
+  {
+    "id": "p1002",
+    "name": "Performance Hoodie",
+    "description": "Moisture-wicking hoodie for cool morning workouts.",
+    "price": 69.5,
+    "category": "Apparel",
+    "inventory": 73
+  },
+  {
+    "id": "p1003",
+    "name": "Smart Fitness Watch",
+    "description": "Tracks heart rate, sleep, and workout metrics in real time.",
+    "price": 199,
+    "category": "Electronics",
+    "inventory": 30
+  },
+  {
+    "id": "p1004",
+    "name": "Insulated Water Bottle",
+    "description": "Keeps beverages cold for up to 24 hours.",
+    "price": 24.99,
+    "category": "Accessories",
+    "inventory": 120
+  },
+  {
+    "id": "p1005",
+    "name": "Yoga Mat Pro",
+    "description": "High-density non-slip mat for yoga and stretching sessions.",
+    "price": 49,
+    "category": "Fitness",
+    "inventory": 58
+  },
+  {
+    "id": "p1006",
+    "name": "Wireless Earbuds",
+    "description": "Noise-isolating earbuds with 30-hour battery life.",
+    "price": 89.99,
+    "category": "Electronics",
+    "inventory": 64
+  }
+]
