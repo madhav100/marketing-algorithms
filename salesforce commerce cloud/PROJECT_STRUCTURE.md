@@ -6,6 +6,7 @@ This document lists the current file/folder structure under `salesforce commerce
 salesforce commerce cloud
 - .DS_Store
 - PROJECT_STRUCTURE.md
+- RUNNING_INSTRUCTIONS.md
 - admin-console
   - README.md
   - admin-console-panel
