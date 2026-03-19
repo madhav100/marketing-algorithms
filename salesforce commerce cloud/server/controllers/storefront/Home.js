@@ -31,8 +31,10 @@ async function showHome(req, res, next) {
     const products = await productService.getAllProducts();
     const categories = await categoryService.getAllCategories();
     const featuredProducts = products.slice(0, 3).map((product) => ({
+      id: String(product.id),
       title: product.name,
       price: formatPrice(product.price),
+      priceValue: Number(product.price || 0),
       image: getProductImage(product),
     }));
 

@@ -10,6 +10,7 @@ const orderRoutes = require('./routes/api/orders');
 
 const app = express();
 const PORT = 3000;
+const SERVER_BOOT_ID = String(Date.now());
 
 // Configure Nunjucks to render canonical Walmart storefront templates.
 nunjucks.configure(path.join(__dirname, '../walmart/cartridge/templates/default'), {
@@ -18,6 +19,12 @@ nunjucks.configure(path.join(__dirname, '../walmart/cartridge/templates/default'
   noCache: true,
 });
 app.set('view engine', 'html');
+app.locals.serverBootId = SERVER_BOOT_ID;
+
+app.use((req, res, next) => {
+  res.locals.serverBootId = req.app.locals.serverBootId;
+  next();
+});
 
 // Parse JSON bodies for API requests.
 app.use(express.json());

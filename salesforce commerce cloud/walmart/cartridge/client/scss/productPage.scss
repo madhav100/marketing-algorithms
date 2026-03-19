@@ -68,13 +68,27 @@
     margin-bottom: 14px;
   }
 
-  .cta {
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .cta,
+  .cart-link {
     background: $wm-blue;
     color: #fff;
     border: 0;
     padding: 12px 16px;
     border-radius: 999px;
     font-weight: 700;
+    text-decoration: none;
+  }
+
+  .cart-link {
+    background: #eef4ff;
+    color: $wm-blue-dark;
   }
 }
 

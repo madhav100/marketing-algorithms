@@ -26,9 +26,11 @@ async function showProduct(req, res, next) {
     }
 
     return res.render('product/productPage.html', {
+      productId: String(product.id),
       title: product.name,
       image: getProductImage(product),
       price: formatPrice(product.price),
+      priceValue: Number(product.price || 0),
       stock: `${Number(product.inventory || 0)} in stock`,
       description: product.description || 'No description provided.',
       variants: [
