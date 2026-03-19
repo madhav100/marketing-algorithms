@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="admin.css" />
 </head>
 <body>
-  <!-- Global top utility bar -->
   <header class="topbar" role="banner">
     <div class="topbar__brand">
       <span class="cloud-logo" aria-hidden="true">☁</span>
@@ -22,7 +21,6 @@
   </header>
 
   <div class="layout">
-    <!-- Left sidebar navigation -->
     <aside class="sidebar" aria-label="Primary navigation">
       <nav>
         <h2 class="sidebar-title">Merchant Tools</h2>
@@ -39,9 +37,7 @@
       </nav>
     </aside>
 
-    <!-- Main page content -->
     <main class="content" role="main">
-      <!-- Products section -->
       <section id="section-products" class="app-section is-visible">
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <a href="#">Home</a><span>/</span><a href="#">Commerce</a><span>/</span><span aria-current="page">Storefront</span>
@@ -50,12 +46,9 @@
         <section class="page-header">
           <div>
             <h1><span class="section-eye" aria-hidden="true">👁</span> Storefront</h1>
-            <p>Manage catalog items for the storefront</p>
+            <p>Manage catalog items that appear on the storefront by category.</p>
           </div>
-          <div class="page-header__actions">
-            <button class="btn" type="button">Import CSV</button>
-            <button class="btn" type="button">Export</button>
-          </div>
+          <div class="page-header__actions"></div>
         </section>
 
         <section class="metrics-grid" aria-label="Product summary metrics">
@@ -65,42 +58,93 @@
           <article class="metric-card"><p>Draft Items</p><h2 id="draft-products">0</h2></article>
         </section>
 
-        <section class="card filters" aria-label="Filter products">
-          <label>Search<input type="search" placeholder="Find by product name or SKU" /></label>
-          <label>Category
-            <select><option>All Categories</option><option>Electronics</option><option>Groceries</option><option>Home</option><option>Apparel</option></select>
-          </label>
-          <label>Status
-            <select><option>All Statuses</option><option>Active</option><option>Draft</option><option>Low Stock</option></select>
-          </label>
-          <label>Stock Status
-            <select><option>All</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
-          </label>
-          <button class="btn" type="button">Reset Filters</button>
-        </section>
+        <section class="products-layout">
+          <section class="card form-card" aria-label="Create product">
+            <div class="card-heading">
+              <div>
+                <h2>Add Product</h2>
+                <p>Saved directly to the shared JSON database used by the storefront.</p>
+              </div>
+            </div>
+            <form id="product-form" class="product-form">
+              <label>Product Name<input id="product-name" name="name" type="text" required /></label>
+              <label>Description<textarea id="product-description" name="description" rows="4" required></textarea></label>
+              <label>Image URL<input id="product-image" name="image" type="url" placeholder="https://example.com/product-image.jpg" /></label>
+              <label>Category
+                <select id="product-category" name="category" required></select>
+              </label>
+              <div class="form-row">
+                <label>Price<input id="product-price" name="price" type="number" min="0" step="0.01" required /></label>
+                <label>Inventory<input id="product-inventory" name="inventory" type="number" min="0" step="1" required /></label>
+              </div>
+              <label>Status
+                <select id="product-status" name="status">
+                  <option value="Active">Active</option>
+                  <option value="Draft">Draft</option>
+                  <option value="Low Stock">Low Stock</option>
+                </select>
+              </label>
+              <div class="form-actions">
+                <button class="btn btn--primary" type="submit">Save Product</button>
+                <button class="btn" type="reset">Reset</button>
+              </div>
+              <p id="product-form-message" class="form-message" aria-live="polite"></p>
+            </form>
+          </section>
 
-        <section class="card table-card" aria-label="Products table">
-          <table>
-            <thead>
-              <tr>
-                <th>Product</th><th>SKU</th><th>Category</th><th>Price</th>
-                <th>Stock</th><th>Status</th><th>Updated</th>
-              </tr>
-            </thead>
-            <tbody id="products-table-body"></tbody>
-          </table>
+          <div>
+            <section class="card filters" aria-label="Filter products">
+              <label>Search<input id="filter-search" type="search" placeholder="Find by product name or category" /></label>
+              <label>Category
+                <select id="filter-category"><option value="all">All Categories</option></select>
+              </label>
+              <label>Status
+                <select id="filter-status">
+                  <option value="all">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Draft">Draft</option>
+                  <option value="Low Stock">Low Stock</option>
+                </select>
+              </label>
+              <label>Stock Status
+                <select id="filter-stock">
+                  <option value="all">All</option>
+                  <option value="in-stock">In Stock</option>
+                  <option value="low-stock">Low Stock</option>
+                  <option value="out-of-stock">Out of Stock</option>
+                </select>
+              </label>
+              <button id="reset-filters" class="btn" type="button">Reset Filters</button>
+            </section>
+
+            <section class="card table-card" aria-label="Products table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th><th>Category</th><th>Price</th>
+                    <th>Stock</th><th>Status</th><th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="products-table-body"></tbody>
+              </table>
+            </section>
+          </div>
         </section>
       </section>
 
-      <!-- Other sidebar sections -->
       <section id="section-dashboard" class="app-section card">
         <h2>Dashboard</h2>
         <p class="section-note">Dashboard widgets will appear here.</p>
       </section>
 
       <section id="section-categories" class="app-section card">
-        <h2>Categories</h2>
-        <p class="section-note">Category management tools will appear here.</p>
+        <div class="card-heading">
+          <div>
+            <h2>Categories</h2>
+            <p>These categories drive how products appear on the storefront.</p>
+          </div>
+        </div>
+        <div id="categories-list" class="category-admin-grid"></div>
       </section>
 
       <section id="section-inventory" class="app-section card">
@@ -129,9 +173,9 @@
       </section>
 
       <section id="section-products-previews" class="preview-grid app-section is-visible" aria-label="Additional admin previews">
-        <article class="card preview-card"><h3>Recent Orders</h3><p>Operational preview area.</p></article>
-        <article class="card preview-card"><h3>Inventory Alerts</h3><p>Operational preview area.</p></article>
-        <article class="card preview-card"><h3>Featured Homepage Products</h3><p>Operational preview area.</p></article>
+        <article class="card preview-card"><h3>Shared Database</h3><p>Products are stored in the shared catalog database used by the platform.</p></article>
+        <article class="card preview-card"><h3>Category Mapping</h3><p>Each product stays associated with its selected category for catalog organization.</p></article>
+        <article class="card preview-card"><h3>Product Details</h3><p>Name, description, image, price, inventory, and status are all saved from this form.</p></article>
       </section>
     </main>
   </div>

@@ -33,12 +33,29 @@
     border: 1px solid $wm-line;
     border-radius: $wm-radius;
     padding: 16px;
+  }
 
-    img {
-      width: 100%;
-      border-radius: 10px;
-      background: #eef4ff;
-    }
+  .product-media img {
+    width: 100%;
+    border-radius: 10px;
+    background: #eef4ff;
+  }
+
+  .description {
+    color: #5b6b80;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: #5b6b80;
+    font-size: .85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  h1 {
+    margin: 10px 0 8px;
   }
 
   .price {
@@ -51,30 +68,35 @@
   .stock {
     color: #1f7a3d;
     font-weight: 700;
+    margin: 0 0 8px;
   }
 
-  label {
-    display: block;
-    margin: 12px 0 6px;
-    font-weight: 700;
+  .description {
+    margin: 0 0 12px;
   }
 
-  select {
-    width: 100%;
-    max-width: 240px;
-    padding: 10px;
-    border: 1px solid $wm-line;
-    border-radius: 10px;
-    margin-bottom: 14px;
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
-  .cta {
+  .cta,
+  .cart-link {
     background: $wm-blue;
     color: #fff;
     border: 0;
     padding: 12px 16px;
     border-radius: 999px;
     font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .cart-link {
+    background: #eef4ff;
+    color: $wm-blue-dark;
   }
 }
 

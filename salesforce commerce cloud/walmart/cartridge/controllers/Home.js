@@ -5,20 +5,16 @@ var server = require('server');
 server.get('Show', function (req, res, next) {
     var homepageData = {
         storeName: 'Walmart',
-        welcomeMessage: 'Save money. Live better.',
+        welcomeMessage: 'Browse products managed from the admin catalog.',
         categories: [
-            { name: 'Grocery', url: '/category/grocery' },
+            { name: 'Footwear', url: '/category/footwear' },
+            { name: 'Apparel', url: '/category/apparel' },
             { name: 'Electronics', url: '/category/electronics' },
-            { name: 'Fashion', url: '/category/fashion' },
-            { name: 'Home', url: '/category/home' },
-            { name: 'Pharmacy', url: '/category/pharmacy' }
+            { name: 'Accessories', url: '/category/accessories' },
+            { name: 'Fitness', url: '/category/fitness' }
         ],
-        featuredProducts: [
-            { title: 'Fresh Apples', price: '$4.99', image: '../../../client/default/images/products/fresh-apples.svg' },
-            { title: 'Wireless Earbuds', price: '$29.99', image: '../../../client/default/images/products/wireless-earbuds.svg' },
-            { title: 'Cotton T-Shirt', price: '$12.99', image: '../../../client/default/images/products/cotton-tshirt.svg' }
-        ],
-        promoMessage: 'Free pickup today on eligible orders over $35.'
+        featuredProducts: [],
+        promoMessage: 'Storefront catalog data should come from the admin-managed database.'
     };
 
     res.render('home/homePage', homepageData);
