@@ -1,23 +1,14 @@
 # walmart_evo
 
-This folder now owns the repository's project-evolution deliverables.
+This folder is the workspace for project-evolution artifacts.
 
-## Metadata-first outputs
+## Current layout
 
-The timeline is now maintained as structured metadata first, with a generated Markdown summary alongside it:
+- `walmart_evo/docs/README.md` — notes about evolution documentation placement.
+- `walmart_evo/tools/README.md` — notes about future helper tooling.
+- `docs/project_timeline_expanded.md` — the current evidence-based expanded timeline deliverable.
 
-- `walmart_evo/project_timeline.json` — canonical milestone metadata
-- `walmart_evo/project_timeline.md` — generated human-readable summary
-- `tools/generate_project_timeline.py` — generator for the Markdown summary
+## Notes
 
-## Why the chart workflow was removed
-
-The previous implementation centered on generated SVG/PNG artifacts under `docs/`. That flow has been retired in favor of reviewable text-based assets that diff cleanly in pull requests and keep the milestone record in one canonical JSON document.
-
-## Regenerating the summary
-
-Run:
-
-```bash
-python tools/generate_project_timeline.py
-```
+- The older metadata-only timeline artifacts were removed because they were too compressed for the requested audit trail.
+- No SVG/PNG chart artifacts are part of the current timeline workflow.
