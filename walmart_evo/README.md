@@ -1,14 +1,23 @@
 # walmart_evo
 
-This folder groups the project-evolution work requested for the repository.
+This folder now owns the repository's project-evolution deliverables.
 
-Primary outputs live in:
+## Metadata-first outputs
 
-- `docs/project_progress.json`
-- `docs/project_progress.md`
-- `docs/project_progress.svg`
-- `docs/project_progress.png`
-- `tools/render_progress_chart.py`
+The timeline is now maintained as structured metadata first, with a generated Markdown summary alongside it:
 
+- `walmart_evo/project_timeline.json` — canonical milestone metadata
+- `walmart_evo/project_timeline.md` — generated human-readable summary
+- `tools/generate_project_timeline.py` — generator for the Markdown summary
 
-Note: `docs/project_progress.png` is generated locally by the renderer and is intentionally gitignored because binary files are not supported in the PR diff workflow.
+## Why the chart workflow was removed
+
+The previous implementation centered on generated SVG/PNG artifacts under `docs/`. That flow has been retired in favor of reviewable text-based assets that diff cleanly in pull requests and keep the milestone record in one canonical JSON document.
+
+## Regenerating the summary
+
+Run:
+
+```bash
+python tools/generate_project_timeline.py
+```
