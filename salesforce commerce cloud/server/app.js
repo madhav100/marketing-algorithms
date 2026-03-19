@@ -7,6 +7,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const productRoutes = require('./routes/api/products');
 const categoryRoutes = require('./routes/api/categories');
 const orderRoutes = require('./routes/api/orders');
+const customerRoutes = require('./routes/api/customers');
 
 const app = express();
 const PORT = 3000;
@@ -39,6 +40,7 @@ app.use('/', storefrontRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Basic error handler for local debugging.
 app.use((error, req, res, next) => {

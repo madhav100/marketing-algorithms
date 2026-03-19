@@ -1,6 +1,27 @@
 (function () {
+    function getCurrentCustomer() {
+        try {
+            return JSON.parse(window.localStorage.getItem('wmCurrentCustomer') || 'null');
+        } catch (error) {
+            return null;
+        }
+    }
+
     function getServerBootId() {
         return document.body ? document.body.dataset.serverBootId || '' : '';
+    }
+
+    function getCartScope() {
+        var customer = getCurrentCustomer();
+        return customer && customer.id ? customer.id : 'guest';
+    }
+
+    function getCartItemsKey() {
+        return 'wmCartItems::' + getCartScope();
+    }
+
+    function getCartBootKey() {
+        return 'wmCartServerBoot::' + getCartScope();
     }
 
     function syncCartStorageWithServerBoot() {
@@ -10,10 +31,9 @@
             return;
         }
 
-        if (window.localStorage.getItem('wmCartServerBoot') !== serverBootId) {
-            window.localStorage.removeItem('wmCartItems');
-            window.localStorage.removeItem('wmCartCount');
-            window.localStorage.setItem('wmCartServerBoot', serverBootId);
+        if (window.localStorage.getItem(getCartBootKey()) !== serverBootId) {
+            window.localStorage.removeItem(getCartItemsKey());
+            window.localStorage.setItem(getCartBootKey(), serverBootId);
         }
     }
 
@@ -21,7 +41,7 @@
         syncCartStorageWithServerBoot();
 
         try {
-            return JSON.parse(window.localStorage.getItem('wmCartItems') || '[]');
+            return JSON.parse(window.localStorage.getItem(getCartItemsKey()) || '[]');
         } catch (error) {
             return [];
         }
@@ -29,10 +49,14 @@
 
     function saveCartItems(items) {
         syncCartStorageWithServerBoot();
-        window.localStorage.setItem('wmCartItems', JSON.stringify(items));
-        window.localStorage.setItem('wmCartCount', String(items.reduce(function (total, item) {
-            return total + Number(item.quantity || 0);
-        }, 0)));
+        window.localStorage.setItem(getCartItemsKey(), JSON.stringify(items));
+    }
+
+    function updateAccountLinks() {
+        var customer = getCurrentCustomer();
+        document.querySelectorAll('[data-account-link]').forEach(function (link) {
+            link.textContent = customer ? customer.name : 'Account';
+        });
     }
 
     function buildCartItem(button) {
@@ -43,7 +67,8 @@
             price: Number(button.dataset.productPrice || 0),
             displayPrice: button.dataset.productDisplayPrice,
             categoryName: button.dataset.categoryName || 'Uncategorized',
-            quantity: 1
+            quantity: 1,
+            customerId: getCartScope()
         };
     }
 
@@ -70,12 +95,13 @@
 
         button.addEventListener('click', function () {
             upsertCartItem(buildCartItem(button));
-            window.alert('Product added to cart');
+            window.alert('Product added to cart for ' + (getCurrentCustomer() ? getCurrentCustomer().name : 'guest') + '.');
         });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
+        updateAccountLinks();
         bindAddToCart();
     });
 }());

@@ -2,6 +2,18 @@ const { readJsonFile, writeJsonFile } = require('../utils/fileStore');
 
 const PRODUCTS_FILE = 'products.json';
 
+function normalizeBoolean(value, fallback) {
+  if (typeof value === 'undefined') {
+    return Boolean(fallback);
+  }
+
+  if (typeof value === 'string') {
+    return value === 'true';
+  }
+
+  return Boolean(value);
+}
+
 function normalizeProductInput(data, existingProduct) {
   const base = existingProduct || {};
 
@@ -14,6 +26,7 @@ function normalizeProductInput(data, existingProduct) {
     category: String(typeof data.category !== 'undefined' ? data.category : base.category || 'Uncategorized').trim() || 'Uncategorized',
     inventory: Number(typeof data.inventory !== 'undefined' ? data.inventory : base.inventory || 0) || 0,
     status: String(typeof data.status !== 'undefined' ? data.status : base.status || 'Draft').trim() || 'Draft',
+    retired: normalizeBoolean(data.retired, base.retired),
     updated: new Date().toISOString(),
   };
 }

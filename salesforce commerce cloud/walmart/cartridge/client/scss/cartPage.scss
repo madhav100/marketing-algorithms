@@ -21,6 +21,10 @@
     font-weight: 700;
   }
 
+  .account-nav-link {
+    margin-left: 16px;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -41,6 +45,12 @@
     align-items: baseline;
     gap: 12px;
     margin-bottom: 16px;
+  }
+
+  .cart-owner {
+    margin: 0;
+    color: #5b6b80;
+    font-weight: 600;
   }
 
   #cart-items {

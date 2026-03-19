@@ -6,7 +6,7 @@ async function showProduct(req, res, next) {
   try {
     const product = await productService.getProductById(req.params.id);
 
-    if (!product) {
+    if (!product || product.retired) {
       return res.status(404).send('Product not found');
     }
 

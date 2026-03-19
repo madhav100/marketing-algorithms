@@ -1,0 +1,41 @@
+:root {
+  --wm-blue: #0071ce;
+  --wm-blue-dark: #004c91;
+  --wm-yellow: #ffc220;
+  --bg: #f5f7fb;
+  --text: #1f2a37;
+  --muted: #5b6b80;
+  --line: #e5edf6;
+  --card: #ffffff;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); }
+.container { width: min(1080px, 94vw); margin: 0 auto; }
+.top { background: var(--wm-blue); color: #fff; }
+.top__row { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; }
+.top__row a { color: #fff; text-decoration: none; font-weight: 700; }
+.account-layout { padding: 24px 0 36px; display: grid; gap: 18px; }
+.forms-grid, .summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.panel, .summary-card, .order-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06); }
+.panel { padding: 20px; }
+.eyebrow { margin: 0 0 6px; text-transform: uppercase; letter-spacing: .08em; color: var(--wm-blue); font-weight: 700; font-size: .82rem; }
+.intro-panel h1, .panel h2, .panel h3 { margin-top: 0; }
+.account-form { display: grid; gap: 12px; }
+.account-form label { display: grid; gap: 6px; color: var(--muted); font-size: .92rem; }
+.account-form input, .account-form textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; }
+.btn { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 999px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
+.btn-primary { background: var(--wm-blue); color: #fff; border-color: var(--wm-blue); }
+.account-summary__header { display: flex; justify-content: space-between; gap: 16px; align-items: start; margin-bottom: 18px; }
+.summary-card { padding: 16px; }
+.summary-card p { margin: 0 0 8px; color: var(--muted); }
+.summary-card h3 { margin: 0; font-size: 1.7rem; color: var(--wm-blue-dark); }
+.orders-list { display: grid; gap: 12px; }
+.order-card { padding: 16px; }
+.order-card h4, .order-card p { margin: 0 0 6px; }
+.order-card p:last-child { margin-bottom: 0; }
+.account-message { min-height: 1.2rem; margin: 0; color: var(--muted); }
+.account-message--success { color: #176c45; }
+.account-message--error { color: #b42318; }
+.empty-state { color: var(--muted); margin: 0; }
+@media (max-width: 760px) { .top__row, .account-summary__header, .forms-grid, .summary-grid { grid-template-columns: 1fr; display: grid; } }

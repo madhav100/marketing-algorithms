@@ -68,7 +68,7 @@ function buildProductCard(product) {
     categoryName,
     stock: inventory,
     stockLabel: inventory > 0 ? `${inventory} in stock` : 'Out of stock',
-    status: product.status || (inventory > 0 ? 'Active' : 'Draft'),
+    status: product.retired ? 'Retired' : product.status || (inventory > 0 ? 'Active' : 'Draft'),
     updated: product.updated || '',
     image: product.image || buildCategoryImage(categoryName),
   };
@@ -78,7 +78,7 @@ function buildCategorySections(categories, products) {
   return categories.map((category) => {
     const categoryName = String(category.name || 'Uncategorized').trim() || 'Uncategorized';
     const categoryProducts = products
-      .filter((product) => String(product.category || '').trim() === categoryName)
+      .filter((product) => String(product.category || '').trim() === categoryName && !product.retired)
       .map(buildProductCard);
 
     return {

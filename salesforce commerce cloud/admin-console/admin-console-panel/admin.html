@@ -60,12 +60,17 @@
 
         <section class="products-layout">
           <section class="card form-card" aria-label="Create product">
-            <div class="card-heading">
+            <div class="card-heading card-heading--split">
               <div>
                 <h2>Add Product</h2>
-                <p>Saved directly to the shared JSON database used by the storefront.</p>
+              </div>
+              <div class="card-heading__actions">
+                <input id="product-csv-file" type="file" accept=".csv,text/csv" hidden />
+                <button class="btn" id="import-csv-button" type="button">Import CSV</button>
+                <button class="btn" id="export-csv-button" type="button">Export CSV</button>
               </div>
             </div>
+            <p class="csv-note">CSV fields: name, description, category, price, inventory, status. The image field is ignored for CSV import/export.</p>
             <form id="product-form" class="product-form">
               <label>Product Name<input id="product-name" name="name" type="text" required /></label>
               <label>Description<textarea id="product-description" name="description" rows="4" required></textarea></label>
@@ -89,6 +94,7 @@
                 <button class="btn" type="reset">Reset</button>
               </div>
               <p id="product-form-message" class="form-message" aria-live="polite"></p>
+              <p id="product-csv-message" class="form-message" aria-live="polite"></p>
             </form>
           </section>
 
@@ -104,6 +110,7 @@
                   <option value="Active">Active</option>
                   <option value="Draft">Draft</option>
                   <option value="Low Stock">Low Stock</option>
+                  <option value="Retired">Retired</option>
                 </select>
               </label>
               <label>Stock Status
@@ -132,9 +139,19 @@
         </section>
       </section>
 
-      <section id="section-dashboard" class="app-section card">
-        <h2>Dashboard</h2>
-        <p class="section-note">Dashboard widgets will appear here.</p>
+      <section id="section-dashboard" class="app-section card dashboard-section">
+        <div class="card-heading">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Quick business totals across products, customers, and catalog health.</p>
+          </div>
+        </div>
+        <div class="metrics-grid metrics-grid--dashboard">
+          <article class="metric-card"><p>Customers</p><h2 id="dashboard-customers">0</h2></article>
+          <article class="metric-card"><p>Retired Products</p><h2 id="dashboard-retired-products">0</h2></article>
+          <article class="metric-card"><p>Visible Storefront Products</p><h2 id="dashboard-visible-products">0</h2></article>
+          <article class="metric-card"><p>Categories</p><h2 id="dashboard-categories">0</h2></article>
+        </div>
       </section>
 
       <section id="section-categories" class="app-section card">
@@ -148,8 +165,22 @@
       </section>
 
       <section id="section-inventory" class="app-section card">
-        <h2>Inventory</h2>
-        <p class="section-note">Inventory controls will appear here.</p>
+        <div class="card-heading">
+          <div>
+            <h2>Inventory</h2>
+            <p>Retire products to keep them in the console/database while hiding them from the storefront.</p>
+          </div>
+        </div>
+        <section class="card table-card table-card--embedded" aria-label="Inventory table">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th><th>Inventory</th><th>Status</th><th>Retire from Storefront</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body"></tbody>
+          </table>
+        </section>
       </section>
 
       <section id="section-orders" class="app-section card">
@@ -158,8 +189,22 @@
       </section>
 
       <section id="section-customers" class="app-section card">
-        <h2>Customers</h2>
-        <p class="section-note">Customer data tools will appear here.</p>
+        <div class="card-heading">
+          <div>
+            <h2>Customers</h2>
+            <p>Customer accounts, their contact details, and linked order counts.</p>
+          </div>
+        </div>
+        <section class="card table-card table-card--embedded" aria-label="Customers table">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th><th>Phone</th><th>Home Address</th><th>Orders</th><th>Last Order Status</th>
+              </tr>
+            </thead>
+            <tbody id="customers-table-body"></tbody>
+          </table>
+        </section>
       </section>
 
       <section id="section-content" class="app-section card">
@@ -173,9 +218,9 @@
       </section>
 
       <section id="section-products-previews" class="preview-grid app-section is-visible" aria-label="Additional admin previews">
-        <article class="card preview-card"><h3>Shared Database</h3><p>Products are stored in the shared catalog database used by the platform.</p></article>
-        <article class="card preview-card"><h3>Category Mapping</h3><p>Each product stays associated with its selected category for catalog organization.</p></article>
-        <article class="card preview-card"><h3>Product Details</h3><p>Name, description, image, price, inventory, and status are all saved from this form.</p></article>
+        <article class="card preview-card"><h3>Customer Accounts</h3><p>Customers now sign in with name, phone number, home address, and password from the storefront account page.</p></article>
+        <article class="card preview-card"><h3>Customer Cart Scope</h3><p>Each signed-in customer keeps a separate cart scope and order history reference.</p></article>
+        <article class="card preview-card"><h3>Retired Inventory</h3><p>Retired products stay available in admin and the database, but no longer appear on the storefront.</p></article>
       </section>
     </main>
   </div>

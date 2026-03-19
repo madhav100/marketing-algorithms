@@ -15,17 +15,26 @@
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <a href="#">Account</a>
+        <a data-account-link href="/account">Account</a>
         <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
       </nav>
     </div>
   </header>
 
+  <nav class="category-navbar" aria-label="Shop categories">
+    <div class="container category-navbar__row">
+      <a class="category-navbar__link is-active" href="/walmart">Home</a>
+      {% for category in categories %}
+        <a class="category-navbar__link" href="#category-{{category.slug}}">{{category.name}}</a>
+      {% endfor %}
+    </div>
+  </nav>
+
   <main class="container">
     <section class="hero">
       <h1>Welcome to {{storeName}}</h1>
       <p>{{welcomeMessage}}</p>
-      <button type="button">Account</button>
+      <a class="hero-account-link" data-account-link href="/account">Account</a>
     </section>
 
     <section class="section promo-banner">
@@ -101,7 +110,7 @@
 
   <footer>
     <div class="container footer-links">
-      <a href="#">Account</a>
+      <a data-account-link href="/account">Account</a>
       <a href="/cart">Cart</a>
       <a href="/walmart">Storefront Home</a>
     </div>

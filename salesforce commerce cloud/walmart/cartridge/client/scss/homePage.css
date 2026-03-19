@@ -20,10 +20,14 @@ body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--b
 .search button { border: 0; background: var(--wm-yellow); color: #1b2b3b; font-weight: 700; padding: 0 16px; }
 .top-links { display: flex; gap: 14px; flex-wrap: wrap; }
 .top-links a { color: #fff; text-decoration: none; font-weight: 600; }
+.category-navbar { background: #fff; border-bottom: 1px solid var(--line); box-shadow: 0 4px 14px rgba(9, 30, 66, 0.06); }
+.category-navbar__row { display: flex; gap: 12px; align-items: center; overflow-x: auto; padding: 12px 0; scrollbar-width: thin; }
+.category-navbar__link { white-space: nowrap; text-decoration: none; color: var(--wm-blue-dark); font-weight: 700; padding: 8px 14px; border-radius: 999px; background: #eef4ff; }
+.category-navbar__link.is-active, .category-navbar__link:hover { background: var(--wm-yellow); color: #142433; }
 .hero { background: linear-gradient(130deg, var(--wm-blue-dark), var(--wm-blue)); color: #fff; border-radius: var(--radius); padding: 28px; margin: 18px 0; }
 .hero h1 { margin: 0 0 8px; font-size: 2rem; }
 .hero p { margin: 0 0 16px; color: #d8ecff; max-width: 720px; }
-.hero button { border: 0; background: var(--wm-yellow); color: #142433; padding: 12px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+.hero button, .hero-account-link { border: 0; background: var(--wm-yellow); color: #142433; padding: 12px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
 .section { margin: 18px 0 24px; }
 .section h2 { margin: 0 0 10px; font-size: 1.3rem; }
 .section-header { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin-bottom: 12px; }
@@ -53,4 +57,4 @@ body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--b
 footer { margin-top: 24px; background: #fff; border-top: 1px solid var(--line); }
 .footer-links { display: flex; gap: 18px; justify-content: center; padding: 14px 0; }
 .footer-links a { color: var(--muted); text-decoration: none; font-weight: 600; }
-@media (max-width: 900px) { .categories,.products{grid-template-columns:1fr;} .empty-category{grid-template-columns:1fr;} }
+@media (max-width: 900px) { .topbar-row{justify-content:center;} .category-navbar__row{padding:10px 0;} .categories,.products{grid-template-columns:1fr;} .empty-category{grid-template-columns:1fr;} }

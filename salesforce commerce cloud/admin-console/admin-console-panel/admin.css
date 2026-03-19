@@ -175,6 +175,8 @@ body {
 #section-customers,
 #section-content,
 #section-settings { padding: var(--space-5); }
+.dashboard-section { display: none; }
+.dashboard-section.is-visible { display: block; }
 .breadcrumbs {
   display: flex;
   gap: var(--space-2);
@@ -249,6 +251,7 @@ input, select, textarea {
 
 /* Table */
 .table-card { overflow: auto; margin-bottom: var(--space-4); }
+.table-card--embedded { margin-top: var(--space-4); }
 table { width: 100%; border-collapse: collapse; min-width: 980px; }
 thead th {
   position: sticky;
@@ -291,6 +294,7 @@ tbody tr:hover { background: #f7fbff; }
 .badge--active { background: var(--success-bg); color: var(--success-text); }
 .badge--low { background: var(--warn-bg); color: var(--warn-text); }
 .badge--draft { background: var(--draft-bg); color: var(--draft-text); }
+.badge--retired { background: #fbeaea; color: #9f2020; }
 
 .actions { white-space: nowrap; }
 .actions button {
@@ -371,6 +375,7 @@ textarea:focus-visible {
   .metrics-grid,
   .preview-grid,
   .filters { grid-template-columns: 1fr; }
+  .card-heading--split { flex-direction: column; }
 }
 
 
@@ -390,9 +395,28 @@ textarea:focus-visible {
   margin: 0 0 0.2rem;
 }
 
+.card-heading--split {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.card-heading__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 .card-heading p {
   margin: 0;
   color: var(--muted);
+}
+
+.csv-note {
+  margin: var(--space-3) 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .product-form {
@@ -480,3 +504,7 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+.checkbox-label { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text); }
+.checkbox-label input { width: auto; }
+.metrics-grid--dashboard { margin-top: var(--space-4); }
