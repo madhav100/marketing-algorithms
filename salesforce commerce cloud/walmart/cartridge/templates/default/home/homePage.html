@@ -11,11 +11,11 @@
     <div class="container topbar-row">
       <div class="brand">{{storeName}}</div>
       <form id="home-search-form" class="search" action="#" method="get">
-        <input id="search" name="q" type="text" placeholder="Search everything at Walmart" />
+        <input id="search" name="q" type="text" placeholder="Search products managed from admin" />
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <a href="#">Account</a>
+        <a href="/admin">Admin console</a>
         <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
       </nav>
     </div>
@@ -25,54 +25,85 @@
     <section class="hero">
       <h1>Welcome to {{storeName}}</h1>
       <p>{{welcomeMessage}}</p>
-      <button type="button">Shop Now</button>
+      <button type="button" onclick="window.location.href='/admin'">Manage catalog</button>
     </section>
 
     <section class="section promo-banner">
       <p>{{promoMessage}}</p>
+      <p><strong>{{totalProducts}}</strong> product(s) are currently available across <strong>{{categorySections.length}}</strong> admin-managed categories.</p>
     </section>
 
     <section class="section">
-      <h2>Featured Categories</h2>
+      <div class="section-header">
+        <h2>Shop by Category</h2>
+        <p>Each category below is loaded from the admin console database.</p>
+      </div>
       <div class="categories">
-        <a href="{{categories[0].url}}">{{categories[0].name}}</a>
-        <a href="{{categories[1].url}}">{{categories[1].name}}</a>
-        <a href="{{categories[2].url}}">{{categories[2].name}}</a>
-        <a href="{{categories[3].url}}">{{categories[3].name}}</a>
-        <a href="{{categories[4].url}}">{{categories[4].name}}</a>
+        {% for category in categories %}
+          <a class="category-card" href="#category-{{category.slug}}">
+            <img src="{{category.image}}" alt="{{category.name}}" width="260" height="160" />
+            <span class="category-name">{{category.name}}</span>
+            <span class="category-meta">{{category.productCount}} product(s)</span>
+          </a>
+        {% endfor %}
       </div>
     </section>
 
-    <section class="section">
-      <h2>Featured Products</h2>
-      <div class="products">
-        <article class="card wm-card">
-          <img src="{{featuredProducts[0].image}}" alt="{{featuredProducts[0].title}}" width="220" height="146" />
-          <h3>{{featuredProducts[0].title}}</h3>
-          <p class="price">{{featuredProducts[0].price}}</p>
-          <button type="button" data-action="add-to-cart" data-product-id="{{featuredProducts[0].id}}" data-product-title="{{featuredProducts[0].title}}" data-product-image="{{featuredProducts[0].image}}" data-product-price="{{featuredProducts[0].priceValue}}" data-product-display-price="{{featuredProducts[0].price}}">Add to cart</button>
-        </article>
-        <article class="card wm-card">
-          <img src="{{featuredProducts[1].image}}" alt="{{featuredProducts[1].title}}" width="220" height="146" />
-          <h3>{{featuredProducts[1].title}}</h3>
-          <p class="price">{{featuredProducts[1].price}}</p>
-          <button type="button" data-action="add-to-cart" data-product-id="{{featuredProducts[1].id}}" data-product-title="{{featuredProducts[1].title}}" data-product-image="{{featuredProducts[1].image}}" data-product-price="{{featuredProducts[1].priceValue}}" data-product-display-price="{{featuredProducts[1].price}}">Add to cart</button>
-        </article>
-        <article class="card wm-card">
-          <img src="{{featuredProducts[2].image}}" alt="{{featuredProducts[2].title}}" width="220" height="146" />
-          <h3>{{featuredProducts[2].title}}</h3>
-          <p class="price">{{featuredProducts[2].price}}</p>
-          <button type="button" data-action="add-to-cart" data-product-id="{{featuredProducts[2].id}}" data-product-title="{{featuredProducts[2].title}}" data-product-image="{{featuredProducts[2].image}}" data-product-price="{{featuredProducts[2].priceValue}}" data-product-display-price="{{featuredProducts[2].price}}">Add to cart</button>
-        </article>
-      </div>
-    </section>
+    {% for category in categorySections %}
+      <section id="category-{{category.slug}}" class="section category-section">
+        <div class="section-header">
+          <div>
+            <h2>{{category.name}}</h2>
+            <p>{{category.productCount}} product(s) managed from the admin console.</p>
+          </div>
+        </div>
+
+        {% if category.products.length %}
+          <div class="products">
+            {% for product in category.products %}
+              <article class="card wm-card">
+                <img src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
+                <p class="eyebrow">{{product.categoryName}}</p>
+                <h3>{{product.title}}</h3>
+                <p class="description">{{product.description}}</p>
+                <p class="price">{{product.price}}</p>
+                <p class="stock">{{product.stockLabel}}</p>
+                <div class="card-actions">
+                  <a class="product-link" href="/product/{{product.id}}">View details</a>
+                  <button
+                    type="button"
+                    data-action="add-to-cart"
+                    data-product-id="{{product.id}}"
+                    data-product-title="{{product.title}}"
+                    data-product-image="{{product.image}}"
+                    data-product-price="{{product.priceValue}}"
+                    data-product-display-price="{{product.price}}"
+                    data-category-name="{{product.categoryName}}"
+                  >
+                    Add to cart
+                  </button>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-category">
+            <img src="{{category.image}}" alt="{{category.name}}" width="260" height="160" />
+            <div>
+              <h3>No products yet in {{category.name}}</h3>
+              <p>Add products for this category from the admin console and they will appear here automatically.</p>
+            </div>
+          </div>
+        {% endif %}
+      </section>
+    {% endfor %}
   </main>
 
   <footer>
     <div class="container footer-links">
-      <a href="#">Help</a>
-      <a href="#">Contact</a>
-      <a href="#">Policies</a>
+      <a href="/admin">Admin console</a>
+      <a href="/cart">Cart</a>
+      <a href="/walmart">Storefront Home</a>
     </div>
   </footer>
   <script src="../../../client/js/homePage.js"></script>

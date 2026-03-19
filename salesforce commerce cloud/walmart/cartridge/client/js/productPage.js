@@ -36,28 +36,21 @@
     }
 
     function buildCartItem(button) {
-        var variantField = document.getElementById('variant');
-        var variant = variantField ? variantField.value : 'standard';
-        var variantLabel = variantField && variantField.options[variantField.selectedIndex]
-            ? variantField.options[variantField.selectedIndex].text
-            : 'Standard';
-
         return {
             id: button.dataset.productId,
             title: button.dataset.productTitle,
             image: button.dataset.productImage,
             price: Number(button.dataset.productPrice || 0),
             displayPrice: button.dataset.productDisplayPrice,
-            quantity: 1,
-            variant: variant,
-            variantLabel: variantLabel
+            categoryName: button.dataset.categoryName || 'Uncategorized',
+            quantity: 1
         };
     }
 
     function upsertCartItem(nextItem) {
         var items = parseCartItems();
         var existingItem = items.find(function (item) {
-            return item.id === nextItem.id && item.variant === nextItem.variant;
+            return item.id === nextItem.id;
         });
 
         if (existingItem) {

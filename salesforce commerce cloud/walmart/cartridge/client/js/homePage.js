@@ -55,16 +55,15 @@
             image: button.dataset.productImage,
             price: Number(button.dataset.productPrice || 0),
             displayPrice: button.dataset.productDisplayPrice,
-            quantity: 1,
-            variant: 'standard',
-            variantLabel: 'Standard'
+            categoryName: button.dataset.categoryName || 'Uncategorized',
+            quantity: 1
         };
     }
 
     function upsertCartItem(nextItem) {
         var items = parseCartItems();
         var existingItem = items.find(function (item) {
-            return item.id === nextItem.id && item.variant === nextItem.variant;
+            return item.id === nextItem.id;
         });
 
         if (existingItem) {

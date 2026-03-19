@@ -2,6 +2,21 @@ const { readJsonFile, writeJsonFile } = require('../utils/fileStore');
 
 const PRODUCTS_FILE = 'products.json';
 
+function normalizeProductInput(data, existingProduct) {
+  const base = existingProduct || {};
+
+  return {
+    ...base,
+    name: String(typeof data.name !== 'undefined' ? data.name : base.name || '').trim(),
+    description: String(typeof data.description !== 'undefined' ? data.description : base.description || '').trim(),
+    price: Number(typeof data.price !== 'undefined' ? data.price : base.price || 0) || 0,
+    category: String(typeof data.category !== 'undefined' ? data.category : base.category || 'Uncategorized').trim() || 'Uncategorized',
+    inventory: Number(typeof data.inventory !== 'undefined' ? data.inventory : base.inventory || 0) || 0,
+    status: String(typeof data.status !== 'undefined' ? data.status : base.status || 'Draft').trim() || 'Draft',
+    updated: new Date().toISOString(),
+  };
+}
+
 // Return all products from the shared JSON store.
 async function getAllProducts() {
   return readJsonFile(PRODUCTS_FILE);
@@ -17,12 +32,8 @@ async function getProductById(id) {
 async function createProduct(data) {
   const products = await getAllProducts();
   const newProduct = {
-    id: Date.now().toString(),
-    name: data.name,
-    description: data.description || '',
-    price: Number(data.price) || 0,
-    category: data.category || 'Uncategorized',
-    inventory: Number(data.inventory) || 0,
+    id: `p${Date.now()}`,
+    ...normalizeProductInput(data),
   };
 
   products.push(newProduct);
@@ -40,9 +51,8 @@ async function updateProduct(id, data) {
   }
 
   const updatedProduct = {
-    ...products[index],
-    ...data,
     id: products[index].id,
+    ...normalizeProductInput(data, products[index]),
   };
 
   products[index] = updatedProduct;

@@ -54,7 +54,7 @@
             '  <img src="' + escapeHtml(item.image) + '" alt="' + escapeHtml(item.title) + '" width="160" height="106" />',
             '  <div>',
             '    <h3>' + escapeHtml(item.title) + '</h3>',
-            '    <p class="variant">Variant: ' + escapeHtml(item.variantLabel || 'Standard') + '</p>',
+            '    <p class="variant">Category: ' + escapeHtml(item.categoryName || 'Uncategorized') + '</p>',
             '    <p class="qty">Quantity: ' + Number(item.quantity || 0) + '</p>',
             '    <p class="price">' + formatPrice(item.price) + '</p>',
             '  </div>',
