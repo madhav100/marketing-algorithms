@@ -1,5 +1,21 @@
 (function () {
+    function parseCartItems() {
+        try {
+            return JSON.parse(window.localStorage.getItem('wmCartItems') || '[]');
+        } catch (error) {
+            return [];
+        }
+    }
+
     function getCartCount() {
+        var items = parseCartItems();
+
+        if (items.length) {
+            return items.reduce(function (total, item) {
+                return total + Number(item.quantity || 0);
+            }, 0);
+        }
+
         return Number(window.localStorage.getItem('wmCartCount') || 0);
     }
 
