@@ -1,0 +1,94 @@
+[
+  {
+    "id": "repo-init",
+    "title": "Repository Initialization",
+    "start_date": "2025-12-01",
+    "end_date": "2025-12-01",
+    "status": "done",
+    "evidence": [
+      { "path": "README.md", "commits": ["fd97680"] }
+    ],
+    "notes": "The baseline repository starts with the initial commit on 2025-12-01. Current surviving evidence is limited, so this milestone is anchored to the earliest available commit subject and root README history."
+  },
+  {
+    "id": "sfra-foundation",
+    "title": "SFRA Foundation",
+    "start_date": "2026-02-03",
+    "end_date": "2026-02-04",
+    "status": "done",
+    "evidence": [
+      { "path": "README.md", "commits": ["959f40d", "8354923", "25bab4e", "a161c51", "476151c"] },
+      { "path": "salesforce commerce cloud/walmart/WALMART_SFRA_WORKFLOW.md", "commits": ["959f40d", "8354923", "25bab4e", "a161c51", "476151c"] }
+    ],
+    "notes": "Dates come from the first SFRA scaffold and contact-form commits on 2026-02-03/04. Some original scaffold files were replaced later, so the exact file-level evidence is partially reconstructed from commit subjects and later architecture docs."
+  },
+  {
+    "id": "walmart-skeleton",
+    "title": "Walmart Storefront Skeleton",
+    "start_date": "2026-03-10",
+    "end_date": "2026-03-10",
+    "status": "done",
+    "evidence": [
+      { "path": "salesforce commerce cloud/walmart/README.md", "commits": ["fa788a3"] },
+      { "path": "salesforce commerce cloud/walmart/WALMART_SFRA_WORKFLOW.md", "commits": ["0a0f0ad", "83f8cc9", "fa788a3"] },
+      { "path": "salesforce commerce cloud/walmart/WALMART_HOME_PAGE_WORKFLOW_CHECKLIST.md", "commits": ["0a0f0ad"] }
+    ],
+    "notes": "This phase establishes the Walmart-specific project skeleton, workflow narrative, and early homepage workflow outputs."
+  },
+  {
+    "id": "retail-ui-assets",
+    "title": "Retail UI and Assets",
+    "start_date": "2026-03-11",
+    "end_date": "2026-03-11",
+    "status": "done",
+    "evidence": [
+      { "path": "salesforce commerce cloud/walmart/cartridge/templates/default/home/homePage.html", "commits": ["0b8afac", "b101e05", "6f5e8ed", "847d013"] },
+      { "path": "salesforce commerce cloud/walmart/cartridge/templates/default/product/productPage.html", "commits": ["0b8afac", "b101e05", "6f5e8ed", "847d013"] },
+      { "path": "salesforce commerce cloud/walmart/cartridge/client/scss/homePage.scss", "commits": ["6f5e8ed", "847d013"] },
+      { "path": "salesforce commerce cloud/walmart/WALMART_HOME_PRODUCT_FLOW_VISUAL.svg", "commits": ["d5fd8bc"] }
+    ],
+    "notes": "On 2026-03-11 the storefront rapidly evolved from basic structure into a retail-style UI with assets, separated stylesheets, and visual workflow documentation."
+  },
+  {
+    "id": "admin-console-architecture",
+    "title": "Admin Console Architecture",
+    "start_date": "2026-03-11",
+    "end_date": "2026-03-11",
+    "status": "done",
+    "evidence": [
+      { "path": "salesforce commerce cloud/admin-console/README.md", "commits": ["0d9162c"] },
+      { "path": "salesforce commerce cloud/admin-console/admin-console-panel/README.md", "commits": ["0d9162c", "94554b0", "38ebd11", "8346c47"] },
+      { "path": "salesforce commerce cloud/admin-console/admin-console-panel/admin.html", "commits": ["38ebd11", "8346c47"] }
+    ],
+    "notes": "This same-day milestone captures the creation of the separate admin-console area, empty-state cleanup, and state-driven admin panel behavior."
+  },
+  {
+    "id": "integration-layer",
+    "title": "Integration Server Layer",
+    "start_date": "2026-03-12",
+    "end_date": "2026-03-12",
+    "status": "done",
+    "evidence": [
+      { "path": "salesforce commerce cloud/RUNNING_INSTRUCTIONS.md", "commits": ["85e1e69"] },
+      { "path": "salesforce commerce cloud/PROJECT_STRUCTURE.md", "commits": ["9946fd6"] },
+      { "path": "salesforce commerce cloud/admin-console/database/README.md", "commits": ["ad04724"] },
+      { "path": "salesforce commerce cloud/server/server-structure.svg", "commits": ["50782d6"] }
+    ],
+    "notes": "The server, shared APIs, database layout, and run instructions were formalized on 2026-03-12, making the Walmart storefront the canonical served experience."
+  },
+  {
+    "id": "shared-catalog-cart",
+    "title": "Shared Catalog and Cart",
+    "start_date": "2026-03-19",
+    "end_date": "2026-03-19",
+    "status": "done",
+    "evidence": [
+      { "path": "salesforce commerce cloud/server/services/storefrontCatalogService.js", "commits": ["002f252"] },
+      { "path": "salesforce commerce cloud/server/services/productService.js", "commits": ["002f252"] },
+      { "path": "salesforce commerce cloud/admin-console/admin-console-panel/admin.js", "commits": ["002f252"] },
+      { "path": "salesforce commerce cloud/walmart/cartridge/templates/default/home/homePage.html", "commits": ["002f252"] },
+      { "path": "salesforce commerce cloud/walmart/cartridge/client/js/cartPage.js", "commits": ["002f252"] }
+    ],
+    "notes": "The current committed state connects admin-managed catalog data to the storefront, introduces a shared catalog shaping service, and makes the client cart persistent across page visits and server restarts."
+  }
+]
