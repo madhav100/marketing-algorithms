@@ -1,16 +1,6 @@
-// Render canonical Walmart cart page.
+// Render canonical Walmart cart page shell. Items are hydrated from local storage.
 function showCart(req, res) {
-  return res.render('cart/cartPage.html', {
-    items: [
-      {
-        title: 'Trail Running Shoes',
-        quantity: 1,
-        price: '$129.99',
-        image: '/client/default/images/products/fresh-apples.svg',
-      },
-    ],
-    subtotal: '$129.99',
-  });
+  return res.render('cart/cartPage.html');
 }
 
 module.exports = {

@@ -1,41 +1,26 @@
 const productService = require('../../services/productService');
+const storefrontCatalogService = require('../../services/storefrontCatalogService');
 
-function getProductImage(product) {
-  if (product.category === 'Electronics') {
-    return '/client/default/images/products/wireless-earbuds.svg';
-  }
-
-  if (product.category === 'Apparel') {
-    return '/client/default/images/products/cotton-tshirt.svg';
-  }
-
-  return '/client/default/images/products/fresh-apples.svg';
-}
-
-function formatPrice(value) {
-  return `$${Number(value || 0).toFixed(2)}`;
-}
-
-// Render canonical Walmart product detail page from shared data.
+// Render canonical Walmart product detail page from shared admin-managed data.
 async function showProduct(req, res, next) {
   try {
     const product = await productService.getProductById(req.params.id);
 
-    if (!product) {
+    if (!product || product.retired) {
       return res.status(404).send('Product not found');
     }
 
+    const productCard = storefrontCatalogService.buildProductCard(product);
+
     return res.render('product/productPage.html', {
-      title: product.name,
-      image: getProductImage(product),
-      price: formatPrice(product.price),
-      stock: `${Number(product.inventory || 0)} in stock`,
-      description: product.description || 'No description provided.',
-      variants: [
-        { id: 'standard', label: 'Standard' },
-        { id: 'plus', label: 'Plus' },
-        { id: 'premium', label: 'Premium' },
-      ],
+      productId: productCard.id,
+      title: productCard.title,
+      image: productCard.image,
+      price: productCard.price,
+      priceValue: productCard.priceValue,
+      stock: productCard.stockLabel,
+      description: productCard.description,
+      categoryName: productCard.categoryName,
     });
   } catch (error) {
     return next(error);
