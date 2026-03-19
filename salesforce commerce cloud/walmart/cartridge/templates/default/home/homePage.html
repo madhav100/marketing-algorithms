@@ -11,11 +11,11 @@
     <div class="container topbar-row">
       <div class="brand">{{storeName}}</div>
       <form id="home-search-form" class="search" action="#" method="get">
-        <input id="search" name="q" type="text" placeholder="Search products managed from admin" />
+        <input id="search" name="q" type="text" placeholder="Search products at Walmart" />
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <a href="/admin">Admin console</a>
+        <a href="#">Account</a>
         <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
       </nav>
     </div>
@@ -25,18 +25,18 @@
     <section class="hero">
       <h1>Welcome to {{storeName}}</h1>
       <p>{{welcomeMessage}}</p>
-      <button type="button" onclick="window.location.href='/admin'">Manage catalog</button>
+      <button type="button">Account</button>
     </section>
 
     <section class="section promo-banner">
       <p>{{promoMessage}}</p>
-      <p><strong>{{totalProducts}}</strong> product(s) are currently available across <strong>{{categorySections.length}}</strong> admin-managed categories.</p>
+      <p><strong>{{totalProducts}}</strong> product(s) are currently available across <strong>{{categorySections.length}}</strong> shopping categories.</p>
     </section>
 
     <section class="section">
       <div class="section-header">
         <h2>Shop by Category</h2>
-        <p>Each category below is loaded from the admin console database.</p>
+        <p>Browse the store by category to find the products that fit your day.</p>
       </div>
       <div class="categories">
         {% for category in categories %}
@@ -54,7 +54,7 @@
         <div class="section-header">
           <div>
             <h2>{{category.name}}</h2>
-            <p>{{category.productCount}} product(s) managed from the admin console.</p>
+            <p>{{category.productCount}} product(s) available in this category.</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@
             <img src="{{category.image}}" alt="{{category.name}}" width="260" height="160" />
             <div>
               <h3>No products yet in {{category.name}}</h3>
-              <p>Add products for this category from the admin console and they will appear here automatically.</p>
+              <p>Check back soon for new arrivals in this category.</p>
             </div>
           </div>
         {% endif %}
@@ -101,7 +101,7 @@
 
   <footer>
     <div class="container footer-links">
-      <a href="/admin">Admin console</a>
+      <a href="#">Account</a>
       <a href="/cart">Cart</a>
       <a href="/walmart">Storefront Home</a>
     </div>

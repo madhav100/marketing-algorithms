@@ -9,6 +9,7 @@ function normalizeProductInput(data, existingProduct) {
     ...base,
     name: String(typeof data.name !== 'undefined' ? data.name : base.name || '').trim(),
     description: String(typeof data.description !== 'undefined' ? data.description : base.description || '').trim(),
+    image: String(typeof data.image !== 'undefined' ? data.image : base.image || '').trim(),
     price: Number(typeof data.price !== 'undefined' ? data.price : base.price || 0) || 0,
     category: String(typeof data.category !== 'undefined' ? data.category : base.category || 'Uncategorized').trim() || 'Uncategorized',
     inventory: Number(typeof data.inventory !== 'undefined' ? data.inventory : base.inventory || 0) || 0,

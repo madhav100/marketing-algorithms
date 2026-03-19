@@ -48,9 +48,7 @@
             <h1><span class="section-eye" aria-hidden="true">👁</span> Storefront</h1>
             <p>Manage catalog items that appear on the storefront by category.</p>
           </div>
-          <div class="page-header__actions">
-            <a class="btn" href="/walmart">Open Storefront</a>
-          </div>
+          <div class="page-header__actions"></div>
         </section>
 
         <section class="metrics-grid" aria-label="Product summary metrics">
@@ -71,6 +69,7 @@
             <form id="product-form" class="product-form">
               <label>Product Name<input id="product-name" name="name" type="text" required /></label>
               <label>Description<textarea id="product-description" name="description" rows="4" required></textarea></label>
+              <label>Image URL<input id="product-image" name="image" type="url" placeholder="https://example.com/product-image.jpg" /></label>
               <label>Category
                 <select id="product-category" name="category" required></select>
               </label>
@@ -174,9 +173,9 @@
       </section>
 
       <section id="section-products-previews" class="preview-grid app-section is-visible" aria-label="Additional admin previews">
-        <article class="card preview-card"><h3>Shared Database</h3><p>Products are persisted in the admin console database and read by the storefront routes.</p></article>
-        <article class="card preview-card"><h3>Category Storefront</h3><p>Each storefront category section is built from the category collection plus matching products.</p></article>
-        <article class="card preview-card"><h3>Product Details</h3><p>Name, description, price, inventory, and status now flow from admin to storefront product pages.</p></article>
+        <article class="card preview-card"><h3>Shared Database</h3><p>Products are stored in the shared catalog database used by the platform.</p></article>
+        <article class="card preview-card"><h3>Category Mapping</h3><p>Each product stays associated with its selected category for catalog organization.</p></article>
+        <article class="card preview-card"><h3>Product Details</h3><p>Name, description, image, price, inventory, and status are all saved from this form.</p></article>
       </section>
     </main>
   </div>

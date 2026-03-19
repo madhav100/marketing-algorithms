@@ -21,8 +21,6 @@ async function showProduct(req, res, next) {
       stock: productCard.stockLabel,
       description: productCard.description,
       categoryName: productCard.categoryName,
-      status: productCard.status,
-      updated: productCard.updated,
     });
   } catch (error) {
     return next(error);

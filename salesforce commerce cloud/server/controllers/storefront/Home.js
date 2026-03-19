@@ -12,8 +12,8 @@ async function showHome(req, res, next) {
 
     return res.render('home/homePage.html', {
       storeName: 'Walmart',
-      welcomeMessage: 'Browse products that are managed directly from the admin console.',
-      promoMessage: 'Categories and product details below are loaded from the shared admin database.',
+      welcomeMessage: 'We are glad you are here—discover everyday essentials, trending finds, and favorites picked for you.',
+      promoMessage: 'Welcome! Explore products by category and add your favorites to the cart.',
       categories: categorySections,
       categorySections,
       totalProducts,

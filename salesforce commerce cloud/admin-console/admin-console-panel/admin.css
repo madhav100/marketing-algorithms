@@ -448,12 +448,6 @@ textarea:focus-visible {
   color: var(--muted);
 }
 
-.category-admin-card a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
 .thumb {
   width: 2.25rem;
   height: 2.25rem;
@@ -464,6 +458,16 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   font-weight: 700;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumb--image {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: cover;
+  border-radius: 999px;
+  display: block;
 }
 
 @media (max-width: 1100px) {

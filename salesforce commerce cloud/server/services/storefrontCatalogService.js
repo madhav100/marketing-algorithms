@@ -70,7 +70,7 @@ function buildProductCard(product) {
     stockLabel: inventory > 0 ? `${inventory} in stock` : 'Out of stock',
     status: product.status || (inventory > 0 ? 'Active' : 'Draft'),
     updated: product.updated || '',
-    image: buildCategoryImage(categoryName),
+    image: product.image || buildCategoryImage(categoryName),
   };
 }
 

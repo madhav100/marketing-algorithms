@@ -91,6 +91,15 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+
+function renderProductThumb(product) {
+  if (product.image) {
+    return `<img class="thumb thumb--image" src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" />`;
+  }
+
+  return `<div class="thumb" aria-hidden="true">${escapeHtml(String(product.category || 'C').slice(0, 1))}</div>`;
+}
+
 function renderProductsTable() {
   const visibleProducts = getFilteredProducts();
 
@@ -109,7 +118,7 @@ function renderProductsTable() {
         <tr>
           <td>
             <div class="product-cell">
-              <div class="thumb" aria-hidden="true">${escapeHtml(String(product.category || 'C').slice(0, 1))}</div>
+              ${renderProductThumb(product)}
               <div>
                 <strong>${escapeHtml(product.name)}</strong>
                 <small>${escapeHtml(product.description || 'No description')}</small>
@@ -161,7 +170,6 @@ function renderCategoriesSection() {
         <article class="category-admin-card">
           <h3>${escapeHtml(category.name)}</h3>
           <p>${count} product(s) currently assigned.</p>
-          <a href="/walmart#category-${escapeHtml(category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">View storefront section</a>
         </article>
       `;
     })
@@ -213,6 +221,7 @@ async function handleProductSubmit(event) {
   const payload = {
     name: formData.get('name'),
     description: formData.get('description'),
+    image: formData.get('image'),
     category: formData.get('category'),
     price: Number(formData.get('price') || 0),
     inventory: Number(formData.get('inventory') || 0),

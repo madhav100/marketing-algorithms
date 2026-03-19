@@ -15,17 +15,12 @@
     <section class="layout">
       <article class="panel product-media">
         <img src="{{image}}" alt="{{categoryName}} category" width="500" height="330" />
-        <p class="media-caption">Generic category image for {{categoryName}}</p>
       </article>
       <article class="panel">
         <p class="eyebrow">{{categoryName}}</p>
         <h1>{{title}}</h1>
         <p class="price">{{price}}</p>
         <p class="stock">{{stock}}</p>
-        <p class="status">Status: <strong>{{status}}</strong></p>
-        {% if updated %}
-          <p class="updated">Last updated: {{updated}}</p>
-        {% endif %}
         <p class="description">{{description}}</p>
         <div class="actions">
           <button
