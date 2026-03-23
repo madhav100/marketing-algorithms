@@ -7,6 +7,12 @@ async function getAllOrders() {
   return readJsonFile(ORDERS_FILE);
 }
 
+async function getOrdersByCustomerId(customerId) {
+  const orders = await getAllOrders();
+  return orders.filter((order) => String(order.customerId || '') === String(customerId || ''));
+}
+
 module.exports = {
   getAllOrders,
+  getOrdersByCustomerId,
 };

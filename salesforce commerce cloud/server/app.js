@@ -7,9 +7,11 @@ const adminRoutes = require('./routes/adminRoutes');
 const productRoutes = require('./routes/api/products');
 const categoryRoutes = require('./routes/api/categories');
 const orderRoutes = require('./routes/api/orders');
+const customerRoutes = require('./routes/api/customers');
 
 const app = express();
 const PORT = 3000;
+const SERVER_BOOT_ID = String(Date.now());
 
 // Configure Nunjucks to render canonical Walmart storefront templates.
 nunjucks.configure(path.join(__dirname, '../walmart/cartridge/templates/default'), {
@@ -18,6 +20,12 @@ nunjucks.configure(path.join(__dirname, '../walmart/cartridge/templates/default'
   noCache: true,
 });
 app.set('view engine', 'html');
+app.locals.serverBootId = SERVER_BOOT_ID;
+
+app.use((req, res, next) => {
+  res.locals.serverBootId = req.app.locals.serverBootId;
+  next();
+});
 
 // Parse JSON bodies for API requests.
 app.use(express.json());
@@ -32,6 +40,7 @@ app.use('/', storefrontRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Basic error handler for local debugging.
 app.use((error, req, res, next) => {

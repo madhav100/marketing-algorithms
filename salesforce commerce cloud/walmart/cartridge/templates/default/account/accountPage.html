@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account - Walmart</title>
+  <link rel="stylesheet" href="../../../client/scss/accountPage.css" />
+</head>
+<body class="account-page" data-server-boot-id="{{serverBootId}}">
+  <header class="top">
+    <div class="container top__row">
+      <a href="/walmart">← Back to Home</a>
+      <a href="/cart">Cart</a>
+    </div>
+  </header>
+
+  <main class="container account-layout">
+    <section class="panel intro-panel">
+      <p class="eyebrow">Customer Account</p>
+      <h1>Sign up or sign in</h1>
+      <p>Create your customer account with your name, phone number, home address, and password. Each account keeps its own cart scope and order history.</p>
+      <p id="account-status-message" class="account-message" aria-live="polite"></p>
+    </section>
+
+    <section class="forms-grid" id="account-auth-forms">
+      <article class="panel">
+        <h2>Sign In</h2>
+        <form id="sign-in-form" class="account-form">
+          <label>Phone Number<input name="phone" type="tel" required /></label>
+          <label>Password<input name="password" type="password" required /></label>
+          <button class="btn btn-primary" type="submit">Sign In</button>
+        </form>
+      </article>
+
+      <article class="panel">
+        <h2>Sign Up</h2>
+        <form id="sign-up-form" class="account-form">
+          <label>Name<input name="name" type="text" required /></label>
+          <label>Phone Number<input name="phone" type="tel" required /></label>
+          <label>Home Address<textarea name="address" rows="3" required></textarea></label>
+          <label>Password<input name="password" type="password" required /></label>
+          <button class="btn btn-primary" type="submit">Create Account</button>
+        </form>
+      </article>
+    </section>
+
+    <section id="account-summary" class="panel account-summary" hidden>
+      <div class="account-summary__header">
+        <div>
+          <p class="eyebrow">Signed In</p>
+          <h2 id="account-customer-name">Customer</h2>
+          <p id="account-customer-phone"></p>
+          <p id="account-customer-address"></p>
+        </div>
+        <button id="account-sign-out" class="btn" type="button">Sign Out</button>
+      </div>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <p>Cart Items</p>
+          <h3 id="account-cart-count">0</h3>
+        </article>
+        <article class="summary-card">
+          <p>Orders</p>
+          <h3 id="account-order-count">0</h3>
+        </article>
+      </div>
+
+      <div>
+        <h3>Your Orders</h3>
+        <div id="account-orders-list" class="orders-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../../client/js/accountPage.js"></script>
+</body>
+</html>

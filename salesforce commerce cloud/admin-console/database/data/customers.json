@@ -1,0 +1,20 @@
+[
+  {
+    "id": "cu9001",
+    "name": "Ava Martinez",
+    "phone": "555-0101",
+    "address": "128 Market Street, Austin, TX",
+    "password": "ava123",
+    "created": "2026-03-12T09:00:00.000Z",
+    "updated": "2026-03-12T09:00:00.000Z"
+  },
+  {
+    "id": "cu9002",
+    "name": "Noah Johnson",
+    "phone": "555-0102",
+    "address": "44 Lakeview Avenue, Denver, CO",
+    "password": "noah123",
+    "created": "2026-03-12T10:00:00.000Z",
+    "updated": "2026-03-12T10:00:00.000Z"
+  }
+]

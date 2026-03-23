@@ -6,30 +6,38 @@
   <title>{{title}} - Walmart</title>
   <link rel="stylesheet" href="../../../client/scss/productPage.css" />
 </head>
-<body class="product-page">
+<body class="product-page" data-server-boot-id="{{serverBootId}}">
   <header class="top">
-    <div class="container"><a href="#">← Back to Home</a></div>
+    <div class="container"><a href="/walmart">← Back to Home</a> <a class="account-nav-link" data-account-link href="/account">Account</a></div>
   </header>
 
   <main class="container">
     <section class="layout">
-      <article class="panel">
-        <img src="{{image}}" alt="{{title}}" width="500" height="330" />
+      <article class="panel product-media">
+        <img src="{{image}}" alt="{{categoryName}} category" width="500" height="330" />
       </article>
       <article class="panel">
+        <p class="eyebrow">{{categoryName}}</p>
         <h1>{{title}}</h1>
         <p class="price">{{price}}</p>
         <p class="stock">{{stock}}</p>
-
-        <label for="variant">Variant</label>
-        <select id="variant" name="variant">
-          <option value="{{variants[0].id}}">{{variants[0].label}}</option>
-          <option value="{{variants[1].id}}">{{variants[1].label}}</option>
-          <option value="{{variants[2].id}}">{{variants[2].label}}</option>
-        </select>
-
-        <p>{{description}}</p>
-        <button id="product-add-to-cart" class="cta" type="button">Add to cart</button>
+        <p class="description">{{description}}</p>
+        <div class="actions">
+          <button
+            id="product-add-to-cart"
+            class="cta"
+            type="button"
+            data-product-id="{{productId}}"
+            data-product-title="{{title}}"
+            data-product-image="{{image}}"
+            data-product-price="{{priceValue}}"
+            data-product-display-price="{{price}}"
+            data-category-name="{{categoryName}}"
+          >
+            Add to cart
+          </button>
+          <a class="cart-link" href="/cart">View cart</a>
+        </div>
       </article>
     </section>
   </main>
