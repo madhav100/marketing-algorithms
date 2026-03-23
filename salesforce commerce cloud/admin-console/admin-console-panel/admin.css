@@ -252,7 +252,7 @@ input, select, textarea {
 /* Table */
 .table-card { overflow: auto; margin-bottom: var(--space-4); }
 .table-card--embedded { margin-top: var(--space-4); }
-table { width: 100%; border-collapse: collapse; min-width: 980px; }
+table { width: 100%; border-collapse: collapse; min-width: 100%; }
 thead th {
   position: sticky;
   top: 0;
@@ -283,6 +283,12 @@ tbody tr:hover { background: #f7fbff; }
   border: 1px solid #bfd7f3;
 }
 .product-cell small { display: block; color: var(--muted); }
+.cell-meta {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: 0.76rem;
+}
 
 .badge {
   display: inline-block;
@@ -360,6 +366,7 @@ textarea:focus-visible {
   .metrics-grid,
   .preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  table { min-width: 780px; }
 }
 
 @media (max-width: 760px) {
@@ -376,6 +383,7 @@ textarea:focus-visible {
   .preview-grid,
   .filters { grid-template-columns: 1fr; }
   .card-heading--split { flex-direction: column; }
+  table { min-width: 680px; }
 }
 
 

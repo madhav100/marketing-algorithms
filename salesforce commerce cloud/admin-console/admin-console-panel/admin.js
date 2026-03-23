@@ -92,6 +92,22 @@ function getBadgeClass(status) {
   return 'badge--low';
 }
 
+function getStorefrontState(product) {
+  if (product.retired) {
+    return {
+      label: 'Archived',
+      description: 'Hidden from storefront',
+      badgeClass: 'badge--retired'
+    };
+  }
+
+  return {
+    label: 'Visible',
+    description: 'Shown on storefront',
+    badgeClass: 'badge--active'
+  };
+}
+
 function formatDate(value) {
   if (!value) {
     return '—';
@@ -126,13 +142,14 @@ function renderProductsTable() {
   const visibleProducts = getFilteredProducts();
 
   if (visibleProducts.length === 0) {
-    tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No products match the current filters. Add a product or reset filters.</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="7" class="empty-state">No products match the current filters. Add a product or reset filters.</td></tr>';
     return;
   }
 
   tableBody.innerHTML = visibleProducts
     .map((product) => {
       const status = getComputedStatus(product);
+      const storefrontState = getStorefrontState(product);
       const badgeClass = getBadgeClass(status);
       const inventory = Number(product.inventory || 0);
 
@@ -151,6 +168,10 @@ function renderProductsTable() {
           <td>$${Number(product.price || 0).toFixed(2)}</td>
           <td>${inventory}</td>
           <td><span class="badge ${badgeClass}">${escapeHtml(status)}</span></td>
+          <td>
+            <span class="badge ${storefrontState.badgeClass}">${escapeHtml(storefrontState.label)}</span>
+            <small class="cell-meta">${escapeHtml(storefrontState.description)}</small>
+          </td>
           <td>${escapeHtml(formatDate(product.updated))}</td>
         </tr>
       `;
@@ -205,21 +226,26 @@ function renderCategoriesSection() {
 
 function renderInventoryTable() {
   if (!products.length) {
-    inventoryTableBody.innerHTML = '<tr><td colspan="4" class="empty-state">No products available.</td></tr>';
+    inventoryTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No products available.</td></tr>';
     return;
   }
 
   inventoryTableBody.innerHTML = products.map((product) => {
     const status = getComputedStatus(product);
+    const storefrontState = getStorefrontState(product);
     return `
       <tr>
         <td>${escapeHtml(product.name)}</td>
         <td>${Number(product.inventory || 0)}</td>
         <td><span class="badge ${getBadgeClass(status)}">${escapeHtml(status)}</span></td>
         <td>
+          <span class="badge ${storefrontState.badgeClass}">${escapeHtml(storefrontState.label)}</span>
+          <small class="cell-meta">${escapeHtml(storefrontState.description)}</small>
+        </td>
+        <td>
           <label class="checkbox-label">
             <input type="checkbox" data-action="toggle-retired" data-product-id="${escapeHtml(product.id)}" ${product.retired ? 'checked' : ''} />
-            <span>${product.retired ? 'Retired' : 'Visible'}</span>
+            <span>${product.retired ? 'Archived' : 'Visible'}</span>
           </label>
         </td>
       </tr>
@@ -242,34 +268,6 @@ function renderCustomersSection() {
       <td>${escapeHtml(customer.lastOrderStatus || 'No orders yet')}</td>
     </tr>
   `).join('');
-}
-
-function renderCategoryOptions() {
-  const optionsMarkup = categories
-    .map((category) => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`)
-    .join('');
-
-  productCategorySelect.innerHTML = optionsMarkup;
-  filterCategory.innerHTML = '<option value="all">All Categories</option>' + optionsMarkup;
-}
-
-function renderCategoriesSection() {
-  if (!categories.length) {
-    categoriesList.innerHTML = '<p class="section-note">No categories available.</p>';
-    return;
-  }
-
-  categoriesList.innerHTML = categories
-    .map((category) => {
-      const count = products.filter((product) => product.category === category.name).length;
-      return `
-        <article class="category-admin-card">
-          <h3>${escapeHtml(category.name)}</h3>
-          <p>${count} product(s) currently assigned.</p>
-        </article>
-      `;
-    })
-    .join('');
 }
 
 function showSection(sectionName) {
@@ -527,8 +525,15 @@ function bindInventoryRetireToggle() {
     }
 
     try {
-      await saveProduct({ ...product, retired: checkbox.checked }, product.id);
+      const updatedProduct = await saveProduct({ ...product, retired: checkbox.checked }, product.id);
       await loadData();
+      setMessage(
+        productCsvMessage,
+        checkbox.checked
+          ? `${updatedProduct.name} is archived and hidden from the storefront.`
+          : `${updatedProduct.name} is visible on the storefront again.`,
+        'success'
+      );
     } catch (error) {
       checkbox.checked = !checkbox.checked;
       setMessage(productCsvMessage, error.message, 'error');
@@ -550,8 +555,8 @@ bindFilters();
 bindInventoryRetireToggle();
 showSection('products');
 loadData().catch((error) => {
-  tableBody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
-  inventoryTableBody.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+  tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+  inventoryTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   customersTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   categoriesList.innerHTML = `<p class="section-note">${escapeHtml(error.message)}</p>`;
   setMessage(productCsvMessage, error.message, 'error');

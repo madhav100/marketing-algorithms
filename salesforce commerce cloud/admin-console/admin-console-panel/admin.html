@@ -71,6 +71,7 @@
               </div>
             </div>
             <p class="csv-note">CSV fields: name, description, category, price, inventory, status. The image field is ignored for CSV import/export.</p>
+            <p class="csv-note">Dummy CSV import files for QA are available under <code>salesforce commerce cloud/admin-console/sample-imports/products-csv/</code>.</p>
             <form id="product-form" class="product-form">
               <label>Product Name<input id="product-name" name="name" type="text" required /></label>
               <label>Description<textarea id="product-description" name="description" rows="4" required></textarea></label>
@@ -129,7 +130,7 @@
                 <thead>
                   <tr>
                     <th>Product</th><th>Category</th><th>Price</th>
-                    <th>Stock</th><th>Status</th><th>Updated</th>
+                    <th>Stock</th><th>Catalog Status</th><th>Storefront</th><th>Updated</th>
                   </tr>
                 </thead>
                 <tbody id="products-table-body"></tbody>
@@ -175,7 +176,7 @@
           <table>
             <thead>
               <tr>
-                <th>Product</th><th>Inventory</th><th>Status</th><th>Retire from Storefront</th>
+                <th>Product</th><th>Inventory</th><th>Catalog Status</th><th>Storefront</th><th>Archive from Storefront</th>
               </tr>
             </thead>
             <tbody id="inventory-table-body"></tbody>

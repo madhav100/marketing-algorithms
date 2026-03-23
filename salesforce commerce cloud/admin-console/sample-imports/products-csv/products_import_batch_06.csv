@@ -1,0 +1,51 @@
+name,description,category,price,inventory,status
+Storefront QA Footwear Trail Runner,Dummy import product 1 for the Footwear category in the Storefront QA workbook.,Footwear,38.99,15,Draft
+Storefront QA Footwear Court Sneaker,Dummy import product 2 for the Footwear category in the Storefront QA workbook.,Footwear,39.99,16,Active
+Storefront QA Footwear Daily Walker,Dummy import product 3 for the Footwear category in the Storefront QA workbook.,Footwear,40.99,17,Active
+Storefront QA Footwear Kids Slip-On,Dummy import product 4 for the Footwear category in the Storefront QA workbook.,Footwear,41.99,18,Low Stock
+Storefront QA Footwear Studio Trainer,Dummy import product 5 for the Footwear category in the Storefront QA workbook.,Footwear,42.99,19,Draft
+Storefront QA Footwear Commuter Loafer,Dummy import product 6 for the Footwear category in the Storefront QA workbook.,Footwear,43.99,20,Active
+Storefront QA Footwear Weekend Sandal,Dummy import product 7 for the Footwear category in the Storefront QA workbook.,Footwear,44.99,21,Active
+Storefront QA Footwear Performance Cleat,Dummy import product 8 for the Footwear category in the Storefront QA workbook.,Footwear,45.99,22,Low Stock
+Storefront QA Footwear Weather Boot,Dummy import product 9 for the Footwear category in the Storefront QA workbook.,Footwear,46.99,23,Draft
+Storefront QA Footwear Recovery Slide,Dummy import product 10 for the Footwear category in the Storefront QA workbook.,Footwear,47.99,24,Active
+Storefront QA Apparel Everyday Tee,Dummy import product 1 for the Apparel category in the Storefront QA workbook.,Apparel,38.99,15,Draft
+Storefront QA Apparel Performance Hoodie,Dummy import product 2 for the Apparel category in the Storefront QA workbook.,Apparel,39.99,16,Active
+Storefront QA Apparel Stretch Jogger,Dummy import product 3 for the Apparel category in the Storefront QA workbook.,Apparel,40.99,17,Active
+Storefront QA Apparel Thermal Henley,Dummy import product 4 for the Apparel category in the Storefront QA workbook.,Apparel,41.99,18,Low Stock
+Storefront QA Apparel Rain Shell,Dummy import product 5 for the Apparel category in the Storefront QA workbook.,Apparel,42.99,19,Draft
+Storefront QA Apparel Yoga Tank,Dummy import product 6 for the Apparel category in the Storefront QA workbook.,Apparel,43.99,20,Active
+Storefront QA Apparel Fleece Quarter Zip,Dummy import product 7 for the Apparel category in the Storefront QA workbook.,Apparel,44.99,21,Active
+Storefront QA Apparel Kids Graphic Tee,Dummy import product 8 for the Apparel category in the Storefront QA workbook.,Apparel,45.99,22,Low Stock
+Storefront QA Apparel Lounge Short,Dummy import product 9 for the Apparel category in the Storefront QA workbook.,Apparel,46.99,23,Draft
+Storefront QA Apparel Travel Polo,Dummy import product 10 for the Apparel category in the Storefront QA workbook.,Apparel,47.99,24,Active
+Storefront QA Electronics Bluetooth Earbuds,Dummy import product 1 for the Electronics category in the Storefront QA workbook.,Electronics,38.99,15,Draft
+Storefront QA Electronics Smart Speaker,Dummy import product 2 for the Electronics category in the Storefront QA workbook.,Electronics,39.99,16,Active
+Storefront QA Electronics Fitness Tracker,Dummy import product 3 for the Electronics category in the Storefront QA workbook.,Electronics,40.99,17,Active
+Storefront QA Electronics Portable Charger,Dummy import product 4 for the Electronics category in the Storefront QA workbook.,Electronics,41.99,18,Low Stock
+Storefront QA Electronics LED Desk Lamp,Dummy import product 5 for the Electronics category in the Storefront QA workbook.,Electronics,42.99,19,Draft
+Storefront QA Electronics Streaming Stick,Dummy import product 6 for the Electronics category in the Storefront QA workbook.,Electronics,43.99,20,Active
+Storefront QA Electronics Noise Cancel Headset,Dummy import product 7 for the Electronics category in the Storefront QA workbook.,Electronics,44.99,21,Active
+Storefront QA Electronics Action Camera,Dummy import product 8 for the Electronics category in the Storefront QA workbook.,Electronics,45.99,22,Low Stock
+Storefront QA Electronics Wireless Keyboard,Dummy import product 9 for the Electronics category in the Storefront QA workbook.,Electronics,46.99,23,Draft
+Storefront QA Electronics 4K Monitor,Dummy import product 10 for the Electronics category in the Storefront QA workbook.,Electronics,47.99,24,Active
+Storefront QA Accessories Travel Backpack,Dummy import product 1 for the Accessories category in the Storefront QA workbook.,Accessories,38.99,15,Draft
+Storefront QA Accessories Insulated Bottle,Dummy import product 2 for the Accessories category in the Storefront QA workbook.,Accessories,39.99,16,Active
+Storefront QA Accessories Weekend Tote,Dummy import product 3 for the Accessories category in the Storefront QA workbook.,Accessories,40.99,17,Active
+Storefront QA Accessories Phone Wallet,Dummy import product 4 for the Accessories category in the Storefront QA workbook.,Accessories,41.99,18,Low Stock
+Storefront QA Accessories Polarized Sunglasses,Dummy import product 5 for the Accessories category in the Storefront QA workbook.,Accessories,42.99,19,Draft
+Storefront QA Accessories Canvas Belt,Dummy import product 6 for the Accessories category in the Storefront QA workbook.,Accessories,43.99,20,Active
+Storefront QA Accessories Laptop Sleeve,Dummy import product 7 for the Accessories category in the Storefront QA workbook.,Accessories,44.99,21,Active
+Storefront QA Accessories Packing Cubes,Dummy import product 8 for the Accessories category in the Storefront QA workbook.,Accessories,45.99,22,Low Stock
+Storefront QA Accessories Compact Umbrella,Dummy import product 9 for the Accessories category in the Storefront QA workbook.,Accessories,46.99,23,Draft
+Storefront QA Accessories Baseball Cap,Dummy import product 10 for the Accessories category in the Storefront QA workbook.,Accessories,47.99,24,Active
+Storefront QA Fitness Yoga Mat,Dummy import product 1 for the Fitness category in the Storefront QA workbook.,Fitness,38.99,15,Draft
+Storefront QA Fitness Resistance Band Set,Dummy import product 2 for the Fitness category in the Storefront QA workbook.,Fitness,39.99,16,Active
+Storefront QA Fitness Foam Roller,Dummy import product 3 for the Fitness category in the Storefront QA workbook.,Fitness,40.99,17,Active
+Storefront QA Fitness Adjustable Dumbbell,Dummy import product 4 for the Fitness category in the Storefront QA workbook.,Fitness,41.99,18,Low Stock
+Storefront QA Fitness Recovery Ball,Dummy import product 5 for the Fitness category in the Storefront QA workbook.,Fitness,42.99,19,Draft
+Storefront QA Fitness Jump Rope,Dummy import product 6 for the Fitness category in the Storefront QA workbook.,Fitness,43.99,20,Active
+Storefront QA Fitness Core Slider,Dummy import product 7 for the Fitness category in the Storefront QA workbook.,Fitness,44.99,21,Active
+Storefront QA Fitness Exercise Bike Mat,Dummy import product 8 for the Fitness category in the Storefront QA workbook.,Fitness,45.99,22,Low Stock
+Storefront QA Fitness Hydration Vest,Dummy import product 9 for the Fitness category in the Storefront QA workbook.,Fitness,46.99,23,Draft
+Storefront QA Fitness Mini Stepper,Dummy import product 10 for the Fitness category in the Storefront QA workbook.,Fitness,47.99,24,Active
