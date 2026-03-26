@@ -3,9 +3,10 @@ async function loadSessions() {
   const tbody = document.querySelector('#sessionsTable tbody');
   tbody.innerHTML = '';
 
+  const nonGuestSessions = sessions.filter((s) => s.customerId && s.customerId !== 'guest');
   const metrics = {
-    active: sessions.filter((s) => s.status === 'active').length,
-    loggedIn: sessions.filter((s) => s.isLoggedIn).length,
+    active: nonGuestSessions.filter((s) => s.status === 'active').length,
+    loggedIn: nonGuestSessions.filter((s) => s.isLoggedIn).length,
     withCart: sessions.filter((s) => s.addToCartCount > 0).length,
     abandoned: sessions.filter((s) => s.cartAbandoned).length,
   };
