@@ -7,6 +7,10 @@
         }
     }
 
+    function clearCurrentCustomer() {
+        window.localStorage.removeItem('wmCurrentCustomer');
+    }
+
     function getServerBootId() {
         return document.body ? document.body.dataset.serverBootId || '' : '';
     }
@@ -63,6 +67,11 @@
         document.querySelectorAll('[data-account-link]').forEach(function (link) {
             link.textContent = customer ? customer.name : 'Account';
         });
+
+        var signOutButton = document.getElementById('home-sign-out');
+        if (signOutButton) {
+            signOutButton.hidden = !customer;
+        }
     }
 
     function renderCartCount() {
@@ -105,8 +114,64 @@
         buttons.forEach(function (button) {
             button.addEventListener('click', function () {
                 upsertCartItem(buildCartItem(button));
+                if (window.SfraCartTracker && typeof window.SfraCartTracker.trackAddToCart === 'function') {
+                    window.SfraCartTracker.trackAddToCart(
+                        button.dataset.productId,
+                        button.dataset.productTitle,
+                        1,
+                        Number(button.dataset.productPrice || 0)
+                    );
+                }
                 renderCartCount();
             });
+        });
+    }
+
+    function bindCategoryClicks() {
+        document.querySelectorAll('.category-card').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
+                    window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
+                }
+            });
+        });
+    }
+
+    function bindProductClicks() {
+        document.querySelectorAll('.product-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                var card = link.closest('.wm-card');
+                if (!card) return;
+                var titleNode = card.querySelector('h3');
+                var button = card.querySelector('[data-action="add-to-cart"]');
+                if (window.SfraProductTracker && typeof window.SfraProductTracker.trackProductClick === 'function') {
+                    window.SfraProductTracker.trackProductClick(
+                        button ? button.dataset.productId : '',
+                        titleNode ? titleNode.textContent.trim() : 'Unknown product',
+                        'home',
+                        'product-grid'
+                    );
+                }
+            });
+        });
+    }
+
+    function bindSignOut() {
+        var signOutButton = document.getElementById('home-sign-out');
+        if (!signOutButton) {
+            return;
+        }
+
+        signOutButton.addEventListener('click', function () {
+            var customer = getCurrentCustomer();
+            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
+                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
+            }
+            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+            }
+            clearCurrentCustomer();
+            window.location.reload();
         });
     }
 
@@ -130,6 +195,9 @@
         updateAccountLinks();
         renderCartCount();
         bindAddToCart();
+        bindCategoryClicks();
+        bindProductClicks();
+        bindSignOut();
         bindSearch();
     });
 }());

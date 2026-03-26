@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.card { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+th, td { border: 1px solid #ddd; padding: 6px; font-size: 12px; }
+tr:hover { background: #fafafa; cursor: pointer; }
+#timeline { margin-top: 12px; background: #f6f6f6; padding: 10px; }
