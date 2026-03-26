@@ -1,6 +1,7 @@
 async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
   const messageNode = document.getElementById('payment-message');
   const submitButton = document.getElementById('submit-payment');
+  const paymentForm = document.getElementById('payment-form');
 
   function setMessage(message) {
     if (messageNode) messageNode.textContent = message;
@@ -19,10 +20,11 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
   }
 
   if (setup.mode === 'mock') {
-    setMessage('Stripe test mode keys are not configured. Running local mock payment mode.');
-    submitButton.addEventListener('click', () => {
+    setMessage('Stripe keys are not configured yet. Configure test keys to render Payment Element.');
+    paymentForm.addEventListener('submit', (event) => {
+      event.preventDefault();
       submitButton.disabled = true;
-      setMessage('Mock payment succeeded. Configure Stripe keys to use real test cards.');
+      setMessage('Mock payment succeeded. Add Stripe test keys for real Payment Element.');
     });
     return;
   }
@@ -37,7 +39,8 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
   const paymentElement = elements.create('payment');
   paymentElement.mount('#payment-element');
 
-  submitButton.addEventListener('click', async () => {
+  paymentForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
     submitButton.disabled = true;
     setMessage('Processing payment...');
 

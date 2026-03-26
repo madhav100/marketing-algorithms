@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 const nunjucks = require('nunjucks');
+const { loadEnvLocal } = require('./utils/loadEnvLocal');
+
+loadEnvLocal();
 
 const storefrontRoutes = require('./routes/storefrontRoutes');
 const adminRoutes = require('./routes/adminRoutes');

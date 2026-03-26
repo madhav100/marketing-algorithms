@@ -43,7 +43,7 @@ function updateOrderByPaymentIntent(paymentIntentId, paymentStatus) {
   const order = livePaymentOrders.find((item) => item.paymentIntentId === paymentIntentId);
   if (!order) return null;
   order.paymentStatus = paymentStatus;
-  order.status = paymentStatus === 'paid' ? 'completed' : paymentStatus;
+  order.status = paymentStatus === 'paid' ? 'paid' : paymentStatus;
   order.updatedAt = new Date().toISOString();
   return order;
 }

@@ -25,5 +25,5 @@ test('order payment status updates from webhook mapping', () => {
   const updated = orderService.updateOrderByPaymentIntent('pi_test_123', 'paid');
 
   assert.equal(updated.paymentStatus, 'paid');
-  assert.equal(updated.status, 'completed');
+  assert.equal(updated.status, 'paid');
 });

@@ -4,8 +4,9 @@ const orderService = require('../services/orderService');
 function mapPaymentStatus(eventType) {
   if (eventType === 'payment_intent.succeeded') return 'paid';
   if (eventType === 'payment_intent.payment_failed') return 'failed';
+  if (eventType === 'payment_intent.processing') return 'processing';
   if (eventType === 'charge.refunded') return 'refunded';
-  return 'pending';
+  return 'pending_payment';
 }
 
 function handleStripeWebhook(req, res) {

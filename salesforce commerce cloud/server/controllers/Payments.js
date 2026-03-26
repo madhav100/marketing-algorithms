@@ -1,15 +1,29 @@
 const paymentService = require('../services/paymentService');
 const orderService = require('../services/orderService');
 
+function computeAmountFromItems(items) {
+  return items.reduce((sum, item) => {
+    const price = Number(item.price || 0);
+    const quantity = Number(item.quantity || 0);
+    return sum + (price * quantity);
+  }, 0);
+}
+
 function validateCheckoutPayload(payload = {}) {
-  const amount = Number(payload.amount || 0);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    throw new Error('Invalid checkout amount');
+  const items = Array.isArray(payload.items) ? payload.items : [];
+  if (!items.length) {
+    throw new Error('Cart is empty.');
   }
+
+  const serverAmount = Number(computeAmountFromItems(items).toFixed(2));
+  if (!Number.isFinite(serverAmount) || serverAmount <= 0) {
+    throw new Error('Invalid checkout amount derived from cart items');
+  }
+
   return {
-    amount,
+    amount: serverAmount,
     currency: payload.currency || 'usd',
-    items: Array.isArray(payload.items) ? payload.items : [],
+    items,
     customerId: payload.customerId || 'guest',
   };
 }
@@ -22,8 +36,8 @@ async function createIntent(req, res) {
       amount: payload.amount,
       currency: payload.currency,
       items: payload.items,
-      status: 'pending',
-      paymentStatus: 'pending',
+      status: 'pending_payment',
+      paymentStatus: 'pending_payment',
     });
 
     const intent = await paymentService.createPaymentIntent({
