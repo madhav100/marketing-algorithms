@@ -4,6 +4,7 @@ const nunjucks = require('nunjucks');
 
 const storefrontRoutes = require('./routes/storefrontRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 const productRoutes = require('./routes/api/products');
 const categoryRoutes = require('./routes/api/categories');
 const orderRoutes = require('./routes/api/orders');
@@ -32,11 +33,13 @@ app.use(express.json());
 
 // Serve static assets for admin and Walmart storefront UIs.
 app.use('/admin', express.static(path.join(__dirname, '../admin-console/admin-console-panel')));
+app.use('/admin/customer-sessions', express.static(path.join(__dirname, '../admin-console/customer-sessions')));
 app.use('/client', express.static(path.join(__dirname, '../walmart/cartridge/client')));
 
 // Register application routes.
 app.use('/admin', adminRoutes);
 app.use('/', storefrontRoutes);
+app.use('/', analyticsRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);

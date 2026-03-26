@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Commerce Data Cloud</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; color: #1f2937; }
+    h1 { margin-bottom: .5rem; }
+    .card { border: 1px solid #d1d5db; border-radius: 10px; padding: 1rem; margin-top: 1rem; }
+    code { background: #f3f4f6; padding: .1rem .3rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Commerce Data Cloud Service</h1>
+  <p>Backend Data Cloud-like pipeline for commerce ingestion and identity resolution.</p>
+
+  <div class="card">
+    <h2>Available HTML pages</h2>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/pages/pipeline">Pipeline Overview</a></li>
+      <li><a href="/pages/governance">Governance Overview</a></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>API Endpoints</h2>
+    <ul>
+      <li><code>GET /health</code></li>
+      <li><code>POST /api/ingest/events</code></li>
+      <li><code>POST /api/ingest/import</code></li>
+      <li><code>GET /api/profiles/:unifiedProfileId</code></li>
+      <li><code>GET /api/insights/summary</code></li>
+      <li><code>POST /api/jobs/run</code></li>
+    </ul>
+  </div>
+</body>
+</html>
