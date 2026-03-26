@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - Walmart</title>
+  <link rel="stylesheet" href="../../../client/scss/cartPage.css" />
+</head>
+<body class="checkout-page" data-server-boot-id="{{serverBootId}}" data-stripe-publishable-key="{{stripePublishableKey}}">
+  <header class="top">
+    <div class="container"><a href="/cart">← Back to Cart</a> <a href="/walmart">Storefront Home</a></div>
+  </header>
+
+  <main class="container">
+    <h1>Checkout</h1>
+    {% include "checkout/paymentSection.html" %}
+  </main>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="/client/default/js/checkout/stripeCheckout.js"></script>
+  <script src="/client/default/js/checkout/checkoutPage.js"></script>
+</body>
+</html>
