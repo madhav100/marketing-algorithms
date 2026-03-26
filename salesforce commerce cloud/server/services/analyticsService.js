@@ -54,6 +54,24 @@ class AnalyticsService {
 
   startSession(payload) {
     const session = this.getOrCreateSession(payload);
+
+    if (session.status === 'ended') {
+      session.status = 'active';
+      session.endedAt = null;
+      session.sessionDurationMinutes = 0;
+    }
+
+    if (payload.customerId && payload.customerId !== 'guest') {
+      session.customerId = payload.customerId;
+    }
+
+    if (payload.isLoggedIn !== undefined) {
+      session.isLoggedIn = Boolean(payload.isLoggedIn);
+      if (session.isLoggedIn && !session.lastLoginAt) {
+        session.lastLoginAt = payload.timestamp || this.nowIso();
+      }
+    }
+
     this.logEvent(session, 'session_start', {}, payload.timestamp);
     return session;
   }

@@ -1,6 +1,7 @@
 (function () {
   const STORAGE_KEY = 'sfra_session_id';
 
+
   function getCurrentCustomerId() {
     try {
       const customer = JSON.parse(window.localStorage.getItem('wmCurrentCustomer') || 'null');
@@ -29,13 +30,16 @@
   }
 
   const sessionId = getSessionId();
-  post('/analytics/session/start', { sessionId, customerId: getCurrentCustomerId() });
+  post('/analytics/session/start', { sessionId, customerId: getCurrentCustomerId(), isLoggedIn: getCurrentCustomerId() !== 'guest' });
 
   window.SfraAnalyticsSession = {
     getSessionId,
     login(customerId) { return post('/analytics/session/login', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
     logout(customerId) { return post('/analytics/session/logout', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
-    end(customerId) { return post('/analytics/session/end', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
+    end(customerId) {
+      localStorage.removeItem(STORAGE_KEY);
+      return post('/analytics/session/end', { sessionId, customerId: customerId || getCurrentCustomerId() });
+    },
   };
 
   window.addEventListener('beforeunload', () => {
