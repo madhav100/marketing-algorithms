@@ -6,35 +6,47 @@ function jsonOk(res, payload) {
   return res.status(200).json(payload);
 }
 
+function getPayload(req) {
+  if (!req || req.body == null) return {};
+  if (typeof req.body === 'string') {
+    try {
+      return JSON.parse(req.body);
+    } catch (error) {
+      return {};
+    }
+  }
+  return req.body;
+}
+
 module.exports = {
   analyticsService,
 
   startSession(req, res) {
-    return jsonOk(res, analyticsService.startSession(req.body || {}));
+    return jsonOk(res, analyticsService.startSession(getPayload(req)));
   },
 
   logLogin(req, res) {
-    return jsonOk(res, analyticsService.logLogin(req.body || {}));
+    return jsonOk(res, analyticsService.logLogin(getPayload(req)));
   },
 
   logLogout(req, res) {
-    return jsonOk(res, analyticsService.logLogout(req.body || {}));
+    return jsonOk(res, analyticsService.logLogout(getPayload(req)));
   },
 
   categoryClick(req, res) {
-    return jsonOk(res, analyticsService.trackCategoryClick(req.body || {}));
+    return jsonOk(res, analyticsService.trackCategoryClick(getPayload(req)));
   },
 
   productClick(req, res) {
-    return jsonOk(res, analyticsService.trackProductClick(req.body || {}));
+    return jsonOk(res, analyticsService.trackProductClick(getPayload(req)));
   },
 
   addToCart(req, res) {
-    return jsonOk(res, analyticsService.trackAddToCart(req.body || {}));
+    return jsonOk(res, analyticsService.trackAddToCart(getPayload(req)));
   },
 
   endSession(req, res) {
-    return jsonOk(res, analyticsService.endSession(req.body || {}));
+    return jsonOk(res, analyticsService.endSession(getPayload(req)));
   },
 
   getCustomerSessions(_req, res) {

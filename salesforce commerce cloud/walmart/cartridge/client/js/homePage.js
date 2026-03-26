@@ -167,6 +167,9 @@
             if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
                 window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
             }
+            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+            }
             clearCurrentCustomer();
             window.location.reload();
         });

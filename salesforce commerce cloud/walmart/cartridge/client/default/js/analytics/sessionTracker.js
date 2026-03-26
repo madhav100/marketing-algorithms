@@ -39,6 +39,11 @@
   };
 
   window.addEventListener('beforeunload', () => {
-    navigator.sendBeacon('/analytics/session/end', JSON.stringify({ sessionId, customerId: getCurrentCustomerId() }));
+    fetch('/analytics/session/end', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, customerId: getCurrentCustomerId() }),
+      keepalive: true,
+    });
   });
 })();
