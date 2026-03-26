@@ -21,7 +21,7 @@ async function loadSessions() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${s.sessionId}</td><td>${s.customerId}</td><td>${s.isLoggedIn}</td><td>${s.startedAt || ''}</td><td>${s.endedAt || ''}</td>
-      <td>${s.categoryClickCount}</td><td>${s.productClickCount}</td><td>${s.addToCartCount}</td><td>${s.cartValue}</td><td>${s.cartAbandoned}</td><td>${s.lastActivityAt}</td>
+      <td>${s.categoryClickCount}</td><td>${s.productClickCount}</td><td>${s.addToCartCount}</td><td>${s.cartValue}</td><td>${s.loggedInMinutes || 0}</td><td>${s.cartAbandoned}</td><td>${s.lastActivityAt}</td>
     `;
     tr.addEventListener('click', async () => {
       const details = await fetch(`/admin/api/customer-sessions/${s.sessionId}`).then((r) => r.json());

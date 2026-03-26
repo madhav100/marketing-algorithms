@@ -15,6 +15,9 @@ function createUserSession({ sessionId, customerId = 'guest', isLoggedIn = false
     hasPurchase: false,
     lastCartUpdateAt: null,
     lastActivityAt: startedAt,
+    lastLoginAt: isLoggedIn ? startedAt : null,
+    loggedInMinutes: 0,
+    sessionDurationMinutes: 0,
   };
 }
 

@@ -13,8 +13,12 @@ class AnalyticsService {
     return new Date().toISOString();
   }
 
-  logEvent(session, eventType, eventData = {}) {
-    const createdAt = this.nowIso();
+  minutesBetween(startIso, endIso) {
+    return Number(((new Date(endIso).getTime() - new Date(startIso).getTime()) / 60000).toFixed(2));
+  }
+
+  logEvent(session, eventType, eventData = {}, timestamp) {
+    const createdAt = timestamp || this.nowIso();
     session.lastActivityAt = createdAt;
     const event = createSessionEvent({
       sessionId: session.sessionId,
@@ -25,6 +29,13 @@ class AnalyticsService {
     });
     this.events.push(event);
     return event;
+  }
+
+  recordLoggedInDuration(session, endedAt) {
+    if (!session.lastLoginAt) return;
+    const minutes = Math.max(0, this.minutesBetween(session.lastLoginAt, endedAt));
+    session.loggedInMinutes = Number((session.loggedInMinutes + minutes).toFixed(2));
+    session.lastLoginAt = null;
   }
 
   getOrCreateSession(payload) {
@@ -43,7 +54,7 @@ class AnalyticsService {
 
   startSession(payload) {
     const session = this.getOrCreateSession(payload);
-    this.logEvent(session, 'session_start', {});
+    this.logEvent(session, 'session_start', {}, payload.timestamp);
     return session;
   }
 
@@ -53,14 +64,17 @@ class AnalyticsService {
     if (payload.customerId && session.customerId === 'guest') {
       session.customerId = payload.customerId;
     }
-    this.logEvent(session, 'login', {});
+    session.lastLoginAt = payload.timestamp || this.nowIso();
+    this.logEvent(session, 'login', {}, payload.timestamp);
     return session;
   }
 
   logLogout(payload) {
     const session = this.getOrCreateSession(payload);
+    const now = payload.timestamp || this.nowIso();
+    this.recordLoggedInDuration(session, now);
     session.isLoggedIn = false;
-    this.logEvent(session, 'logout', {});
+    this.logEvent(session, 'logout', { loggedInMinutes: session.loggedInMinutes }, now);
     return session;
   }
 
@@ -71,7 +85,7 @@ class AnalyticsService {
       categoryId: payload.categoryId,
       categoryName: payload.categoryName,
       timestamp: payload.timestamp || this.nowIso(),
-    });
+    }, payload.timestamp);
     return session;
   }
 
@@ -84,7 +98,7 @@ class AnalyticsService {
       sourcePage: payload.sourcePage,
       sourceSection: payload.sourceSection,
       timestamp: payload.timestamp || this.nowIso(),
-    });
+    }, payload.timestamp);
     return session;
   }
 
@@ -100,15 +114,27 @@ class AnalyticsService {
       quantity: payload.quantity || 1,
       price: payload.price || 0,
       timestamp: payload.timestamp || this.nowIso(),
-    });
+    }, payload.timestamp);
     return session;
   }
 
   endSession(payload) {
     const session = this.getOrCreateSession(payload);
-    session.endedAt = payload.timestamp || this.nowIso();
+    const now = payload.timestamp || this.nowIso();
+    if (session.isLoggedIn) {
+      this.recordLoggedInDuration(session, now);
+      session.isLoggedIn = false;
+    }
+
+    session.endedAt = now;
     session.status = 'ended';
-    this.logEvent(session, 'session_end', {});
+    session.sessionDurationMinutes = Math.max(0, this.minutesBetween(session.startedAt, now));
+
+    this.logEvent(session, 'session_end', {
+      sessionDurationMinutes: session.sessionDurationMinutes,
+      loggedInMinutes: session.loggedInMinutes,
+    }, now);
+
     this.evaluateCartAbandonment(session.sessionId);
     return session;
   }
