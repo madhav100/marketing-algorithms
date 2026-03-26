@@ -15,7 +15,15 @@
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <a data-account-link href="/account">Account</a>
+        <a id="guest-account-link" data-account-link href="/account">Account</a>
+        <div id="account-dropdown" hidden>
+          <button id="account-dropdown-toggle" type="button" data-account-link>Account</button>
+          <div id="account-dropdown-menu" hidden>
+            <a href="/account">Account</a>
+            <a href="/my-orders">My Orders</a>
+            <button id="home-sign-out" type="button">Sign out</button>
+          </div>
+        </div>
         <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
       </nav>
     </div>
@@ -115,6 +123,10 @@
       <a href="/walmart">Storefront Home</a>
     </div>
   </footer>
+  <script src="/client/default/js/analytics/sessionTracker.js"></script>
+  <script src="/client/default/js/analytics/categoryTracker.js"></script>
+  <script src="/client/default/js/analytics/productTracker.js"></script>
+  <script src="/client/default/js/analytics/cartTracker.js"></script>
   <script src="../../../client/js/homePage.js"></script>
 </body>
 </html>

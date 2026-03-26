@@ -59,3 +59,37 @@ This starts `admin-console/node-express-backend/src/server.js` on port `4000` by
 - Admin UI lives in `admin-console/admin-console-panel/`.
 - Admin persistence lives in `admin-console/database/data/`.
 - `server/utils/fileStore.js` points to the admin-console database path so admin/API data stays aligned.
+
+## Stripe test payment setup (Payment Element)
+
+1) Create local Stripe env file (interactive):
+
+```bash
+./scripts/setup-stripe-env.sh
+```
+
+This writes keys to `salesforce commerce cloud/.env.local` with restricted file permissions.
+
+2) Start server:
+
+```bash
+cd 'salesforce commerce cloud'
+npm start
+```
+
+3) Start Stripe CLI webhook forwarding in another terminal:
+
+```bash
+stripe listen --forward-to http://localhost:3000/webhooks/stripe
+```
+
+Copy the `whsec_...` signing secret from Stripe CLI output into `STRIPE_WEBHOOK_SECRET` in `.env.local`, then restart the server.
+
+4) Open checkout and test with Stripe test card:
+
+- Card number: `4242 4242 4242 4242`
+- Any future expiry
+- Any CVC
+- Any postal code
+
+After success, payment should appear in Stripe Dashboard (test mode), and local order payment status is updated from webhook events.
