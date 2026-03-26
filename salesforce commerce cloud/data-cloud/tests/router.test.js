@@ -29,3 +29,15 @@ test('health route returns ok payload', async () => {
   assert.equal(res.statusCode, 200);
   assert.equal(payload.status, 'ok');
 });
+
+test('home route renders html template', async () => {
+  const app = createApp();
+  const req = { method: 'GET', url: '/' };
+  const res = createMockRes();
+
+  await app.handle(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.match(res.headers['Content-Type'], /text\/html/);
+  assert.match(res.body, /Commerce Data Cloud Service/);
+});

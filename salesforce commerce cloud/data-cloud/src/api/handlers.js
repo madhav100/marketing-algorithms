@@ -2,9 +2,22 @@ const { ingestStreamRecord } = require('../streams/ingestionService');
 const { runPipelineForEvent, runPipelineForPendingEvents } = require('../jobs/pipelineJob');
 const { calculateInsights } = require('../insights/insightsService');
 const { sendJson, readJsonBody } = require('../utils/http');
+const { renderTemplate } = require('../utils/templateRenderer');
 
 function buildHandlers(db) {
   return {
+    async homePage(_req, res) {
+      renderTemplate(res, 'index.html');
+    },
+
+    async pipelinePage(_req, res) {
+      renderTemplate(res, 'pipeline.html');
+    },
+
+    async governancePage(_req, res) {
+      renderTemplate(res, 'governance.html');
+    },
+
     async health(_req, res) {
       sendJson(res, 200, { status: 'ok', service: 'data-cloud' });
     },

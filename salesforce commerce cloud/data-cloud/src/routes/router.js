@@ -4,6 +4,18 @@ function createRouter(handlers) {
   return async function route(req, res) {
     const url = new URL(req.url, 'http://localhost');
 
+    if (req.method === 'GET' && url.pathname === '/') {
+      return handlers.homePage(req, res);
+    }
+
+    if (req.method === 'GET' && url.pathname === '/pages/pipeline') {
+      return handlers.pipelinePage(req, res);
+    }
+
+    if (req.method === 'GET' && url.pathname === '/pages/governance') {
+      return handlers.governancePage(req, res);
+    }
+
     if (req.method === 'GET' && url.pathname === '/health') {
       return handlers.health(req, res);
     }

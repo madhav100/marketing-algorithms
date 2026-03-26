@@ -21,6 +21,14 @@ node src/server.js
 
 Runs on `http://localhost:5050` by default.
 
+## HTML templates
+
+The `src/templates/` directory contains service-facing HTML pages rendered by backend routes:
+
+- `GET /` (home)
+- `GET /pages/pipeline` (pipeline overview)
+- `GET /pages/governance` (governance overview)
+
 ## API endpoints
 
 - `GET /health`
