@@ -18,6 +18,15 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
     return;
   }
 
+  if (setup.mode === 'mock') {
+    setMessage('Stripe test mode keys are not configured. Running local mock payment mode.');
+    submitButton.addEventListener('click', () => {
+      submitButton.disabled = true;
+      setMessage('Mock payment succeeded. Configure Stripe keys to use real test cards.');
+    });
+    return;
+  }
+
   if (!publishableKey || !setup.clientSecret || typeof window.Stripe !== 'function') {
     setMessage('Stripe test mode is not fully configured. Set publishable/secret keys to enable card form.');
     return;
