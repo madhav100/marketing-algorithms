@@ -4,6 +4,7 @@ const ProductController = require('../controllers/storefront/Product');
 const CartController = require('../controllers/storefront/Cart');
 const AccountController = require('../controllers/storefront/Account');
 const CheckoutController = require('../controllers/storefront/Checkout');
+const MyOrdersController = require('../controllers/storefront/MyOrders');
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.get('/product/:id', ProductController.showProduct);
 router.get('/cart', CartController.showCart);
 router.get('/account', AccountController.showAccount);
 router.get('/checkout', CheckoutController.showCheckout);
+router.get('/my-orders', MyOrdersController.showMyOrders);
 
 module.exports = router;

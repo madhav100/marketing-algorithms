@@ -48,10 +48,20 @@ function updateOrderByPaymentIntent(paymentIntentId, paymentStatus) {
   return order;
 }
 
+function updateOrderPaymentStatus(orderId, paymentStatus) {
+  const order = livePaymentOrders.find((item) => item.id === orderId);
+  if (!order) return null;
+  order.paymentStatus = paymentStatus;
+  order.status = paymentStatus === 'paid' ? 'paid' : paymentStatus;
+  order.updatedAt = new Date().toISOString();
+  return order;
+}
+
 module.exports = {
   getAllOrders,
   getOrdersByCustomerId,
   createPaymentOrder,
   linkOrderPaymentIntent,
   updateOrderByPaymentIntent,
+  updateOrderPaymentStatus,
 };

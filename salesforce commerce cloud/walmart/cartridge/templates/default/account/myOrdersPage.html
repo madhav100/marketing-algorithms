@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders - Walmart</title>
+  <link rel="stylesheet" href="../../../client/scss/accountPage.css" />
+</head>
+<body class="account-page" data-server-boot-id="{{serverBootId}}">
+  <header class="top">
+    <div class="container top__row">
+      <a href="/walmart">← Back to Home</a>
+      <a href="/cart">Cart</a>
+    </div>
+  </header>
+
+  <main class="container account-layout">
+    <section class="panel intro-panel">
+      <p class="eyebrow">Customer Account</p>
+      <h1>My Orders</h1>
+      <p id="orders-status-message" class="account-message" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+      <div id="my-orders-list" class="orders-list"></div>
+    </section>
+  </main>
+
+  <script src="/client/default/js/analytics/sessionTracker.js"></script>
+  <script src="../../../client/js/myOrdersPage.js"></script>
+</body>
+</html>

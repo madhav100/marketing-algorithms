@@ -27,3 +27,18 @@ test('order payment status updates from webhook mapping', () => {
   assert.equal(updated.paymentStatus, 'paid');
   assert.equal(updated.status, 'paid');
 });
+
+test('order payment status can be updated directly by order id', () => {
+  const order = orderService.createPaymentOrder({
+    customerId: 'C2',
+    amount: 45,
+    currency: 'usd',
+    items: [],
+    status: 'pending_payment',
+    paymentStatus: 'pending_payment',
+  });
+
+  const updated = orderService.updateOrderPaymentStatus(order.id, 'paid');
+  assert.equal(updated.paymentStatus, 'paid');
+  assert.equal(updated.status, 'paid');
+});

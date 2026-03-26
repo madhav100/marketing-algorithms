@@ -60,6 +60,36 @@ async function createIntent(req, res) {
   }
 }
 
+function confirmIntent(req, res) {
+  try {
+    const orderId = String(req.body?.orderId || '').trim();
+    const paymentIntentId = String(req.body?.paymentIntentId || '').trim();
+    const paymentStatus = String(req.body?.paymentStatus || '').trim() || 'pending_payment';
+
+    if (!orderId) {
+      throw new Error('Missing order id.');
+    }
+
+    const updatedOrder = orderService.updateOrderPaymentStatus(orderId, paymentStatus);
+    if (!updatedOrder) {
+      throw new Error('Order not found.');
+    }
+
+    if (paymentIntentId && !updatedOrder.paymentIntentId) {
+      orderService.linkOrderPaymentIntent(orderId, paymentIntentId);
+    }
+
+    return res.status(200).json({
+      orderId: updatedOrder.id,
+      paymentStatus: updatedOrder.paymentStatus,
+      status: updatedOrder.status,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createIntent,
+  confirmIntent,
 };
