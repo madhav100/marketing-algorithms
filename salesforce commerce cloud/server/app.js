@@ -5,6 +5,8 @@ const nunjucks = require('nunjucks');
 const storefrontRoutes = require('./routes/storefrontRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const WebhooksController = require('./controllers/Webhooks');
 const productRoutes = require('./routes/api/products');
 const categoryRoutes = require('./routes/api/categories');
 const orderRoutes = require('./routes/api/orders');
@@ -28,6 +30,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Stripe webhook must receive raw body for signature verification.
+app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), WebhooksController.handleStripeWebhook);
+
 // Parse JSON bodies for API requests.
 app.use(express.json());
 
@@ -40,6 +45,7 @@ app.use('/client', express.static(path.join(__dirname, '../walmart/cartridge/cli
 app.use('/admin', adminRoutes);
 app.use('/', storefrontRoutes);
 app.use('/', analyticsRoutes);
+app.use('/', paymentRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);

@@ -130,6 +130,18 @@
         renderSummary(items);
     }
 
+
+    function bindCheckout() {
+        var checkoutButton = document.querySelector('.wm-checkout');
+        if (!checkoutButton) {
+            return;
+        }
+
+        checkoutButton.addEventListener('click', function () {
+            window.location.href = '/checkout';
+        });
+    }
+
     function bindRemove() {
         document.addEventListener('click', function (event) {
             var removeButton = event.target.closest('[data-action="remove-cart-item"]');
@@ -149,6 +161,7 @@
         syncCartStorageWithServerBoot();
         updateAccountLinks();
         renderCart();
+        bindCheckout();
         bindRemove();
     });
 }());
