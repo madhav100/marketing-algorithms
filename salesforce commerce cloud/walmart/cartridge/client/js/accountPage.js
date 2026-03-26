@@ -120,6 +120,27 @@
         }).join('');
     }
 
+    function bindCustomerDropdown() {
+        var toggle = document.getElementById('account-customer-toggle');
+        var menu = document.getElementById('account-customer-menu');
+
+        if (!toggle || !menu) {
+            return;
+        }
+
+        toggle.addEventListener('click', function () {
+            menu.hidden = !menu.hidden;
+            toggle.setAttribute('aria-expanded', String(!menu.hidden));
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!toggle.contains(event.target) && !menu.contains(event.target)) {
+                menu.hidden = true;
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
     async function fetchOrders(customerId) {
         var response = await fetch('/api/customers/' + encodeURIComponent(customerId) + '/orders');
         if (!response.ok) {
@@ -187,9 +208,12 @@
                     password: payload.password
                 });
                 setCurrentCustomer(customer);
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.login === 'function') {
+                    window.SfraAnalyticsSession.login(customer.id);
+                }
                 signInForm.reset();
                 setStatusMessage('Signed in successfully.', 'success');
-                await refreshAccountView();
+                window.location.href = '/walmart';
             } catch (error) {
                 setStatusMessage(error.message, 'error');
             }
@@ -202,23 +226,34 @@
             try {
                 var customer = await submitJson('/api/customers/sign-up', serializeForm(signUpForm));
                 setCurrentCustomer(customer);
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.login === 'function') {
+                    window.SfraAnalyticsSession.login(customer.id);
+                }
                 signUpForm.reset();
                 setStatusMessage('Account created and signed in.', 'success');
-                await refreshAccountView();
+                window.location.href = '/walmart';
             } catch (error) {
                 setStatusMessage(error.message, 'error');
             }
         });
 
         signOutButton.addEventListener('click', function () {
+            var customer = getCurrentCustomer();
+            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
+                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
+            }
+            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+            }
             clearCurrentCustomer();
             setStatusMessage('Signed out.', '');
-            renderAccountSummary(null, []);
+            window.location.href = '/walmart';
         });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         bindForms();
+        bindCustomerDropdown();
         refreshAccountView();
     });
 }());

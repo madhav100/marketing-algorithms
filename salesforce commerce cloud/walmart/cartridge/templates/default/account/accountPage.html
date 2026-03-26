@@ -11,6 +11,7 @@
     <div class="container top__row">
       <a href="/walmart">← Back to Home</a>
       <a href="/cart">Cart</a>
+      <a href="/my-orders">My Orders</a>
     </div>
   </header>
 
@@ -48,11 +49,19 @@
       <div class="account-summary__header">
         <div>
           <p class="eyebrow">Signed In</p>
-          <h2 id="account-customer-name">Customer</h2>
+          <div class="customer-dropdown">
+            <button id="account-customer-toggle" class="customer-dropdown__toggle" type="button" aria-expanded="false">
+              <span id="account-customer-name">Customer</span>
+              <span aria-hidden="true">▾</span>
+            </button>
+            <div id="account-customer-menu" class="customer-dropdown__menu" hidden>
+              <a href="/my-orders">My Orders</a>
+              <button id="account-sign-out" class="btn" type="button">Sign Out</button>
+            </div>
+          </div>
           <p id="account-customer-phone"></p>
           <p id="account-customer-address"></p>
         </div>
-        <button id="account-sign-out" class="btn" type="button">Sign Out</button>
       </div>
 
       <div class="summary-grid">
@@ -73,6 +82,10 @@
     </section>
   </main>
 
+  <script src="/client/default/js/analytics/sessionTracker.js"></script>
+  <script src="/client/default/js/analytics/categoryTracker.js"></script>
+  <script src="/client/default/js/analytics/productTracker.js"></script>
+  <script src="/client/default/js/analytics/cartTracker.js"></script>
   <script src="../../../client/js/accountPage.js"></script>
 </body>
 </html>
