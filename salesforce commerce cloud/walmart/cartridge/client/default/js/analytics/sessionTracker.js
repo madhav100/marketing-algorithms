@@ -1,6 +1,15 @@
 (function () {
   const STORAGE_KEY = 'sfra_session_id';
 
+  function getCurrentCustomerId() {
+    try {
+      const customer = JSON.parse(window.localStorage.getItem('wmCurrentCustomer') || 'null');
+      return customer && customer.id ? customer.id : 'guest';
+    } catch (error) {
+      return 'guest';
+    }
+  }
+
   function getSessionId() {
     let sessionId = localStorage.getItem(STORAGE_KEY);
     if (!sessionId) {
@@ -20,16 +29,16 @@
   }
 
   const sessionId = getSessionId();
-  post('/analytics/session/start', { sessionId, customerId: 'guest' });
+  post('/analytics/session/start', { sessionId, customerId: getCurrentCustomerId() });
 
   window.SfraAnalyticsSession = {
     getSessionId,
-    login(customerId) { return post('/analytics/session/login', { sessionId, customerId }); },
-    logout(customerId) { return post('/analytics/session/logout', { sessionId, customerId }); },
-    end(customerId) { return post('/analytics/session/end', { sessionId, customerId: customerId || 'guest' }); },
+    login(customerId) { return post('/analytics/session/login', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
+    logout(customerId) { return post('/analytics/session/logout', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
+    end(customerId) { return post('/analytics/session/end', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
   };
 
   window.addEventListener('beforeunload', () => {
-    navigator.sendBeacon('/analytics/session/end', JSON.stringify({ sessionId, customerId: 'guest' }));
+    navigator.sendBeacon('/analytics/session/end', JSON.stringify({ sessionId, customerId: getCurrentCustomerId() }));
   });
 })();
