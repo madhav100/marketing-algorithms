@@ -1,0 +1,5 @@
+subscriptionId,customerId,planName,mrr,status,startDate,endDate
+S-001,1,Gold,49.00,active,2025-11-01,
+S-002,2,Basic,19.00,active,2026-01-14,
+S-003,3,Enterprise,199.00,active,2024-05-20,
+S-004,4,Gold,49.00,cancelled,2023-03-10,2026-01-31

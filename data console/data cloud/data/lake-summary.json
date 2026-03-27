@@ -1,0 +1,41 @@
+{
+  "processedCsvFiles": [
+    "customer_orders.csv",
+    "customer_profiles.csv",
+    "customer_returns.csv",
+    "customer_subscriptions.csv",
+    "customer_support_tickets.csv"
+  ],
+  "entityCounts": {
+    "customer_orders": 4,
+    "customer_profiles": 4,
+    "customer_returns": 3,
+    "customer_subscriptions": 4,
+    "customer_support_tickets": 4
+  },
+  "metadata": {
+    "lastUpdatedAt": "2026-03-27T05:42:33.505Z",
+    "ingestedFiles": [
+      {
+        "fileName": "customer_orders.csv",
+        "ingestedAt": "2026-03-27T05:42:33.498Z"
+      },
+      {
+        "fileName": "customer_profiles.csv",
+        "ingestedAt": "2026-03-27T05:42:33.499Z"
+      },
+      {
+        "fileName": "customer_returns.csv",
+        "ingestedAt": "2026-03-27T05:42:33.501Z"
+      },
+      {
+        "fileName": "customer_subscriptions.csv",
+        "ingestedAt": "2026-03-27T05:42:33.502Z"
+      },
+      {
+        "fileName": "customer_support_tickets.csv",
+        "ingestedAt": "2026-03-27T05:42:33.505Z"
+      }
+    ]
+  }
+}
