@@ -1,6 +1,5 @@
 import { createKpiCard } from '../components/kpiCard.js';
 import { createSpeedometer } from '../components/speedometer.js';
-import { createTablePanel } from '../components/tablePanel.js';
 
 function sumEntityCounts(entityCounts = {}) {
   return Object.values(entityCounts).reduce((sum, count) => sum + Number(count || 0), 0);
@@ -13,6 +12,70 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
+function createRecordsGraph() {
+  const panel = document.createElement('article');
+  panel.className = 'panel';
+  panel.innerHTML = `
+    <div class="title">Records Processed</div>
+    <div class="legend">Transparent trend graph by CSV stream.</div>
+    <svg class="records-graph" viewBox="0 0 640 220" role="img" aria-label="Records processed chart">
+      <g class="axis">
+        <line x1="40" y1="20" x2="40" y2="190"></line>
+        <line x1="40" y1="190" x2="620" y2="190"></line>
+      </g>
+      <polyline class="line" points="40,190 620,190"></polyline>
+      <g class="dots"></g>
+      <g class="labels"></g>
+    </svg>
+  `;
+
+  const polyline = panel.querySelector('.line');
+  const dots = panel.querySelector('.dots');
+  const labels = panel.querySelector('.labels');
+
+  function update(points = []) {
+    dots.innerHTML = '';
+    labels.innerHTML = '';
+
+    if (!points.length) {
+      polyline.setAttribute('points', '40,190 620,190');
+      return;
+    }
+
+    const xStart = 70;
+    const xEnd = 590;
+    const yBottom = 180;
+    const yTop = 35;
+    const maxValue = Math.max(...points.map((point) => point.value), 1);
+
+    const polylinePoints = points.map((point, index) => {
+      const x = xStart + (points.length === 1 ? 0 : (index * (xEnd - xStart)) / (points.length - 1));
+      const y = yBottom - (point.value / maxValue) * (yBottom - yTop);
+
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', x);
+      dot.setAttribute('cy', y);
+      dot.setAttribute('r', '4');
+      dot.setAttribute('class', 'dot');
+      dots.append(dot);
+
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', x);
+      label.setAttribute('y', 206);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('class', 'label');
+      label.textContent = point.label.replace('customer_', '').replace('_', '');
+      labels.append(label);
+
+      return `${x},${y}`;
+    });
+
+    polyline.setAttribute('points', polylinePoints.join(' '));
+  }
+
+  return { panel, update };
+}
+
 export function pipelinePlugin(root) {
   const topbar = document.createElement('section');
   topbar.className = 'topbar';
@@ -21,26 +84,39 @@ export function pipelinePlugin(root) {
   titlePanel.className = 'panel';
   titlePanel.innerHTML = `
     <div class="headline">
-      <h1>Data Console • Modular SIEM Dashboard</h1>
-      <span class="tag">pluggable UI</span>
+      <h1>Data Console • SIEM Dashboard</h1>
     </div>
-    <div class="legend">Component-based horizontal dashboard where data is the fuel.</div>
+    <div class="legend">Horizontal monitoring with live ingestion-step animations.</div>
     <button class="run-btn" id="runIngestBtn">Run Ingest</button>
   `;
 
   const csvCard = createKpiCard({ title: 'Active CSV Streams', value: '0' });
   const objectCard = createKpiCard({ title: 'Objects in Lake', value: '0' });
   const healthCard = createKpiCard({ title: 'Pipeline Health', value: 'READY', tone: 'warn' });
-  const govCard = createKpiCard({ title: 'Governance Alerts', value: '0 BLOCKING', tone: 'ok' });
 
-  topbar.append(titlePanel, csvCard, objectCard, healthCard, govCard);
+  topbar.append(titlePanel, csvCard, objectCard, healthCard);
 
   const main = document.createElement('section');
-  main.className = 'main';
+  main.className = 'main-single';
 
-  const speedPanels = document.createElement('article');
-  speedPanels.className = 'panel';
-  speedPanels.innerHTML = `<div class="title">Data Fuel Speedometers</div><div class="legend">Track ingestion throughput and processing rates.</div>`;
+  const processPanel = document.createElement('article');
+  processPanel.className = 'panel process-panel';
+  processPanel.innerHTML = `
+    <div class="title">Ingestion process</div>
+    <div class="legend">One container showing each pipeline step while ingestion runs.</div>
+    <div class="process-steps" id="processSteps">
+      <div class="step-box" data-step="extract">CSV Extract</div>
+      <div class="step-box" data-step="parse">Parser</div>
+      <div class="step-box" data-step="validate">Validation</div>
+      <div class="step-box" data-step="transform">Transform</div>
+      <div class="step-box" data-step="upsert">Objects Lake Upsert</div>
+      <div class="step-box" data-step="summary">Summary Write</div>
+    </div>
+  `;
+
+  const speedPanel = document.createElement('article');
+  speedPanel.className = 'panel';
+  speedPanel.innerHTML = `<div class="title">Data Fuel Speedometers</div><div class="legend">Track ingestion throughput and processing rates.</div>`;
 
   const ingestGauge = createSpeedometer({ label: 'Ingest Rate', value: 0, max: 1000, unit: ' r/m' });
   const validationGauge = createSpeedometer({ label: 'Validation Rate', value: 0, max: 1000, unit: ' r/m' });
@@ -49,46 +125,35 @@ export function pipelinePlugin(root) {
   const gaugeGrid = document.createElement('div');
   gaugeGrid.className = 'gauge-grid';
   gaugeGrid.append(ingestGauge.element, validationGauge.element, writeGauge.element);
-  speedPanels.append(gaugeGrid);
+  speedPanel.append(gaugeGrid);
 
-  const middleStack = document.createElement('section');
-  middleStack.className = 'stack';
-  middleStack.append(
-    createTablePanel({
-      title: 'Entity Relationships',
-      headers: ['Entity', 'Key', 'Relationship'],
-      rows: [
-        ['customer_profiles', '<span class="mono">id</span>', 'root customer object'],
-        ['customer_orders', '<span class="mono">orderId</span>', '<span class="mono">customerId → customer_profiles.id</span>'],
-        ['customer_returns', '<span class="mono">returnId</span>', '<span class="mono">orderId + customerId</span>'],
-        ['customer_subscriptions', '<span class="mono">subscriptionId</span>', '<span class="mono">customerId → customer_profiles.id</span>']
-      ]
-    }),
-    createTablePanel({
-      title: 'Governance Controls',
-      headers: ['Control', 'Status'],
-      rows: [
-        ['Required IDs', '<span class="ok">PASS</span>'],
-        ['Numeric Revenue Fields', '<span class="ok">PASS</span>'],
-        ['Date Format', '<span class="ok">PASS</span>'],
-        ['Revenue Integrity', '<span class="ok">PASS</span>']
-      ]
-    })
-  );
+  const recordsGraph = createRecordsGraph();
 
-  const eventPanel = createTablePanel({
-    title: 'SOC-Style Event Feed',
-    headers: ['Time', 'Event', 'Severity'],
-    rows: [["<span class='mono'>--:--:--</span>", 'Press "Run Ingest" to refresh data', '<span class="warn">INFO</span>']]
-  });
-
-  main.append(speedPanels, middleStack, eventPanel);
+  main.append(processPanel, speedPanel, recordsGraph.panel);
   root.append(topbar, main);
 
   const [csvValueNode] = csvCard.querySelectorAll('.value');
   const [objectValueNode] = objectCard.querySelectorAll('.value');
   const [healthValueNode] = healthCard.querySelectorAll('.value');
   const runButton = titlePanel.querySelector('#runIngestBtn');
+  const stepNodes = processPanel.querySelectorAll('.step-box');
+
+  function clearStepState() {
+    stepNodes.forEach((node) => node.classList.remove('running', 'done'));
+  }
+
+  function playStepAnimation() {
+    clearStepState();
+    stepNodes.forEach((node, index) => {
+      setTimeout(() => {
+        node.classList.add('running');
+      }, 200 + index * 300);
+      setTimeout(() => {
+        node.classList.remove('running');
+        node.classList.add('done');
+      }, 700 + index * 300);
+    });
+  }
 
   function resetMetrics() {
     csvValueNode.textContent = '0';
@@ -97,6 +162,8 @@ export function pipelinePlugin(root) {
     ingestGauge.setValue(0);
     validationGauge.setValue(0);
     writeGauge.setValue(0);
+    recordsGraph.update([]);
+    clearStepState();
   }
 
   async function runIngest() {
@@ -104,6 +171,8 @@ export function pipelinePlugin(root) {
     runButton.textContent = 'Running...';
     healthValueNode.textContent = 'RUNNING';
     healthValueNode.className = 'value warn';
+
+    playStepAnimation();
 
     try {
       const response = await fetch('/api/ingest', { method: 'POST' });
@@ -114,7 +183,8 @@ export function pipelinePlugin(root) {
       const payload = await response.json();
       const summary = payload.summary || {};
       const fileCount = (summary.processedCsvFiles || []).length;
-      const totalRecords = sumEntityCounts(summary.entityCounts || {});
+      const entityCounts = summary.entityCounts || {};
+      const totalRecords = sumEntityCounts(entityCounts);
       const rates = estimateRate(totalRecords, fileCount);
 
       csvValueNode.textContent = String(fileCount);
@@ -125,9 +195,14 @@ export function pipelinePlugin(root) {
       ingestGauge.setValue(rates.ingestRate);
       validationGauge.setValue(rates.validationRate);
       writeGauge.setValue(rates.writeRate);
+
+      recordsGraph.update(
+        Object.entries(entityCounts).map(([label, value]) => ({ label, value: Number(value || 0) }))
+      );
     } catch (error) {
       healthValueNode.textContent = 'FAILED';
       healthValueNode.className = 'value bad';
+      clearStepState();
       console.error(error);
     } finally {
       runButton.disabled = false;
