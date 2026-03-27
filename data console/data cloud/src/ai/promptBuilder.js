@@ -5,7 +5,8 @@ export function buildManagerPrompt(analysisResult = {}) {
     'Summary must be concise and business-manager friendly, max 2 short paragraphs.',
     'Mention top opportunity and top risk.',
     'Alerts must be action-relevant.',
-    'Recommended actions must be specific.'
+    'Recommended actions must be specific.',
+    'Do not include markdown fences, comments, or trailing commas.',
   ].join('\n');
 
   const input = JSON.stringify(analysisResult, null, 2);

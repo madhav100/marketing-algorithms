@@ -3,12 +3,36 @@ import { buildManagerPrompt } from './promptBuilder.js';
 import { validateManagerInsights } from './schema.js';
 
 function extractJson(rawText = '') {
-  const firstBrace = rawText.indexOf('{');
-  const lastBrace = rawText.lastIndexOf('}');
+  const withoutFences = String(rawText)
+    .replace(/```json/gi, '')
+    .replace(/```/g, '')
+    .trim();
+
+  const firstBrace = withoutFences.indexOf('{');
+  const lastBrace = withoutFences.lastIndexOf('}');
   if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
     throw new Error('No JSON object found in Ollama output.');
   }
-  return rawText.slice(firstBrace, lastBrace + 1);
+  return withoutFences.slice(firstBrace, lastBrace + 1);
+}
+
+function sanitizeJsonText(jsonText = '') {
+  return String(jsonText)
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/,\s*([}\]])/g, '$1')
+    .replace(/[\u0000-\u0019]/g, '');
+}
+
+export function parseManagerInsightsJson(rawText = '') {
+  const extracted = extractJson(rawText);
+
+  try {
+    return JSON.parse(extracted);
+  } catch {
+    const sanitized = sanitizeJsonText(extracted);
+    return JSON.parse(sanitized);
+  }
 }
 
 export async function generateManagerInsights(analysisResult = {}, options = {}) {
@@ -28,7 +52,7 @@ export async function generateManagerInsights(analysisResult = {}, options = {})
     throw new Error(`Ollama returned non-zero status (${run.status}): ${run.stderr || run.stdout}`);
   }
 
-  const parsed = JSON.parse(extractJson(run.stdout || ''));
+  const parsed = parseManagerInsightsJson(run.stdout || '');
   const validation = validateManagerInsights(parsed);
   if (!validation.valid) {
     throw new Error(`Ollama JSON failed schema validation: ${validation.error}`);
