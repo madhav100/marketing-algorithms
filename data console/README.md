@@ -4,7 +4,7 @@ This top-level folder is an independent workspace.
 
 ## Structure
 - `data cloud/` — standalone data cloud with 5 customer CSV streams, governance, and data objects lake.
-- `dashboard view/` — webpage UI for pipeline concepts, relationships, and a data explorer template.
+- `dashboard view/` — modular, component-based dashboard UI (pluggable admin dashboard) plus a data explorer template.
 
 This implementation is intentionally separated from other project folders.
 
@@ -39,4 +39,13 @@ npm run serve
 # then open
 # http://localhost:8787/dashboard%20view/index.html
 # http://localhost:8787/dashboard%20view/data-explorer-template.html
+```
+
+
+## Dashboard architecture
+```bash
+# dashboard modules
+# - dashboard view/js/components/*
+# - dashboard view/js/plugins/pipelinePlugin.js
+# - dashboard view/js/app.js
 ```
