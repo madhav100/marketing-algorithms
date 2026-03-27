@@ -12,23 +12,6 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
-const CSV_HEADERS = [
-  { file: 'customer_profiles.csv', headers: ['id', 'email', 'segment', 'region', 'signupDate'] },
-  { file: 'customer_orders.csv', headers: ['orderId', 'customerId', 'orderDate', 'grossRevenue', 'discountAmount', 'netRevenue'] },
-  { file: 'customer_returns.csv', headers: ['returnId', 'orderId', 'customerId', 'returnDate', 'refundAmount', 'reason'] },
-  { file: 'customer_subscriptions.csv', headers: ['subscriptionId', 'customerId', 'planName', 'mrr', 'status', 'startDate', 'endDate'] },
-  { file: 'customer_support_tickets.csv', headers: ['ticketId', 'customerId', 'openedDate', 'priority', 'resolutionHours', 'issueCategory'] }
-];
-
-function buildCsvHeadersMarkup() {
-  return CSV_HEADERS.map((stream) => `
-    <article class="csv-header-card">
-      <div class="csv-file">${stream.file}</div>
-      <div class="csv-cols">${stream.headers.join(', ')}</div>
-    </article>
-  `).join('');
-}
-
 function createLineGraph({ title, subtitle, className }) {
   const panel = document.createElement('article');
   panel.className = 'panel';
@@ -103,7 +86,7 @@ export function pipelinePlugin(root) {
     <div class="headline">
       <h1>Data Console • SIEM Dashboard</h1>
     </div>
-    <div class="legend">Horizontal monitoring with live ingestion-step animations.</div>
+    <div class="legend">Live pipeline animation and metrics from ingestion output.</div>
     <button class="run-btn" id="runIngestBtn">Run Ingest</button>
   `;
 
@@ -119,19 +102,15 @@ export function pipelinePlugin(root) {
   const processPanel = document.createElement('article');
   processPanel.className = 'panel process-panel';
   processPanel.innerHTML = `
-    <div class="title">Ingestion process</div>
-    <div class="legend">One container showing each pipeline step while ingestion runs.</div>
-    <div class="process-steps" id="processSteps">
-      <div class="step-box" data-step="extract">CSV Extract</div>
-      <div class="step-box" data-step="parse">Parser</div>
-      <div class="step-box" data-step="validate">Validation</div>
-      <div class="step-box" data-step="transform">Transform</div>
-      <div class="step-box" data-step="upsert">Objects Lake Upsert</div>
-      <div class="step-box" data-step="summary">Summary Write</div>
-    </div>
-    <div class="csv-headers-wrap">
-      <div class="title">CSV Headers</div>
-      <div class="csv-headers-grid">${buildCsvHeadersMarkup()}</div>
+    <div class="title">Pipeline Runtime Animation</div>
+    <div class="legend">[ Ingestion Files ] → [ Data Streams ] → [ DLO ] → [ DMO ]</div>
+    <div class="pipeline-runtime" id="pipelineRuntime">
+      <div class="pipeline-track"></div>
+      <div class="pipeline-pulse"></div>
+      <div class="pipeline-node" data-node="files">Ingestion Files</div>
+      <div class="pipeline-node" data-node="streams">Data Streams</div>
+      <div class="pipeline-node" data-node="dlo">DLO</div>
+      <div class="pipeline-node" data-node="dmo">DMO</div>
     </div>
   `;
 
@@ -185,23 +164,13 @@ export function pipelinePlugin(root) {
   const [objectValueNode] = objectCard.querySelectorAll('.value');
   const [healthValueNode] = healthCard.querySelectorAll('.value');
   const runButton = titlePanel.querySelector('#runIngestBtn');
-  const stepNodes = processPanel.querySelectorAll('.step-box');
+  const runtimeNode = processPanel.querySelector('#pipelineRuntime');
 
-  function clearStepState() {
-    stepNodes.forEach((node) => node.classList.remove('running', 'done'));
-  }
-
-  function playStepAnimation() {
-    clearStepState();
-    stepNodes.forEach((node, index) => {
-      setTimeout(() => {
-        node.classList.add('running');
-      }, 200 + index * 300);
-      setTimeout(() => {
-        node.classList.remove('running');
-        node.classList.add('done');
-      }, 700 + index * 300);
-    });
+  function setPipelineState(state) {
+    runtimeNode.classList.remove('is-running', 'is-finished', 'is-failed');
+    if (state) {
+      runtimeNode.classList.add(state);
+    }
   }
 
   function setLakePanels(entityCounts = {}, modelObjectCounts = {}) {
@@ -228,7 +197,7 @@ export function pipelinePlugin(root) {
     writeGauge.setValue(0);
     recordsGraph.update([]);
     setLakePanels({}, {});
-    clearStepState();
+    setPipelineState('');
   }
 
   async function runIngest() {
@@ -236,8 +205,7 @@ export function pipelinePlugin(root) {
     runButton.textContent = 'Running...';
     healthValueNode.textContent = 'RUNNING';
     healthValueNode.className = 'value warn';
-
-    playStepAnimation();
+    setPipelineState('is-running');
 
     try {
       const response = await fetch('/api/ingest', { method: 'POST' });
@@ -266,10 +234,11 @@ export function pipelinePlugin(root) {
         Object.entries(entityCounts).map(([label, value]) => ({ label: label.replace('_DLO', ''), value: Number(value || 0) }))
       );
       setLakePanels(entityCounts, modelObjectCounts);
+      setPipelineState('is-finished');
     } catch (error) {
       healthValueNode.textContent = 'FAILED';
       healthValueNode.className = 'value bad';
-      clearStepState();
+      setPipelineState('is-failed');
       console.error(error);
     } finally {
       runButton.disabled = false;
