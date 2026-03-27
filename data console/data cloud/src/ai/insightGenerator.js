@@ -25,10 +25,27 @@ function sanitizeJsonText(jsonText = '') {
 }
 
 
+
+function toInsightText(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '[invalid-object]';
+    }
+  }
+
+  return String(value);
+}
+
 function normalizeStringArray(value) {
   if (Array.isArray(value)) {
     return value
-      .map((item) => String(item ?? '').trim())
+      .map((item) => toInsightText(item).trim())
       .filter(Boolean);
   }
 
@@ -41,7 +58,7 @@ function normalizeStringArray(value) {
 
   if (value && typeof value === 'object') {
     return Object.values(value)
-      .map((item) => String(item ?? '').trim())
+      .map((item) => toInsightText(item).trim())
       .filter(Boolean);
   }
 
