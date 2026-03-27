@@ -1,0 +1,5 @@
+id,email,segment,region,signupDate
+1,jordan@example.com,loyal,NA,2024-01-12
+2,sam@example.com,new,NA,2025-08-02
+3,riley@example.com,vip,EU,2023-11-30
+4,morgan@example.com,at_risk,APAC,2022-06-15
