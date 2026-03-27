@@ -76,7 +76,7 @@ export function pipelinePlugin(root) {
 
   const chartsPanel = document.createElement('article');
   chartsPanel.className = 'panel charts-panel compact';
-  chartsPanel.innerHTML = `<div class="title">DMO Analytics Charts</div><div class="legend tiny">All chart views in one block.</div><div class="charts-grid"></div>`;
+  chartsPanel.innerHTML = `<div class="title">DMO Analytics Charts</div><div class="charts-grid"></div>`;
   const chartsGrid = chartsPanel.querySelector('.charts-grid');
 
   const netRevenueCard = chartCard('Net Revenue by Segment', 'Bar');
@@ -91,11 +91,20 @@ export function pipelinePlugin(root) {
   aiPanel.className = 'panel compact';
   aiPanel.innerHTML = `
     <div class="title">AI Summary</div>
-    <div class="legend tiny">Manager-friendly insights from semantic and analytics outputs.</div>
-    <div class="ai-headline" id="aiHeadline">No insight yet.</div>
-    <div class="ai-summary" id="aiSummary">Run ingest to generate semantic + AI summary.</div>
-    <ul class="ai-list" id="aiAlerts"></ul>
-    <ul class="ai-list" id="aiActions"></ul>
+    <div class="ai-summary-rect">
+      <div class="ai-headline" id="aiHeadline">No insight yet.</div>
+      <div class="ai-summary" id="aiSummary">Run ingest to generate semantic + AI summary.</div>
+      <div class="ai-subblocks">
+        <section class="ai-subblock">
+          <div class="ai-subtitle">Alerts</div>
+          <ul class="ai-list" id="aiAlerts"></ul>
+        </section>
+        <section class="ai-subblock">
+          <div class="ai-subtitle">Actions</div>
+          <ul class="ai-list" id="aiActions"></ul>
+        </section>
+      </div>
+    </div>
   `;
 
   main.append(processPanel, speedPanel, chartsPanel, aiPanel);
@@ -113,15 +122,17 @@ export function pipelinePlugin(root) {
   const aiActions = aiPanel.querySelector('#aiActions');
 
   function clearPipelineNodeStates() {
-    pipelineNodes.forEach((node) => node.classList.remove('active', 'done', 'failed'));
+    pipelineNodes.forEach((node) => node.classList.remove('active', 'done', 'failed', 'processing'));
   }
 
   function playPipelineSquares() {
     clearPipelineNodeStates();
     pipelineNodes.forEach((node, index) => {
-      setTimeout(() => node.classList.add('active'), index * 260);
       setTimeout(() => {
-        node.classList.remove('active');
+        node.classList.add('active', 'processing');
+      }, index * 260);
+      setTimeout(() => {
+        node.classList.remove('active', 'processing');
         node.classList.add('done');
       }, index * 260 + 220);
     });

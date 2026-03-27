@@ -24,6 +24,49 @@ function sanitizeJsonText(jsonText = '') {
     .replace(/[\u0000-\u0019]/g, '');
 }
 
+
+function normalizeStringArray(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item ?? '').trim())
+      .filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(/\n|;|\|/g)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.values(value)
+      .map((item) => String(item ?? '').trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function normalizeChartCaptions(value = {}) {
+  const source = value && typeof value === 'object' ? value : {};
+  return {
+    netRevenueBySegment: String(source.netRevenueBySegment ?? '').trim(),
+    refundBySegment: String(source.refundBySegment ?? '').trim(),
+    refundsOverTime: String(source.refundsOverTime ?? '').trim()
+  };
+}
+
+function normalizeManagerInsights(payload = {}) {
+  return {
+    headline: String(payload.headline ?? '').trim(),
+    summary: String(payload.summary ?? '').trim(),
+    alerts: normalizeStringArray(payload.alerts),
+    recommendedActions: normalizeStringArray(payload.recommendedActions),
+    chartCaptions: normalizeChartCaptions(payload.chartCaptions)
+  };
+}
+
 export function parseManagerInsightsJson(rawText = '') {
   const extracted = extractJson(rawText);
 
@@ -53,10 +96,11 @@ export async function generateManagerInsights(analysisResult = {}, options = {})
   }
 
   const parsed = parseManagerInsightsJson(run.stdout || '');
-  const validation = validateManagerInsights(parsed);
+  const normalized = normalizeManagerInsights(parsed);
+  const validation = validateManagerInsights(normalized);
   if (!validation.valid) {
     throw new Error(`Ollama JSON failed schema validation: ${validation.error}`);
   }
 
-  return parsed;
+  return normalized;
 }
