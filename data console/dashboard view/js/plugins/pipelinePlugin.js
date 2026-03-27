@@ -59,6 +59,7 @@ export function pipelinePlugin(root) {
       <div class="pipeline-node" data-node="dlo">DLO</div>
       <div class="pipeline-node" data-node="dmo">DMO</div>
     </div>
+    <div class="file-processing-list" id="fileProcessingList"></div>
   `;
 
   const speedPanel = document.createElement('article');
@@ -76,7 +77,7 @@ export function pipelinePlugin(root) {
 
   const chartsPanel = document.createElement('article');
   chartsPanel.className = 'panel charts-panel compact';
-  chartsPanel.innerHTML = `<div class="title">DMO Analytics Charts</div><div class="charts-grid"></div>`;
+  chartsPanel.innerHTML = `<div class="title">Customers Analysis</div><div class="charts-grid"></div>`;
   const chartsGrid = chartsPanel.querySelector('.charts-grid');
 
   const netRevenueCard = chartCard('Net Revenue by Segment', 'Bar');
@@ -85,7 +86,7 @@ export function pipelinePlugin(root) {
   const customerMixCard = chartCard('Customer Mix by Segment', 'Donut');
   const heatmapCard = chartCard('Segment × Metric', 'Heatmap');
 
-  chartsGrid.append(netRevenueCard, refundCard, refundsOverTimeCard, customerMixCard, heatmapCard);
+  chartsGrid.append(customerMixCard, netRevenueCard, refundCard, refundsOverTimeCard, heatmapCard);
 
   const aiPanel = document.createElement('article');
   aiPanel.className = 'panel compact';
@@ -120,13 +121,36 @@ export function pipelinePlugin(root) {
   const aiSummary = aiPanel.querySelector('#aiSummary');
   const aiAlerts = aiPanel.querySelector('#aiAlerts');
   const aiActions = aiPanel.querySelector('#aiActions');
+  const fileProcessingList = processPanel.querySelector('#fileProcessingList');
+  const csvFiles = [
+    'customer_profiles.csv',
+    'customer_orders.csv',
+    'customer_returns.csv',
+    'customer_subscriptions.csv',
+    'customer_support_tickets.csv'
+  ];
+
+  function renderFileProcessingItems() {
+    fileProcessingList.innerHTML = csvFiles
+      .map((fileName) => `<div class="file-item" data-file="${fileName}">${fileName}</div>`)
+      .join('');
+  }
+
+  function clearFileProcessingState() {
+    fileProcessingList.querySelectorAll('.file-item').forEach((node) => {
+      node.classList.remove('processing', 'done', 'failed');
+    });
+  }
 
   function clearPipelineNodeStates() {
     pipelineNodes.forEach((node) => node.classList.remove('active', 'done', 'failed', 'processing'));
+    clearFileProcessingState();
   }
 
   function playPipelineSquares() {
     clearPipelineNodeStates();
+    const fileItems = Array.from(fileProcessingList.querySelectorAll('.file-item'));
+
     pipelineNodes.forEach((node, index) => {
       setTimeout(() => {
         node.classList.add('active', 'processing');
@@ -135,6 +159,14 @@ export function pipelinePlugin(root) {
         node.classList.remove('active', 'processing');
         node.classList.add('done');
       }, index * 260 + 220);
+    });
+
+    fileItems.forEach((item, index) => {
+      setTimeout(() => item.classList.add('processing'), index * 180);
+      setTimeout(() => {
+        item.classList.remove('processing');
+        item.classList.add('done');
+      }, index * 180 + 150);
     });
   }
 
@@ -147,6 +179,7 @@ export function pipelinePlugin(root) {
     } else if (state === 'is-failed') {
       clearPipelineNodeStates();
       pipelineNodes.forEach((node) => node.classList.add('failed'));
+      fileProcessingList.querySelectorAll('.file-item').forEach((node) => node.classList.add('failed'));
     }
   }
 
@@ -157,14 +190,18 @@ export function pipelinePlugin(root) {
     aiAlerts.innerHTML = '';
     (managerInsights.alerts || []).forEach((item) => {
       const li = document.createElement('li');
-      li.textContent = `Alert: ${item}`;
+      const text = typeof item === 'object' ? JSON.stringify(item) : String(item);
+      li.className = 'alert-item';
+      li.textContent = `Alert: ${text}`;
       aiAlerts.append(li);
     });
 
     aiActions.innerHTML = '';
     (managerInsights.recommendedActions || []).forEach((item) => {
       const li = document.createElement('li');
-      li.textContent = `Action: ${item}`;
+      const text = typeof item === 'object' ? JSON.stringify(item) : String(item);
+      li.className = 'action-item';
+      li.textContent = `Action: ${text}`;
       aiActions.append(li);
     });
   }
@@ -233,6 +270,7 @@ export function pipelinePlugin(root) {
     }
   }
 
+  renderFileProcessingItems();
   runButton.addEventListener('click', runIngest);
   resetMetrics();
 }

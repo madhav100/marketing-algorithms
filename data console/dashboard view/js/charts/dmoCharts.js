@@ -64,6 +64,8 @@ export function renderLineChart(container, points = []) {
 
   const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
   polyline.setAttribute('class', 'line-main');
+  const area = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  area.setAttribute('class', 'line-area');
 
   const polylinePoints = points.map((point, index) => {
     const x = xStart + (points.length === 1 ? 0 : (index * (xEnd - xStart)) / (points.length - 1));
@@ -88,6 +90,9 @@ export function renderLineChart(container, points = []) {
   });
 
   polyline.setAttribute('points', polylinePoints.join(' '));
+  const areaPoints = `${xStart},${yBottom} ${polylinePoints.join(' ')} ${xEnd},${yBottom}`;
+  area.setAttribute('points', areaPoints);
+  svg.append(area);
   svg.append(polyline);
   container.append(svg);
 }

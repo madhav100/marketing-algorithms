@@ -34,10 +34,12 @@ body {
   grid-template-rows: auto 1fr;
   gap: 0.6rem;
   padding: 0.6rem;
+  max-width: 50vw;
+  margin: 0 auto;
 }
 
 .panel {
-  background: linear-gradient(160deg, rgba(11, 18, 32, 0.92), rgba(15, 23, 42, 0.94));
+  background: linear-gradient(160deg, rgba(11, 18, 32, 0.46), rgba(15, 23, 42, 0.47));
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 0.65rem;
@@ -119,6 +121,39 @@ body {
   100% { opacity: 0.3; transform: translateY(0); }
 }
 
+.file-processing-list {
+  margin-top: 0.35rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.file-item {
+  border: 1px solid #2d4664;
+  border-radius: 6px;
+  padding: 0.24rem 0.3rem;
+  font-size: 0.58rem;
+  color: #bfdbfe;
+  background: rgba(30, 41, 59, 0.25);
+}
+
+.file-item.processing {
+  border-color: #22d3ee;
+  color: #67e8f9;
+  animation: filePulse 0.8s infinite ease-in-out;
+}
+
+.file-item.done {
+  border-color: #22c55e;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.file-item.failed {
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
 .gauge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
 .gauge-label { color: var(--muted); font-size: .62rem; text-transform: uppercase; }
 .gauge-value { margin-top: .2rem; font-size: 0.82rem; font-weight: 700; }
@@ -137,7 +172,7 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
   border: 1px solid #223245;
   border-radius: 7px;
   padding: 0.42rem;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.35);
 }
 .chart-title { font-size: 0.64rem; color: #cbd5e1; }
 .chart-type { font-size: 0.56rem; color: #7dd3fc; margin-top: 0.15rem; text-transform: uppercase; }
@@ -161,6 +196,7 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
 
 .chart-svg { width: 100%; height: 135px; }
 .line-main { fill: none; stroke: #60a5fa; stroke-width: 2.5; }
+.line-area { fill: rgba(96, 165, 250, 0.28); }
 .line-dot { fill: #22d3ee; }
 .line-label { fill: #94a3b8; font-size: 9px; }
 
@@ -179,7 +215,7 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
   border: 3px double #4f6b8b;
   border-radius: 9px;
   padding: 0.45rem;
-  background: rgba(15, 23, 42, 0.52);
+  background: rgba(15, 23, 42, 0.26);
   position: relative;
 }
 
@@ -195,7 +231,7 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
   border: 1px solid #395171;
   border-radius: 7px;
   padding: 0.3rem 0.35rem;
-  background: rgba(2, 6, 23, 0.35);
+  background: rgba(2, 6, 23, 0.18);
 }
 .ai-subtitle {
   font-size: 0.58rem;
@@ -205,9 +241,12 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
 }
 .ai-list { margin: 0.2rem 0 0; padding-left: 0.85rem; color: #93c5fd; font-size: 0.6rem; }
 .ai-list li { margin: 0.12rem 0; }
+.ai-list .alert-item { color: #f87171; }
+.ai-list .action-item { color: #4ade80; }
 
 
 @media (max-width: 1000px) {
+  .app-shell { max-width: 100%; }
   .topbar { grid-template-columns: repeat(2, 1fr); }
   .gauge-grid { grid-template-columns: 1fr; }
   .pipeline-runtime { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -216,4 +255,5 @@ svg.gauge { width: 100%; max-width: 140px; height: auto; }
   .donut-svg { justify-self: center; }
   .heatmap-row { grid-template-columns: 1fr; }
   .ai-subblocks { grid-template-columns: 1fr; }
+  .file-processing-list { grid-template-columns: 1fr; }
 }
