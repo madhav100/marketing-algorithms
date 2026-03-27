@@ -24,6 +24,7 @@ This folder contains a standalone stream-ingestion layer, raw Data Lake Objects 
 - Writes runtime-generated artifacts:
   - `data/objects-lake.json`
   - `data/model-objects.json`
+  - `data/dmo-analytics.json`
   - `data/lake-summary.json`
 
 > Note: files in `data/` are generated at ingestion time and are not source-controlled.
@@ -58,3 +59,8 @@ Then use `POST /api/ingest` from the dashboard **Run Ingest** button.
 - Streams + DLO mapping: `csvs_info.md`
 - Business model: `data-model.md` (materialized into `data/model-objects.json` during ingestion)
 - Governance: `data-governance.md`
+
+
+## DMO analytics script
+- Script: `src/analyzeDmo.js`
+- It analyzes `data/model-objects.json` and writes chart-ready metrics to `data/dmo-analytics.json` during each ingestion run.

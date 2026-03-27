@@ -6,6 +6,7 @@ const { spawn } = require('child_process');
 const PORT = Number(process.env.PORT || 8787);
 const ROOT = __dirname;
 const SUMMARY_FILE = path.join(ROOT, 'data cloud', 'data', 'lake-summary.json');
+const DMO_ANALYTICS_FILE = path.join(ROOT, 'data cloud', 'data', 'dmo-analytics.json');
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -28,11 +29,29 @@ function readSummary() {
       entityCounts: {},
       modelObjectCounts: {},
       metadata: { ingestedFiles: [] },
-      modelMetadata: { unresolvedLinks: {} }
+      modelMetadata: { unresolvedLinks: {} },
+      dmoAnalyticsGeneratedAt: null
     };
   }
 
   return JSON.parse(fs.readFileSync(SUMMARY_FILE, 'utf8'));
+}
+
+function readDmoAnalytics() {
+  if (!fs.existsSync(DMO_ANALYTICS_FILE)) {
+    return {
+      generatedAt: null,
+      charts: {
+        netRevenueBySegment: [],
+        refundBySegment: [],
+        refundsOverTime: [],
+        customerMixBySegment: [],
+        heatmap: []
+      }
+    };
+  }
+
+  return JSON.parse(fs.readFileSync(DMO_ANALYTICS_FILE, 'utf8'));
 }
 
 function runIngest() {
@@ -54,7 +73,7 @@ function runIngest() {
         return;
       }
 
-      resolve({ stdout, summary: readSummary() });
+      resolve({ stdout, summary: readSummary(), analytics: readDmoAnalytics() });
     });
   });
 }
@@ -97,6 +116,11 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.url === '/api/dmo-analytics' && req.method === 'GET') {
+    send(res, 200, JSON.stringify(readDmoAnalytics()), 'application/json; charset=utf-8');
+    return;
+  }
+
   if (req.url === '/api/ingest' && req.method === 'POST') {
     try {
       const result = await runIngest();
@@ -121,5 +145,5 @@ server.listen(PORT, () => {
   console.log(`Data Console server running at http://localhost:${PORT}`);
   console.log('Dashboard: /dashboard view/index.html');
   console.log('Explorer: /dashboard view/data-explorer-template.html');
-  console.log('API: GET /api/summary, POST /api/ingest');
+  console.log('API: GET /api/summary, GET /api/dmo-analytics, POST /api/ingest');
 });

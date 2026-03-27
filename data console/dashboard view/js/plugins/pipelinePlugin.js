@@ -1,5 +1,11 @@
 import { createKpiCard } from '../components/kpiCard.js';
 import { createSpeedometer } from '../components/speedometer.js';
+import {
+  renderBarChart,
+  renderLineChart,
+  renderDonutChart,
+  renderHeatmap
+} from '../charts/dmoCharts.js';
 
 function sumEntityCounts(entityCounts = {}) {
   return Object.values(entityCounts).reduce((sum, count) => sum + Number(count || 0), 0);
@@ -12,68 +18,11 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
-function createLineGraph({ title, subtitle, className }) {
+function chartPanel(title, subtitle, className = '') {
   const panel = document.createElement('article');
-  panel.className = 'panel';
-  panel.innerHTML = `
-    <div class="title">${title}</div>
-    <div class="legend">${subtitle}</div>
-    <svg class="records-graph ${className || ''}" viewBox="0 0 640 220" role="img" aria-label="${title}">
-      <g class="axis">
-        <line x1="40" y1="20" x2="40" y2="190"></line>
-        <line x1="40" y1="190" x2="620" y2="190"></line>
-      </g>
-      <polyline class="line" points="40,190 620,190"></polyline>
-      <g class="dots"></g>
-      <g class="labels"></g>
-    </svg>
-  `;
-
-  const polyline = panel.querySelector('.line');
-  const dots = panel.querySelector('.dots');
-  const labels = panel.querySelector('.labels');
-
-  function update(points = []) {
-    dots.innerHTML = '';
-    labels.innerHTML = '';
-
-    if (!points.length) {
-      polyline.setAttribute('points', '40,190 620,190');
-      return;
-    }
-
-    const xStart = 70;
-    const xEnd = 590;
-    const yBottom = 180;
-    const yTop = 35;
-    const maxValue = Math.max(...points.map((point) => Number(point.value || 0)), 1);
-
-    const polylinePoints = points.map((point, index) => {
-      const x = xStart + (points.length === 1 ? 0 : (index * (xEnd - xStart)) / (points.length - 1));
-      const y = yBottom - (Number(point.value || 0) / maxValue) * (yBottom - yTop);
-
-      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      dot.setAttribute('cx', x);
-      dot.setAttribute('cy', y);
-      dot.setAttribute('r', '4');
-      dot.setAttribute('class', 'dot');
-      dots.append(dot);
-
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', x);
-      label.setAttribute('y', 206);
-      label.setAttribute('text-anchor', 'middle');
-      label.setAttribute('class', 'label');
-      label.textContent = String(point.label || '').slice(0, 10);
-      labels.append(label);
-
-      return `${x},${y}`;
-    });
-
-    polyline.setAttribute('points', polylinePoints.join(' '));
-  }
-
-  return { panel, update };
+  panel.className = `panel ${className}`.trim();
+  panel.innerHTML = `<div class="title">${title}</div><div class="legend">${subtitle}</div><div class="chart-body"></div>`;
+  return panel;
 }
 
 export function pipelinePlugin(root) {
@@ -86,7 +35,7 @@ export function pipelinePlugin(root) {
     <div class="headline">
       <h1>Data Console • SIEM Dashboard</h1>
     </div>
-    <div class="legend">Live pipeline animation and metrics from ingestion output.</div>
+    <div class="legend">Live DMO analytics charts and pipeline runtime states.</div>
     <button class="run-btn" id="runIngestBtn">Run Ingest</button>
   `;
 
@@ -105,8 +54,6 @@ export function pipelinePlugin(root) {
     <div class="title">Pipeline Runtime Animation</div>
     <div class="legend">[ Ingestion Files ] → [ Data Streams ] → [ DLO ] → [ DMO ]</div>
     <div class="pipeline-runtime" id="pipelineRuntime">
-      <div class="pipeline-track"></div>
-      <div class="pipeline-pulse"></div>
       <div class="pipeline-node" data-node="files">Ingestion Files</div>
       <div class="pipeline-node" data-node="streams">Data Streams</div>
       <div class="pipeline-node" data-node="dlo">DLO</div>
@@ -127,37 +74,21 @@ export function pipelinePlugin(root) {
   gaugeGrid.append(ingestGauge.element, validationGauge.element, writeGauge.element);
   speedPanel.append(gaugeGrid);
 
-  const recordsGraph = createLineGraph({
-    title: 'Records Processed',
-    subtitle: 'Transparent trend graph by stream.',
-    className: ''
-  });
+  const netRevenuePanel = chartPanel('Net Revenue by Segment', 'Bar chart');
+  const refundRatePanel = chartPanel('Refund Amount / Refund Rate by Segment', 'Bar chart');
+  const refundsOverTimePanel = chartPanel('Refunds Over Time', 'Line chart');
+  const customerMixPanel = chartPanel('Customer Mix by Segment', 'Donut chart');
+  const heatmapPanel = chartPanel('Segment × Metric View', 'Heatmap');
 
-  const lakeObjectsPanel = document.createElement('article');
-  lakeObjectsPanel.className = 'panel lake-panel';
-  lakeObjectsPanel.innerHTML = `<div class="title">Lake Objects</div><div class="legend">Raw DLO volume and object distribution.</div>`;
-  const lakeObjectsGauge = createSpeedometer({ label: 'Object Volume', value: 0, max: 1000, unit: ' obj' });
-  lakeObjectsPanel.append(lakeObjectsGauge.element);
-  const lakeObjectsGraph = createLineGraph({
-    title: 'Lake Object Distribution',
-    subtitle: 'Counts across DLO collections.',
-    className: 'lake-objects-graph'
-  });
-  lakeObjectsPanel.append(lakeObjectsGraph.panel.querySelector('svg'));
-
-  const lakeModelsPanel = document.createElement('article');
-  lakeModelsPanel.className = 'panel lake-panel';
-  lakeModelsPanel.innerHTML = `<div class="title">Lake Models</div><div class="legend">Model coverage and relationship readiness.</div>`;
-  const lakeModelsGauge = createSpeedometer({ label: 'Model Coverage', value: 0, max: 100, unit: ' %' });
-  lakeModelsPanel.append(lakeModelsGauge.element);
-  const lakeModelsGraph = createLineGraph({
-    title: 'Model Entity Coverage',
-    subtitle: 'Customer model dimensions populated.',
-    className: 'lake-models-graph'
-  });
-  lakeModelsPanel.append(lakeModelsGraph.panel.querySelector('svg'));
-
-  main.append(processPanel, speedPanel, recordsGraph.panel, lakeObjectsPanel, lakeModelsPanel);
+  main.append(
+    processPanel,
+    speedPanel,
+    netRevenuePanel,
+    refundRatePanel,
+    refundsOverTimePanel,
+    customerMixPanel,
+    heatmapPanel
+  );
   root.append(topbar, main);
 
   const [csvValueNode] = csvCard.querySelectorAll('.value');
@@ -165,27 +96,67 @@ export function pipelinePlugin(root) {
   const [healthValueNode] = healthCard.querySelectorAll('.value');
   const runButton = titlePanel.querySelector('#runIngestBtn');
   const runtimeNode = processPanel.querySelector('#pipelineRuntime');
+  const pipelineNodes = Array.from(processPanel.querySelectorAll('.pipeline-node'));
+
+  function clearPipelineNodeStates() {
+    pipelineNodes.forEach((node) => node.classList.remove('active', 'done', 'failed'));
+  }
+
+  function playPipelineSquares() {
+    clearPipelineNodeStates();
+    pipelineNodes.forEach((node, index) => {
+      setTimeout(() => {
+        node.classList.add('active');
+      }, index * 320);
+      setTimeout(() => {
+        node.classList.remove('active');
+        node.classList.add('done');
+      }, index * 320 + 280);
+    });
+  }
 
   function setPipelineState(state) {
     runtimeNode.classList.remove('is-running', 'is-finished', 'is-failed');
     if (state) {
       runtimeNode.classList.add(state);
     }
+
+    if (state === 'is-running') {
+      playPipelineSquares();
+    }
+
+    if (state === 'is-failed') {
+      clearPipelineNodeStates();
+      pipelineNodes.forEach((node) => node.classList.add('failed'));
+    }
   }
 
-  function setLakePanels(entityCounts = {}, modelObjectCounts = {}) {
-    const dloEntries = Object.entries(entityCounts).map(([label, value]) => ({ label, value: Number(value || 0) }));
-    const modelEntries = Object.entries(modelObjectCounts).map(([label, value]) => ({ label, value: Number(value || 0) }));
+  function renderAnalyticsCharts(analytics) {
+    const charts = analytics?.charts || {};
 
-    const totalObjects = dloEntries.reduce((sum, item) => sum + item.value, 0);
-    const nonEmptyModels = modelEntries.filter((item) => item.value > 0).length;
-    const modelCoverage = modelEntries.length ? Math.round((nonEmptyModels / modelEntries.length) * 100) : 0;
+    renderBarChart(
+      netRevenuePanel.querySelector('.chart-body'),
+      (charts.netRevenueBySegment || []).map((item) => ({ label: item.segment, value: item.value })),
+      { decimals: 2 }
+    );
 
-    lakeObjectsGauge.setValue(Math.min(1000, totalObjects));
-    lakeObjectsGraph.update(dloEntries.map((item) => ({ label: item.label.replace('_DLO', ''), value: item.value })));
+    renderBarChart(
+      refundRatePanel.querySelector('.chart-body'),
+      (charts.refundBySegment || []).map((item) => ({ label: item.segment, value: item.refundAmount })),
+      { decimals: 2 }
+    );
 
-    lakeModelsGauge.setValue(modelCoverage);
-    lakeModelsGraph.update(modelEntries.map((item) => ({ label: item.label.replace('_DMO', ''), value: item.value })));
+    renderLineChart(
+      refundsOverTimePanel.querySelector('.chart-body'),
+      (charts.refundsOverTime || []).map((item) => ({ label: item.month, value: item.refundAmount }))
+    );
+
+    renderDonutChart(
+      customerMixPanel.querySelector('.chart-body'),
+      (charts.customerMixBySegment || []).map((item) => ({ label: item.segment, value: item.customers }))
+    );
+
+    renderHeatmap(heatmapPanel.querySelector('.chart-body'), charts.heatmap || []);
   }
 
   function resetMetrics() {
@@ -195,9 +166,8 @@ export function pipelinePlugin(root) {
     ingestGauge.setValue(0);
     validationGauge.setValue(0);
     writeGauge.setValue(0);
-    recordsGraph.update([]);
-    setLakePanels({}, {});
     setPipelineState('');
+    renderAnalyticsCharts({ charts: {} });
   }
 
   async function runIngest() {
@@ -215,9 +185,9 @@ export function pipelinePlugin(root) {
 
       const payload = await response.json();
       const summary = payload.summary || {};
+      const analytics = payload.analytics || {};
       const fileCount = (summary.processedCsvFiles || []).length;
       const entityCounts = summary.entityCounts || {};
-      const modelObjectCounts = summary.modelObjectCounts || {};
       const totalRecords = sumEntityCounts(entityCounts);
       const rates = estimateRate(totalRecords, fileCount);
 
@@ -230,10 +200,7 @@ export function pipelinePlugin(root) {
       validationGauge.setValue(rates.validationRate);
       writeGauge.setValue(rates.writeRate);
 
-      recordsGraph.update(
-        Object.entries(entityCounts).map(([label, value]) => ({ label: label.replace('_DLO', ''), value: Number(value || 0) }))
-      );
-      setLakePanels(entityCounts, modelObjectCounts);
+      renderAnalyticsCharts(analytics);
       setPipelineState('is-finished');
     } catch (error) {
       healthValueNode.textContent = 'FAILED';

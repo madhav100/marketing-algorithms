@@ -4,11 +4,13 @@ const DataObjectsLake = require('./dataObjectsLake');
 const { ingestAllCsv } = require('./csvDataStream');
 const { STREAM_DEFINITIONS } = require('./dataStreams');
 const { buildDataModelObjects } = require('./dataModelObjects');
+const { writeDmoAnalytics } = require('./analyzeDmo');
 
 const ROOT = path.resolve(__dirname, '..');
 const CSV_EXPORTS = path.join(ROOT, 'csv-exports');
 const OBJECTS_LAKE_FILE = path.join(ROOT, 'data', 'objects-lake.json');
 const MODELED_OBJECTS_FILE = path.join(ROOT, 'data', 'model-objects.json');
+const DMO_ANALYTICS_FILE = path.join(ROOT, 'data', 'dmo-analytics.json');
 const SUMMARY_FILE = path.join(ROOT, 'data', 'lake-summary.json');
 
 function writeModeledObjects(rawEntities) {
@@ -39,6 +41,7 @@ async function runIngestion() {
   lake.persist();
 
   const modelSummary = writeModeledObjects(lake.state.entities);
+  const dmoAnalytics = writeDmoAnalytics(MODELED_OBJECTS_FILE, DMO_ANALYTICS_FILE);
 
   const summary = {
     processedCsvFiles: files,
@@ -49,7 +52,8 @@ async function runIngestion() {
       primaryKey
     })),
     ...lake.getSummary(),
-    ...modelSummary
+    ...modelSummary,
+    dmoAnalyticsGeneratedAt: dmoAnalytics.generatedAt
   };
 
   fs.writeFileSync(SUMMARY_FILE, JSON.stringify(summary, null, 2));
