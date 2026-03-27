@@ -27,3 +27,16 @@ xdg-open "data console/dashboard view/index.html"
 # Open data explorer template
 xdg-open "data console/dashboard view/data-explorer-template.html"
 ```
+
+
+## Run local HTML server
+```bash
+# from repo root
+cd "data console"
+npm install
+npm run serve
+
+# then open
+# http://localhost:8787/dashboard%20view/index.html
+# http://localhost:8787/dashboard%20view/data-explorer-template.html
+```

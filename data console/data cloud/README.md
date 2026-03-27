@@ -46,3 +46,10 @@ cp /path/to/customer_support_tickets.csv "data console/data cloud/csv-exports/cu
 cd "data console/data cloud"
 npm run ingest
 ```
+
+
+## View HTML pages via Data Console server
+```bash
+cd "data console"
+npm run serve
+```
