@@ -1,1 +1,4 @@
 salesforce commerce cloud/node_modules/
+data console/node_modules/
+data console/data cloud/node_modules/
+data console/data cloud/data/*.json
