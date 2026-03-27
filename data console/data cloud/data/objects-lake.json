@@ -1,0 +1,77 @@
+{
+  "entities": {
+    "customers": [
+      {
+        "id": 1,
+        "email": "jordan@example.com",
+        "segment": "loyal",
+        "lifetimeValue": 1240.55,
+        "createdAt": "2026-03-27T04:35:54.662Z",
+        "updatedAt": "2026-03-27T05:20:31.854Z"
+      },
+      {
+        "id": 2,
+        "email": "sam@example.com",
+        "segment": "new",
+        "lifetimeValue": 249.99,
+        "createdAt": "2026-03-27T04:35:54.663Z",
+        "updatedAt": "2026-03-27T05:20:31.855Z"
+      },
+      {
+        "id": 3,
+        "email": "riley@example.com",
+        "segment": "vip",
+        "lifetimeValue": 9810.12,
+        "createdAt": "2026-03-27T04:35:54.663Z",
+        "updatedAt": "2026-03-27T05:20:31.855Z"
+      }
+    ],
+    "orders": [
+      {
+        "id": 1001,
+        "customerId": 1,
+        "status": "completed",
+        "total": 59,
+        "createdAt": "2026-03-27T04:35:54.666Z",
+        "updatedAt": "2026-03-27T05:20:31.859Z"
+      },
+      {
+        "id": 1002,
+        "customerId": 2,
+        "status": "processing",
+        "total": 129.5,
+        "createdAt": "2026-03-27T04:35:54.666Z",
+        "updatedAt": "2026-03-27T05:20:31.859Z"
+      },
+      {
+        "id": 1003,
+        "customerId": 3,
+        "status": "completed",
+        "total": 340.25,
+        "createdAt": "2026-03-27T04:35:54.666Z",
+        "updatedAt": "2026-03-27T05:20:31.859Z"
+      }
+    ]
+  },
+  "metadata": {
+    "lastUpdatedAt": "2026-03-27T05:20:31.859Z",
+    "ingestedFiles": [
+      {
+        "fileName": "customers.csv",
+        "ingestedAt": "2026-03-27T04:35:54.664Z"
+      },
+      {
+        "fileName": "orders.csv",
+        "ingestedAt": "2026-03-27T04:35:54.666Z"
+      },
+      {
+        "fileName": "customers.csv",
+        "ingestedAt": "2026-03-27T05:20:31.856Z"
+      },
+      {
+        "fileName": "orders.csv",
+        "ingestedAt": "2026-03-27T05:20:31.859Z"
+      }
+    ]
+  }
+}
