@@ -1,76 +1,194 @@
 {
   "entities": {
-    "customers": [
+    "customer_orders": [
+      {
+        "orderId": 1001,
+        "customerId": 1,
+        "orderDate": "2026-02-01",
+        "grossRevenue": 125,
+        "discountAmount": 10,
+        "netRevenue": 115
+      },
+      {
+        "orderId": 1002,
+        "customerId": 2,
+        "orderDate": "2026-02-13",
+        "grossRevenue": 75.5,
+        "discountAmount": 0,
+        "netRevenue": 75.5
+      },
+      {
+        "orderId": 1003,
+        "customerId": 3,
+        "orderDate": "2026-02-20",
+        "grossRevenue": 340.25,
+        "discountAmount": 20,
+        "netRevenue": 320.25
+      },
+      {
+        "orderId": 1004,
+        "customerId": 1,
+        "orderDate": "2026-03-03",
+        "grossRevenue": 210,
+        "discountAmount": 15,
+        "netRevenue": 195
+      }
+    ],
+    "customer_profiles": [
       {
         "id": 1,
         "email": "jordan@example.com",
         "segment": "loyal",
-        "lifetimeValue": 1240.55,
-        "createdAt": "2026-03-27T04:35:54.662Z",
-        "updatedAt": "2026-03-27T05:20:31.854Z"
+        "region": "NA",
+        "signupDate": "2024-01-12",
+        "createdAt": "2026-03-27T05:42:33.499Z"
       },
       {
         "id": 2,
         "email": "sam@example.com",
         "segment": "new",
-        "lifetimeValue": 249.99,
-        "createdAt": "2026-03-27T04:35:54.663Z",
-        "updatedAt": "2026-03-27T05:20:31.855Z"
+        "region": "NA",
+        "signupDate": "2025-08-02",
+        "createdAt": "2026-03-27T05:42:33.499Z"
       },
       {
         "id": 3,
         "email": "riley@example.com",
         "segment": "vip",
-        "lifetimeValue": 9810.12,
-        "createdAt": "2026-03-27T04:35:54.663Z",
-        "updatedAt": "2026-03-27T05:20:31.855Z"
+        "region": "EU",
+        "signupDate": "2023-11-30",
+        "createdAt": "2026-03-27T05:42:33.499Z"
+      },
+      {
+        "id": 4,
+        "email": "morgan@example.com",
+        "segment": "at_risk",
+        "region": "APAC",
+        "signupDate": "2022-06-15",
+        "createdAt": "2026-03-27T05:42:33.499Z"
       }
     ],
-    "orders": [
+    "customer_returns": [
       {
-        "id": 1001,
-        "customerId": 1,
-        "status": "completed",
-        "total": 59,
-        "createdAt": "2026-03-27T04:35:54.666Z",
-        "updatedAt": "2026-03-27T05:20:31.859Z"
-      },
-      {
-        "id": 1002,
+        "returnId": "R-2001",
+        "orderId": 1002,
         "customerId": 2,
-        "status": "processing",
-        "total": 129.5,
-        "createdAt": "2026-03-27T04:35:54.666Z",
-        "updatedAt": "2026-03-27T05:20:31.859Z"
+        "returnDate": "2026-02-21",
+        "refundAmount": 25.5,
+        "reason": "size_issue"
       },
       {
-        "id": 1003,
+        "returnId": "R-2002",
+        "orderId": 1003,
         "customerId": 3,
-        "status": "completed",
-        "total": 340.25,
-        "createdAt": "2026-03-27T04:35:54.666Z",
-        "updatedAt": "2026-03-27T05:20:31.859Z"
+        "returnDate": "2026-03-01",
+        "refundAmount": 40,
+        "reason": "damaged_item"
+      },
+      {
+        "returnId": "R-2003",
+        "orderId": 1004,
+        "customerId": 1,
+        "returnDate": "2026-03-09",
+        "refundAmount": 15,
+        "reason": "late_delivery"
+      }
+    ],
+    "customer_subscriptions": [
+      {
+        "subscriptionId": "S-001",
+        "customerId": 1,
+        "planName": "Gold",
+        "mrr": 49,
+        "status": "active",
+        "startDate": "2025-11-01",
+        "endDate": ""
+      },
+      {
+        "subscriptionId": "S-002",
+        "customerId": 2,
+        "planName": "Basic",
+        "mrr": 19,
+        "status": "active",
+        "startDate": "2026-01-14",
+        "endDate": ""
+      },
+      {
+        "subscriptionId": "S-003",
+        "customerId": 3,
+        "planName": "Enterprise",
+        "mrr": 199,
+        "status": "active",
+        "startDate": "2024-05-20",
+        "endDate": ""
+      },
+      {
+        "subscriptionId": "S-004",
+        "customerId": 4,
+        "planName": "Gold",
+        "mrr": 49,
+        "status": "cancelled",
+        "startDate": "2023-03-10",
+        "endDate": "2026-01-31"
+      }
+    ],
+    "customer_support_tickets": [
+      {
+        "ticketId": "T-9001",
+        "customerId": 1,
+        "openedDate": "2026-03-02",
+        "priority": "high",
+        "resolutionHours": 4,
+        "issueCategory": "payment"
+      },
+      {
+        "ticketId": "T-9002",
+        "customerId": 2,
+        "openedDate": "2026-03-04",
+        "priority": "medium",
+        "resolutionHours": 12,
+        "issueCategory": "delivery"
+      },
+      {
+        "ticketId": "T-9003",
+        "customerId": 3,
+        "openedDate": "2026-03-05",
+        "priority": "low",
+        "resolutionHours": 24,
+        "issueCategory": "product_question"
+      },
+      {
+        "ticketId": "T-9004",
+        "customerId": 4,
+        "openedDate": "2026-03-07",
+        "priority": "high",
+        "resolutionHours": 6,
+        "issueCategory": "returns"
       }
     ]
   },
   "metadata": {
-    "lastUpdatedAt": "2026-03-27T05:20:31.859Z",
+    "lastUpdatedAt": "2026-03-27T05:42:33.505Z",
     "ingestedFiles": [
       {
-        "fileName": "customers.csv",
-        "ingestedAt": "2026-03-27T04:35:54.664Z"
+        "fileName": "customer_orders.csv",
+        "ingestedAt": "2026-03-27T05:42:33.498Z"
       },
       {
-        "fileName": "orders.csv",
-        "ingestedAt": "2026-03-27T04:35:54.666Z"
+        "fileName": "customer_profiles.csv",
+        "ingestedAt": "2026-03-27T05:42:33.499Z"
       },
       {
-        "fileName": "customers.csv",
-        "ingestedAt": "2026-03-27T05:20:31.856Z"
+        "fileName": "customer_returns.csv",
+        "ingestedAt": "2026-03-27T05:42:33.501Z"
       },
       {
-        "fileName": "orders.csv",
-        "ingestedAt": "2026-03-27T05:20:31.859Z"
+        "fileName": "customer_subscriptions.csv",
+        "ingestedAt": "2026-03-27T05:42:33.502Z"
+      },
+      {
+        "fileName": "customer_support_tickets.csv",
+        "ingestedAt": "2026-03-27T05:42:33.505Z"
       }
     ]
   }

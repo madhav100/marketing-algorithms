@@ -28,6 +28,16 @@ class DataObjectsLake {
     this.state = JSON.parse(raw);
   }
 
+
+  resetForFullRebuild() {
+    this.state = {
+      entities: {},
+      metadata: {
+        lastUpdatedAt: null,
+        ingestedFiles: []
+      }
+    };
+  }
   ensureEntity(entityName) {
     if (!this.state.entities[entityName]) {
       this.state.entities[entityName] = [];

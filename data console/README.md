@@ -3,8 +3,8 @@
 This top-level folder is an independent workspace.
 
 ## Structure
-- `data cloud/` — standalone data cloud with CSV streams and data objects lake.
-- `dashboard view/` — webpage UI for pipeline concepts and relationships.
+- `data cloud/` — standalone data cloud with 5 customer CSV streams, governance, and data objects lake.
+- `dashboard view/` — webpage UI for pipeline concepts, relationships, and a data explorer template.
 
 This implementation is intentionally separated from other project folders.
 
@@ -21,6 +21,9 @@ npm run ingest:watch
 ```
 
 ```bash
-# Open the dashboard locally from repository root
+# Open pipeline dashboard template
 xdg-open "data console/dashboard view/index.html"
+
+# Open data explorer template
+xdg-open "data console/dashboard view/data-explorer-template.html"
 ```

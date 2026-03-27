@@ -182,11 +182,11 @@
       <section class="grid" aria-label="high-level metrics">
         <article class="card">
           <div class="label">CSV Export Streams</div>
-          <div class="value">2</div>
+          <div class="value">5</div>
         </article>
         <article class="card">
           <div class="label">Data Objects in Lake</div>
-          <div class="value">6</div>
+          <div class="value">19</div>
         </article>
         <article class="card">
           <div class="label">Pipeline Health</div>
@@ -194,7 +194,7 @@
         </article>
         <article class="card">
           <div class="label">Relationship Model</div>
-          <div class="value warn">Customers ⇄ Orders</div>
+          <div class="value warn">Profiles ⇄ Orders ⇄ Returns</div>
         </article>
       </section>
 
@@ -208,11 +208,11 @@
             <path id="flow4" class="flow-line" d="M 690 135 C 730 135, 730 240, 680 275" />
 
             <rect class="node" x="20" y="40" width="120" height="80" rx="12" />
-            <text class="node-title" x="32" y="68">customers.csv</text>
+            <text class="node-title" x="32" y="68">customer_profiles.csv</text>
             <text class="node-sub" x="32" y="88">source stream</text>
 
             <rect class="node" x="20" y="150" width="120" height="80" rx="12" />
-            <text class="node-title" x="32" y="178">orders.csv</text>
+            <text class="node-title" x="32" y="178">customer_orders.csv</text>
             <text class="node-sub" x="32" y="198">source stream</text>
 
             <rect class="node" x="340" y="95" width="130" height="80" rx="12" />
@@ -273,6 +273,14 @@
               <p>Creates entity collections by filename and upserts records using <span class="mono">id</span>.</p>
             </div>
             <div class="concept-item">
+              <strong>Model Object: data-model.md</strong>
+              <p>Defines primary keys, foreign keys, and revenue relationships across all five CSV types.</p>
+            </div>
+            <div class="concept-item">
+              <strong>Governance Object: data-governance.md</strong>
+              <p>Specifies data quality, privacy, freshness, and revenue integrity rules during ingestion.</p>
+            </div>
+            <div class="concept-item">
               <strong>Output Object: lake-summary.json</strong>
               <p>Captures relationships and ingestion status so you can monitor what was processed.</p>
             </div>
@@ -291,25 +299,38 @@
         </thead>
         <tbody>
           <tr>
-            <td>customers.csv</td>
-            <td>customers</td>
-            <td>1 customer → many orders</td>
+            <td>customer_profiles.csv</td>
+            <td>customer_profiles</td>
+            <td>primary entity keyed by <span class="mono">id</span></td>
             <td class="ok">Synced</td>
           </tr>
           <tr>
-            <td>orders.csv</td>
-            <td>orders</td>
-            <td>orders.customerId → customers.id</td>
+            <td>customer_orders.csv</td>
+            <td>customer_orders</td>
+            <td><span class="mono">customerId → customer_profiles.id</span></td>
             <td class="ok">Synced</td>
           </tr>
           <tr>
-            <td>lake-summary.json</td>
-            <td>summary</td>
-            <td>entityCounts + metadata</td>
-            <td class="ok">Generated</td>
+            <td>customer_subscriptions.csv</td>
+            <td>customer_subscriptions</td>
+            <td><span class="mono">customerId → customer_profiles.id</span></td>
+            <td class="ok">Synced</td>
+          </tr>
+          <tr>
+            <td>customer_returns.csv</td>
+            <td>customer_returns</td>
+            <td><span class="mono">orderId/customerId</span> relationships</td>
+            <td class="ok">Synced</td>
+          </tr>
+          <tr>
+            <td>customer_support_tickets.csv</td>
+            <td>customer_support_tickets</td>
+            <td><span class="mono">customerId → customer_profiles.id</span></td>
+            <td class="ok">Synced</td>
           </tr>
         </tbody>
       </table>
+      <p class="legend">Open the explorer template: <span class="mono">dashboard view/data-explorer-template.html</span></p>
     </main>
   </body>
 </html>

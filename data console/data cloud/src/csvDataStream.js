@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { validateRecord } = require('./dataGovernance');
 
 function parseCsvLine(line) {
   const values = [];
@@ -62,6 +63,12 @@ async function streamCsvIntoLake(filePath, dataLake) {
       acc[header] = Number.isNaN(asNumber) || raw === '' ? raw : asNumber;
       return acc;
     }, {});
+
+    const validation = validateRecord(entityName, record);
+    if (!validation.valid) {
+      console.warn(`Skipped invalid record in ${entityName}: ${validation.errors.join('; ')}`);
+      continue;
+    }
 
     dataLake.upsert(entityName, record);
   }

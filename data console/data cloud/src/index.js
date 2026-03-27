@@ -11,6 +11,7 @@ const SUMMARY_FILE = path.join(ROOT, 'data', 'lake-summary.json');
 async function runIngestion() {
   const lake = new DataObjectsLake(OBJECTS_LAKE_FILE);
   lake.load();
+  lake.resetForFullRebuild();
 
   if (!fs.existsSync(CSV_EXPORTS)) {
     fs.mkdirSync(CSV_EXPORTS, { recursive: true });
