@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const DataObjectsLake = require('./dataObjectsLake');
 const { ingestAllCsv } = require('./csvDataStream');
+const { STREAM_DEFINITIONS } = require('./dataStreams');
 
 const ROOT = path.resolve(__dirname, '..');
 const CSV_EXPORTS = path.join(ROOT, 'csv-exports');
@@ -17,7 +18,7 @@ async function runIngestion() {
     fs.mkdirSync(CSV_EXPORTS, { recursive: true });
   }
 
-  const files = await ingestAllCsv(CSV_EXPORTS, lake);
+  const files = await ingestAllCsv(CSV_EXPORTS, lake, STREAM_DEFINITIONS);
   lake.persist();
 
   const summary = {

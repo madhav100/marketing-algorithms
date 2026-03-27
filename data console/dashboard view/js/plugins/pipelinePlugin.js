@@ -12,6 +12,39 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
+
+const CSV_HEADERS = [
+  {
+    file: 'customer_profiles.csv',
+    headers: ['id', 'email', 'segment', 'region', 'signupDate']
+  },
+  {
+    file: 'customer_orders.csv',
+    headers: ['orderId', 'customerId', 'orderDate', 'grossRevenue', 'discountAmount', 'netRevenue']
+  },
+  {
+    file: 'customer_returns.csv',
+    headers: ['returnId', 'orderId', 'customerId', 'returnDate', 'refundAmount', 'reason']
+  },
+  {
+    file: 'customer_subscriptions.csv',
+    headers: ['subscriptionId', 'customerId', 'planName', 'mrr', 'status', 'startDate', 'endDate']
+  },
+  {
+    file: 'customer_support_tickets.csv',
+    headers: ['ticketId', 'customerId', 'openedDate', 'priority', 'resolutionHours', 'issueCategory']
+  }
+];
+
+function buildCsvHeadersMarkup() {
+  return CSV_HEADERS.map((stream) => `
+    <article class="csv-header-card">
+      <div class="csv-file">${stream.file}</div>
+      <div class="csv-cols">${stream.headers.join(', ')}</div>
+    </article>
+  `).join('');
+}
+
 function createRecordsGraph() {
   const panel = document.createElement('article');
   panel.className = 'panel';
@@ -111,6 +144,10 @@ export function pipelinePlugin(root) {
       <div class="step-box" data-step="transform">Transform</div>
       <div class="step-box" data-step="upsert">Objects Lake Upsert</div>
       <div class="step-box" data-step="summary">Summary Write</div>
+    </div>
+    <div class="csv-headers-wrap">
+      <div class="title">CSV Headers</div>
+      <div class="csv-headers-grid">${buildCsvHeadersMarkup()}</div>
     </div>
   `;
 

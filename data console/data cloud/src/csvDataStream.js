@@ -39,11 +39,12 @@ function inferEntityName(filePath) {
   return path.basename(filePath, path.extname(filePath)).toLowerCase();
 }
 
-async function streamCsvIntoLake(filePath, dataLake) {
+async function streamCsvIntoLake(filePath, dataLake, streamConfig = {}) {
   const stream = fs.createReadStream(filePath, 'utf8');
   const lineReader = readline.createInterface({ input: stream, crlfDelay: Infinity });
 
-  const entityName = inferEntityName(filePath);
+  const entityName = streamConfig.entityName || inferEntityName(filePath);
+  const primaryKey = streamConfig.primaryKey;
   let headers = null;
 
   for await (const line of lineReader) {
@@ -70,24 +71,43 @@ async function streamCsvIntoLake(filePath, dataLake) {
       continue;
     }
 
-    dataLake.upsert(entityName, record);
+    dataLake.upsert(entityName, record, { primaryKey });
   }
 
   dataLake.markIngestion(path.basename(filePath));
 }
 
-async function ingestAllCsv(csvFolderPath, dataLake) {
-  const fileNames = fs
+async function ingestAllCsv(csvFolderPath, dataLake, streamDefinitions = []) {
+  const discoveredFileNames = fs
     .readdirSync(csvFolderPath)
     .filter((name) => name.toLowerCase().endsWith('.csv'))
     .sort();
 
-  for (const name of fileNames) {
-    const fullPath = path.join(csvFolderPath, name);
-    await streamCsvIntoLake(fullPath, dataLake);
+  const hasConfiguredStreams = Array.isArray(streamDefinitions) && streamDefinitions.length > 0;
+
+  if (!hasConfiguredStreams) {
+    for (const name of discoveredFileNames) {
+      const fullPath = path.join(csvFolderPath, name);
+      await streamCsvIntoLake(fullPath, dataLake);
+    }
+    return discoveredFileNames;
   }
 
-  return fileNames;
+  const processed = [];
+  for (const stream of streamDefinitions) {
+    const fileName = stream.fileName;
+    const fullPath = path.join(csvFolderPath, fileName);
+
+    if (!fs.existsSync(fullPath)) {
+      console.warn(`Configured stream file is missing: ${fileName}`);
+      continue;
+    }
+
+    await streamCsvIntoLake(fullPath, dataLake, stream);
+    processed.push(fileName);
+  }
+
+  return processed;
 }
 
 module.exports = {

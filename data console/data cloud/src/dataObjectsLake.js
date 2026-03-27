@@ -44,18 +44,19 @@ class DataObjectsLake {
     }
   }
 
-  upsert(entityName, record) {
+  upsert(entityName, record, options = {}) {
     this.ensureEntity(entityName);
 
     const collection = this.state.entities[entityName];
-    const idKey = Object.prototype.hasOwnProperty.call(record, 'id') ? 'id' : null;
+    const configuredPrimaryKey = options.primaryKey || null;
+    const idKey = configuredPrimaryKey || (Object.prototype.hasOwnProperty.call(record, 'id') ? 'id' : null);
 
-    if (!idKey) {
+    if (!idKey || !Object.prototype.hasOwnProperty.call(record, idKey)) {
       collection.push(record);
       return;
     }
 
-    const existingIndex = collection.findIndex((item) => String(item.id) === String(record.id));
+    const existingIndex = collection.findIndex((item) => String(item[idKey]) === String(record[idKey]));
 
     if (existingIndex >= 0) {
       collection[existingIndex] = {

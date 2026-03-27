@@ -13,9 +13,11 @@ This folder contains a standalone **Data Objects Lake**, **Data Governance check
 - Reads CSV files from `csv-exports/`.
 - Validates records using governance rules in `src/dataGovernance.js`.
 - Upserts records into the objects lake via `src/dataObjectsLake.js`.
-- Persists outputs to:
+- Persists outputs to runtime-generated files:
   - `data/objects-lake.json`
   - `data/lake-summary.json`
+
+> Note: files in `data/` are generated during ingestion and are not source-controlled.
 
 ## Run from CLI
 ```bash
