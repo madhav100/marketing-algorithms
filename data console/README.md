@@ -39,6 +39,7 @@ npm run serve
 # then open
 # http://localhost:8787/dashboard%20view/index.html
 # http://localhost:8787/dashboard%20view/data-explorer-template.html
+# API: POST http://localhost:8787/api/ingest (used by Run Ingest button)
 ```
 
 

@@ -1,9 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 
 const PORT = Number(process.env.PORT || 8787);
 const ROOT = __dirname;
+const SUMMARY_FILE = path.join(ROOT, 'data cloud', 'data', 'lake-summary.json');
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -17,6 +19,38 @@ const contentTypes = {
 function send(res, statusCode, body, contentType = 'text/plain; charset=utf-8') {
   res.writeHead(statusCode, { 'Content-Type': contentType });
   res.end(body);
+}
+
+function readSummary() {
+  if (!fs.existsSync(SUMMARY_FILE)) {
+    return { processedCsvFiles: [], entityCounts: {}, metadata: { ingestedFiles: [] } };
+  }
+
+  return JSON.parse(fs.readFileSync(SUMMARY_FILE, 'utf8'));
+}
+
+function runIngest() {
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', ['src/index.js'], {
+      cwd: path.join(ROOT, 'data cloud'),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (d) => { stdout += d.toString(); });
+    child.stderr.on('data', (d) => { stderr += d.toString(); });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(stderr || `ingest failed with code ${code}`));
+        return;
+      }
+
+      resolve({ stdout, summary: readSummary() });
+    });
+  });
 }
 
 function safeResolve(requestPath) {
@@ -51,7 +85,22 @@ function serveFile(filePath, res) {
   });
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+  if (req.url === '/api/summary' && req.method === 'GET') {
+    send(res, 200, JSON.stringify(readSummary()), 'application/json; charset=utf-8');
+    return;
+  }
+
+  if (req.url === '/api/ingest' && req.method === 'POST') {
+    try {
+      const result = await runIngest();
+      send(res, 200, JSON.stringify(result), 'application/json; charset=utf-8');
+    } catch (error) {
+      send(res, 500, JSON.stringify({ error: error.message }), 'application/json; charset=utf-8');
+    }
+    return;
+  }
+
   const filePath = safeResolve(req.url || '/');
 
   if (!filePath) {
@@ -66,4 +115,5 @@ server.listen(PORT, () => {
   console.log(`Data Console server running at http://localhost:${PORT}`);
   console.log('Dashboard: /dashboard view/index.html');
   console.log('Explorer: /dashboard view/data-explorer-template.html');
+  console.log('API: GET /api/summary, POST /api/ingest');
 });

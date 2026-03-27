@@ -14,27 +14,27 @@
     "customer_support_tickets": 4
   },
   "metadata": {
-    "lastUpdatedAt": "2026-03-27T05:42:33.505Z",
+    "lastUpdatedAt": "2026-03-27T06:53:08.739Z",
     "ingestedFiles": [
       {
         "fileName": "customer_orders.csv",
-        "ingestedAt": "2026-03-27T05:42:33.498Z"
+        "ingestedAt": "2026-03-27T06:53:08.728Z"
       },
       {
         "fileName": "customer_profiles.csv",
-        "ingestedAt": "2026-03-27T05:42:33.499Z"
+        "ingestedAt": "2026-03-27T06:53:08.730Z"
       },
       {
         "fileName": "customer_returns.csv",
-        "ingestedAt": "2026-03-27T05:42:33.501Z"
+        "ingestedAt": "2026-03-27T06:53:08.732Z"
       },
       {
         "fileName": "customer_subscriptions.csv",
-        "ingestedAt": "2026-03-27T05:42:33.502Z"
+        "ingestedAt": "2026-03-27T06:53:08.733Z"
       },
       {
         "fileName": "customer_support_tickets.csv",
-        "ingestedAt": "2026-03-27T05:42:33.505Z"
+        "ingestedAt": "2026-03-27T06:53:08.739Z"
       }
     ]
   }

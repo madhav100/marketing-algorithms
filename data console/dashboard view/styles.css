@@ -15,9 +15,42 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #030712 0%, var(--bg) 100%);
   color: var(--text);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #0a1b36 0%, #050a14 55%);
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  filter: blur(50px);
+  z-index: -1;
+  opacity: 0.35;
+  animation: drift 18s infinite ease-in-out;
+}
+
+body::before {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.7), rgba(56, 189, 248, 0));
+  top: -10vw;
+  left: -8vw;
+}
+
+body::after {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.6), rgba(168, 85, 247, 0));
+  right: -8vw;
+  bottom: -12vw;
+  animation-delay: -9s;
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -25px) scale(1.08); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
 .app-shell {
@@ -29,10 +62,11 @@ body {
 }
 
 .panel {
-  background: linear-gradient(160deg, var(--panel), var(--panel-2));
+  background: linear-gradient(160deg, rgba(11, 18, 32, 0.88), rgba(15, 23, 42, 0.9));
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.8rem;
+  backdrop-filter: blur(8px);
 }
 
 .title {
@@ -60,6 +94,22 @@ body {
 .headline h1 { margin: 0; font-size: 1.2rem; }
 .tag { font-size: .75rem; border: 1px solid #1f3b53; color: var(--accent); border-radius: 999px; padding: .2rem .55rem; }
 .legend { color: var(--muted); font-size: .82rem; margin-top: .4rem; }
+
+.run-btn {
+  margin-top: 0.65rem;
+  border: 1px solid #1f3b53;
+  background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+  color: #f8fafc;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.run-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .gauge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
 .gauge-card { text-align: center; }
