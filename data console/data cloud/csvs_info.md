@@ -1,50 +1,89 @@
-# CSV Streams Info
+# CSV Streams and Data Lake Objects Info
 
-This file documents what records exist in each CSV stream used by Data Cloud ingestion.
+This file maps each CSV stream to its ingestion stream name and raw Data Lake Object (DLO).
 
-## Record totals
+## 1) Data Streams
 
-| CSV file | Records (excluding header) | Description |
-| --- | ---: | --- |
-| `customer_profiles.csv` | 100 | Master customer profile records. |
-| `customer_orders.csv` | 100 | Order revenue records by customer. |
-| `customer_returns.csv` | 100 | Return and refund records linked to orders. |
-| `customer_subscriptions.csv` | 100 | Subscription lifecycle and MRR records. |
-| `customer_support_tickets.csv` | 100 | Support interactions and resolution records. |
+Each CSV is one ingestion stream that does the following:
+- reads the CSV,
+- validates CSV schema (header shape),
+- validates row data,
+- ingests rows on run/watch/scheduled jobs,
+- writes raw rows into DLO objects.
 
-## Record schema per CSV
-
-### `customer_profiles.csv`
-- **Primary key:** `id`
-- **Columns:** `id`, `email`, `segment`, `region`, `signupDate`
-- **What each record represents:** one customer identity profile row.
-
-### `customer_orders.csv`
-- **Primary key:** `orderId`
-- **Columns:** `orderId`, `customerId`, `orderDate`, `grossRevenue`, `discountAmount`, `netRevenue`
-- **What each record represents:** one revenue event (order) belonging to a customer.
-
-### `customer_returns.csv`
-- **Primary key:** `returnId`
-- **Columns:** `returnId`, `orderId`, `customerId`, `returnDate`, `refundAmount`, `reason`
-- **What each record represents:** one return/refund event tied to a customer order.
-
-### `customer_subscriptions.csv`
-- **Primary key:** `subscriptionId`
-- **Columns:** `subscriptionId`, `customerId`, `planName`, `mrr`, `status`, `startDate`, `endDate`
-- **What each record represents:** one subscription contract and its status window.
-
-### `customer_support_tickets.csv`
-- **Primary key:** `ticketId`
-- **Columns:** `ticketId`, `customerId`, `openedDate`, `priority`, `resolutionHours`, `issueCategory`
-- **What each record represents:** one support case used for CX and operational analysis.
-
-## Data stream to object mapping
-
-| Stream file | Object collection in lake | Object key |
+| Stream Name | CSV Source | Purpose |
 | --- | --- | --- |
-| `customer_profiles.csv` | `customer_profiles` | `id` |
-| `customer_orders.csv` | `customer_orders` | `orderId` |
-| `customer_returns.csv` | `customer_returns` | `returnId` |
-| `customer_subscriptions.csv` | `customer_subscriptions` | `subscriptionId` |
-| `customer_support_tickets.csv` | `customer_support_tickets` | `ticketId` |
+| `customer_profiles_stream` | `customer_profiles.csv` | Customer identity/profile attributes. |
+| `customer_orders_stream` | `customer_orders.csv` | Customer transaction/purchase events. |
+| `customer_returns_stream` | `customer_returns.csv` | Returns/refund events. |
+| `customer_subscriptions_stream` | `customer_subscriptions.csv` | Subscription lifecycle + MRR. |
+| `customer_support_tickets_stream` | `customer_support_tickets.csv` | Service interaction history. |
+
+### Stream schemas
+
+#### `customer_profiles_stream`
+CSV: `customer_profiles.csv`
+- `id`
+- `email`
+- `segment`
+- `region`
+- `signupDate`
+
+#### `customer_orders_stream`
+CSV: `customer_orders.csv`
+- `orderId`
+- `customerId`
+- `orderDate`
+- `grossRevenue`
+- `discountAmount`
+- `netRevenue`
+
+#### `customer_returns_stream`
+CSV: `customer_returns.csv`
+- `returnId`
+- `orderId`
+- `customerId`
+- `returnDate`
+- `refundAmount`
+- `reason`
+
+#### `customer_subscriptions_stream`
+CSV: `customer_subscriptions.csv`
+- `subscriptionId`
+- `customerId`
+- `planName`
+- `mrr`
+- `status`
+- `startDate`
+- `endDate`
+
+#### `customer_support_tickets_stream`
+CSV: `customer_support_tickets.csv`
+- `ticketId`
+- `customerId`
+- `openedDate`
+- `priority`
+- `resolutionHours`
+- `issueCategory`
+
+## 2) Data Lake Objects (Raw Layer)
+
+The raw DLO layer stays close to source shape:
+
+- `CustomerProfile_DLO`
+- `CustomerOrder_DLO`
+- `CustomerReturn_DLO`
+- `CustomerSubscription_DLO`
+- `CustomerSupportTicket_DLO`
+
+| DLO | Primary Key | Source Stream |
+| --- | --- | --- |
+| `CustomerProfile_DLO` | `id` | `customer_profiles_stream` |
+| `CustomerOrder_DLO` | `orderId` | `customer_orders_stream` |
+| `CustomerReturn_DLO` | `returnId` | `customer_returns_stream` |
+| `CustomerSubscription_DLO` | `subscriptionId` | `customer_subscriptions_stream` |
+| `CustomerSupportTicket_DLO` | `ticketId` | `customer_support_tickets_stream` |
+
+## 3) CSV record counts
+
+Each CSV currently contains 100 data rows (plus header row).

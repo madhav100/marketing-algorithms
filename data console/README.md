@@ -31,6 +31,9 @@ npm run ingest
 
 # watch CSV updates
 npm run ingest:watch
+
+# scheduled ingestion (every 60s)
+npm run ingest:schedule
 ```
 
 ## API endpoints (served by `npm run serve`)

@@ -12,28 +12,12 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
-
 const CSV_HEADERS = [
-  {
-    file: 'customer_profiles.csv',
-    headers: ['id', 'email', 'segment', 'region', 'signupDate']
-  },
-  {
-    file: 'customer_orders.csv',
-    headers: ['orderId', 'customerId', 'orderDate', 'grossRevenue', 'discountAmount', 'netRevenue']
-  },
-  {
-    file: 'customer_returns.csv',
-    headers: ['returnId', 'orderId', 'customerId', 'returnDate', 'refundAmount', 'reason']
-  },
-  {
-    file: 'customer_subscriptions.csv',
-    headers: ['subscriptionId', 'customerId', 'planName', 'mrr', 'status', 'startDate', 'endDate']
-  },
-  {
-    file: 'customer_support_tickets.csv',
-    headers: ['ticketId', 'customerId', 'openedDate', 'priority', 'resolutionHours', 'issueCategory']
-  }
+  { file: 'customer_profiles.csv', headers: ['id', 'email', 'segment', 'region', 'signupDate'] },
+  { file: 'customer_orders.csv', headers: ['orderId', 'customerId', 'orderDate', 'grossRevenue', 'discountAmount', 'netRevenue'] },
+  { file: 'customer_returns.csv', headers: ['returnId', 'orderId', 'customerId', 'returnDate', 'refundAmount', 'reason'] },
+  { file: 'customer_subscriptions.csv', headers: ['subscriptionId', 'customerId', 'planName', 'mrr', 'status', 'startDate', 'endDate'] },
+  { file: 'customer_support_tickets.csv', headers: ['ticketId', 'customerId', 'openedDate', 'priority', 'resolutionHours', 'issueCategory'] }
 ];
 
 function buildCsvHeadersMarkup() {
@@ -45,13 +29,13 @@ function buildCsvHeadersMarkup() {
   `).join('');
 }
 
-function createRecordsGraph() {
+function createLineGraph({ title, subtitle, className }) {
   const panel = document.createElement('article');
   panel.className = 'panel';
   panel.innerHTML = `
-    <div class="title">Records Processed</div>
-    <div class="legend">Transparent trend graph by CSV stream.</div>
-    <svg class="records-graph" viewBox="0 0 640 220" role="img" aria-label="Records processed chart">
+    <div class="title">${title}</div>
+    <div class="legend">${subtitle}</div>
+    <svg class="records-graph ${className || ''}" viewBox="0 0 640 220" role="img" aria-label="${title}">
       <g class="axis">
         <line x1="40" y1="20" x2="40" y2="190"></line>
         <line x1="40" y1="190" x2="620" y2="190"></line>
@@ -79,11 +63,11 @@ function createRecordsGraph() {
     const xEnd = 590;
     const yBottom = 180;
     const yTop = 35;
-    const maxValue = Math.max(...points.map((point) => point.value), 1);
+    const maxValue = Math.max(...points.map((point) => Number(point.value || 0)), 1);
 
     const polylinePoints = points.map((point, index) => {
       const x = xStart + (points.length === 1 ? 0 : (index * (xEnd - xStart)) / (points.length - 1));
-      const y = yBottom - (point.value / maxValue) * (yBottom - yTop);
+      const y = yBottom - (Number(point.value || 0) / maxValue) * (yBottom - yTop);
 
       const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       dot.setAttribute('cx', x);
@@ -97,7 +81,7 @@ function createRecordsGraph() {
       label.setAttribute('y', 206);
       label.setAttribute('text-anchor', 'middle');
       label.setAttribute('class', 'label');
-      label.textContent = point.label.replace('customer_', '').replace('_', '');
+      label.textContent = String(point.label || '').slice(0, 10);
       labels.append(label);
 
       return `${x},${y}`;
@@ -164,9 +148,37 @@ export function pipelinePlugin(root) {
   gaugeGrid.append(ingestGauge.element, validationGauge.element, writeGauge.element);
   speedPanel.append(gaugeGrid);
 
-  const recordsGraph = createRecordsGraph();
+  const recordsGraph = createLineGraph({
+    title: 'Records Processed',
+    subtitle: 'Transparent trend graph by stream.',
+    className: ''
+  });
 
-  main.append(processPanel, speedPanel, recordsGraph.panel);
+  const lakeObjectsPanel = document.createElement('article');
+  lakeObjectsPanel.className = 'panel lake-panel';
+  lakeObjectsPanel.innerHTML = `<div class="title">Lake Objects</div><div class="legend">Raw DLO volume and object distribution.</div>`;
+  const lakeObjectsGauge = createSpeedometer({ label: 'Object Volume', value: 0, max: 1000, unit: ' obj' });
+  lakeObjectsPanel.append(lakeObjectsGauge.element);
+  const lakeObjectsGraph = createLineGraph({
+    title: 'Lake Object Distribution',
+    subtitle: 'Counts across DLO collections.',
+    className: 'lake-objects-graph'
+  });
+  lakeObjectsPanel.append(lakeObjectsGraph.panel.querySelector('svg'));
+
+  const lakeModelsPanel = document.createElement('article');
+  lakeModelsPanel.className = 'panel lake-panel';
+  lakeModelsPanel.innerHTML = `<div class="title">Lake Models</div><div class="legend">Model coverage and relationship readiness.</div>`;
+  const lakeModelsGauge = createSpeedometer({ label: 'Model Coverage', value: 0, max: 100, unit: ' %' });
+  lakeModelsPanel.append(lakeModelsGauge.element);
+  const lakeModelsGraph = createLineGraph({
+    title: 'Model Entity Coverage',
+    subtitle: 'Customer model dimensions populated.',
+    className: 'lake-models-graph'
+  });
+  lakeModelsPanel.append(lakeModelsGraph.panel.querySelector('svg'));
+
+  main.append(processPanel, speedPanel, recordsGraph.panel, lakeObjectsPanel, lakeModelsPanel);
   root.append(topbar, main);
 
   const [csvValueNode] = csvCard.querySelectorAll('.value');
@@ -192,6 +204,19 @@ export function pipelinePlugin(root) {
     });
   }
 
+  function setLakePanels(entityCounts = {}) {
+    const entries = Object.entries(entityCounts).map(([label, value]) => ({ label, value: Number(value || 0) }));
+    const totalObjects = entries.reduce((sum, item) => sum + item.value, 0);
+    const nonEmpty = entries.filter((item) => item.value > 0).length;
+    const modelCoverage = entries.length ? Math.round((nonEmpty / entries.length) * 100) : 0;
+
+    lakeObjectsGauge.setValue(Math.min(1000, totalObjects));
+    lakeObjectsGraph.update(entries.map((item) => ({ label: item.label.replace('_DLO', ''), value: item.value })));
+
+    lakeModelsGauge.setValue(modelCoverage);
+    lakeModelsGraph.update(entries.map((item) => ({ label: item.label.replace('_DLO', ''), value: item.value > 0 ? 100 : 0 })));
+  }
+
   function resetMetrics() {
     csvValueNode.textContent = '0';
     objectValueNode.textContent = '0';
@@ -200,6 +225,7 @@ export function pipelinePlugin(root) {
     validationGauge.setValue(0);
     writeGauge.setValue(0);
     recordsGraph.update([]);
+    setLakePanels({});
     clearStepState();
   }
 
@@ -234,8 +260,9 @@ export function pipelinePlugin(root) {
       writeGauge.setValue(rates.writeRate);
 
       recordsGraph.update(
-        Object.entries(entityCounts).map(([label, value]) => ({ label, value: Number(value || 0) }))
+        Object.entries(entityCounts).map(([label, value]) => ({ label: label.replace('_DLO', ''), value: Number(value || 0) }))
       );
+      setLakePanels(entityCounts);
     } catch (error) {
       healthValueNode.textContent = 'FAILED';
       healthValueNode.className = 'value bad';

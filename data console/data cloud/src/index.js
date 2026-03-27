@@ -23,6 +23,12 @@ async function runIngestion() {
 
   const summary = {
     processedCsvFiles: files,
+    streamDefinitions: STREAM_DEFINITIONS.map(({ streamName, fileName, dloName, primaryKey }) => ({
+      streamName,
+      fileName,
+      dloName,
+      primaryKey
+    })),
     ...lake.getSummary()
   };
 
@@ -51,8 +57,39 @@ function runWatchMode() {
   });
 }
 
+function getScheduleSeconds() {
+  const arg = process.argv.find((value) => value.startsWith('--schedule-seconds='));
+  if (!arg) {
+    return null;
+  }
+
+  const raw = Number(arg.split('=')[1]);
+  if (Number.isNaN(raw) || raw <= 0) {
+    throw new Error('Invalid --schedule-seconds value. It must be a positive number.');
+  }
+
+  return raw;
+}
+
+function runScheduledMode(scheduleSeconds) {
+  console.log(`Running scheduled ingestion every ${scheduleSeconds} seconds.`);
+  runIngestion().catch((error) => {
+    console.error('Initial scheduled ingestion failed:', error);
+  });
+
+  setInterval(() => {
+    runIngestion().catch((error) => {
+      console.error('Scheduled ingestion failed:', error);
+    });
+  }, scheduleSeconds * 1000);
+}
+
+const scheduleSeconds = getScheduleSeconds();
+
 if (process.argv.includes('--watch')) {
   runWatchMode();
+} else if (scheduleSeconds) {
+  runScheduledMode(scheduleSeconds);
 } else {
   runIngestion().catch((error) => {
     console.error(error);

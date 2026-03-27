@@ -73,10 +73,12 @@ class DataObjectsLake {
     });
   }
 
-  markIngestion(fileName) {
+  markIngestion(fileName, streamName = null, entityName = null) {
     this.state.metadata.lastUpdatedAt = new Date().toISOString();
     this.state.metadata.ingestedFiles.push({
       fileName,
+      streamName,
+      entityName,
       ingestedAt: new Date().toISOString()
     });
   }

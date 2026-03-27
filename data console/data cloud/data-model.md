@@ -1,34 +1,109 @@
-# Data Model (Revenue Analysis Ready)
+# Business Data Model (Customer-Centric)
 
-This model is designed so customer behavior can be connected to revenue outcomes later.
+The ingestion layer keeps raw DLOs file-shaped, while the analytics model is business-shaped.
 
-## Core entities
-- `customer_profiles`
-  - Primary key: `id`
-  - Describes segment, geography, and signup cohort
-- `customer_orders`
-  - Primary key: `orderId`
-  - Foreign key: `customerId -> customer_profiles.id`
-  - Revenue measures: `grossRevenue`, `discountAmount`, `netRevenue`
-- `customer_subscriptions`
-  - Primary key: `subscriptionId`
-  - Foreign key: `customerId -> customer_profiles.id`
-  - Recurring measure: `mrr`
-- `customer_returns`
-  - Primary key: `returnId`
-  - Foreign keys:
-    - `customerId -> customer_profiles.id`
-    - `orderId -> customer_orders.orderId`
-  - Revenue offset: `refundAmount`
-- `customer_support_tickets`
-  - Primary key: `ticketId`
-  - Foreign key: `customerId -> customer_profiles.id`
-  - Service metric: `resolutionHours`
+## Core model graph
 
-## Relationship map
-- One customer can have many orders.
-- One customer can have many subscriptions (historical or parallel plans).
-- One customer can have many returns.
-- One customer can have many support tickets.
-- Net realized revenue can be estimated as:
-  - `SUM(customer_orders.netRevenue) - SUM(customer_returns.refundAmount)`
+```text
+Customer
+ ├── Orders
+ ├── Returns
+ ├── Subscriptions
+ └── Support Tickets
+```
+
+## Core model objects
+
+### 1) Customer
+Root entity for identity and profile dimensions.
+
+Fields:
+- `customerId`
+- `email`
+- `segment`
+- `region`
+- `signupDate`
+
+Source mapping:
+- `CustomerProfile_DLO.id -> Customer.customerId`
+
+### 2) Order
+Purchase event object.
+
+Fields:
+- `orderId`
+- `customerId`
+- `orderDate`
+- `grossRevenue`
+- `discountAmount`
+- `netRevenue`
+
+Relationship:
+- Many Orders -> One Customer
+
+Source mapping:
+- `CustomerOrder_DLO.*`
+
+### 3) Return
+Refund/return behavior object.
+
+Fields:
+- `returnId`
+- `orderId`
+- `customerId`
+- `returnDate`
+- `refundAmount`
+- `reason`
+
+Relationships:
+- Many Returns -> One Customer
+- Many Returns -> One Order
+
+Source mapping:
+- `CustomerReturn_DLO.*`
+
+### 4) Subscription
+Recurring billing object.
+
+Fields:
+- `subscriptionId`
+- `customerId`
+- `planName`
+- `mrr`
+- `status`
+- `startDate`
+- `endDate`
+
+Relationship:
+- Many Subscriptions -> One Customer
+
+Source mapping:
+- `CustomerSubscription_DLO.*`
+
+### 5) Support Ticket
+Customer service burden/history object.
+
+Fields:
+- `ticketId`
+- `customerId`
+- `openedDate`
+- `priority`
+- `resolutionHours`
+- `issueCategory`
+
+Relationship:
+- Many Support Tickets -> One Customer
+
+Source mapping:
+- `CustomerSupportTicket_DLO.*`
+
+## Validation checks (raw to modeled quality)
+
+- Primary keys are present and unique per DLO.
+- Foreign keys map to known parent entities:
+  - `customerId` should reference `CustomerProfile_DLO.id`.
+  - `orderId` in returns should reference `CustomerOrder_DLO.orderId`.
+- Monetary fields are numeric and non-negative.
+- Revenue math checks for orders:
+  - `netRevenue = grossRevenue - discountAmount`.
+- Date fields use `YYYY-MM-DD` and represent sensible ranges.

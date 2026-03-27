@@ -1,33 +1,43 @@
 const STREAM_DEFINITIONS = [
   {
+    streamName: 'customer_profiles_stream',
     fileName: 'customer_profiles.csv',
-    entityName: 'customer_profiles',
+    expectedHeaders: ['id', 'email', 'segment', 'region', 'signupDate'],
+    dloName: 'CustomerProfile_DLO',
     primaryKey: 'id',
-    description: 'Customer identity, segmentation, and signup metadata.'
+    description: 'Customer master/profile stream (identity and profile attributes).'
   },
   {
+    streamName: 'customer_orders_stream',
     fileName: 'customer_orders.csv',
-    entityName: 'customer_orders',
+    expectedHeaders: ['orderId', 'customerId', 'orderDate', 'grossRevenue', 'discountAmount', 'netRevenue'],
+    dloName: 'CustomerOrder_DLO',
     primaryKey: 'orderId',
-    description: 'Order-level revenue facts including gross, discount, and net revenue.'
+    description: 'Transaction stream (customer purchase events).'
   },
   {
+    streamName: 'customer_returns_stream',
     fileName: 'customer_returns.csv',
-    entityName: 'customer_returns',
+    expectedHeaders: ['returnId', 'orderId', 'customerId', 'returnDate', 'refundAmount', 'reason'],
+    dloName: 'CustomerReturn_DLO',
     primaryKey: 'returnId',
-    description: 'Return/refund events connected to customer orders.'
+    description: 'Refund/returns stream (returned products/orders).'
   },
   {
+    streamName: 'customer_subscriptions_stream',
     fileName: 'customer_subscriptions.csv',
-    entityName: 'customer_subscriptions',
+    expectedHeaders: ['subscriptionId', 'customerId', 'planName', 'mrr', 'status', 'startDate', 'endDate'],
+    dloName: 'CustomerSubscription_DLO',
     primaryKey: 'subscriptionId',
-    description: 'Recurring-plan lifecycle and MRR attributes.'
+    description: 'Recurring revenue stream (subscription lifecycle and MRR).'
   },
   {
+    streamName: 'customer_support_tickets_stream',
     fileName: 'customer_support_tickets.csv',
-    entityName: 'customer_support_tickets',
+    expectedHeaders: ['ticketId', 'customerId', 'openedDate', 'priority', 'resolutionHours', 'issueCategory'],
+    dloName: 'CustomerSupportTicket_DLO',
     primaryKey: 'ticketId',
-    description: 'Operational support events for customer experience analysis.'
+    description: 'Service interaction stream (support burden and issue history).'
   }
 ];
 

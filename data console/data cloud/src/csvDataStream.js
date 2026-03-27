@@ -39,12 +39,26 @@ function inferEntityName(filePath) {
   return path.basename(filePath, path.extname(filePath)).toLowerCase();
 }
 
+function isHeaderSchemaValid(actualHeaders, expectedHeaders = []) {
+  if (!expectedHeaders.length) {
+    return true;
+  }
+
+  if (actualHeaders.length !== expectedHeaders.length) {
+    return false;
+  }
+
+  return expectedHeaders.every((header, index) => header === actualHeaders[index]);
+}
+
 async function streamCsvIntoLake(filePath, dataLake, streamConfig = {}) {
   const stream = fs.createReadStream(filePath, 'utf8');
   const lineReader = readline.createInterface({ input: stream, crlfDelay: Infinity });
 
-  const entityName = streamConfig.entityName || inferEntityName(filePath);
+  const entityName = streamConfig.dloName || streamConfig.entityName || inferEntityName(filePath);
   const primaryKey = streamConfig.primaryKey;
+  const expectedHeaders = streamConfig.expectedHeaders || [];
+  const streamName = streamConfig.streamName || `${entityName}_stream`;
   let headers = null;
 
   for await (const line of lineReader) {
@@ -54,6 +68,11 @@ async function streamCsvIntoLake(filePath, dataLake, streamConfig = {}) {
 
     if (!headers) {
       headers = parseCsvLine(line);
+      if (!isHeaderSchemaValid(headers, expectedHeaders)) {
+        throw new Error(
+          `${streamName} header mismatch. Expected [${expectedHeaders.join(', ')}] but found [${headers.join(', ')}]`
+        );
+      }
       continue;
     }
 
@@ -74,7 +93,7 @@ async function streamCsvIntoLake(filePath, dataLake, streamConfig = {}) {
     dataLake.upsert(entityName, record, { primaryKey });
   }
 
-  dataLake.markIngestion(path.basename(filePath));
+  dataLake.markIngestion(path.basename(filePath), streamName, entityName);
 }
 
 async function ingestAllCsv(csvFolderPath, dataLake, streamDefinitions = []) {
@@ -94,8 +113,8 @@ async function ingestAllCsv(csvFolderPath, dataLake, streamDefinitions = []) {
   }
 
   const processed = [];
-  for (const stream of streamDefinitions) {
-    const fileName = stream.fileName;
+  for (const streamConfig of streamDefinitions) {
+    const fileName = streamConfig.fileName;
     const fullPath = path.join(csvFolderPath, fileName);
 
     if (!fs.existsSync(fullPath)) {
@@ -103,7 +122,7 @@ async function ingestAllCsv(csvFolderPath, dataLake, streamDefinitions = []) {
       continue;
     }
 
-    await streamCsvIntoLake(fullPath, dataLake, stream);
+    await streamCsvIntoLake(fullPath, dataLake, streamConfig);
     processed.push(fileName);
   }
 
@@ -112,5 +131,6 @@ async function ingestAllCsv(csvFolderPath, dataLake, streamDefinitions = []) {
 
 module.exports = {
   ingestAllCsv,
-  streamCsvIntoLake
+  streamCsvIntoLake,
+  isHeaderSchemaValid
 };
