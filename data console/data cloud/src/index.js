@@ -41,7 +41,7 @@ async function runIngestion() {
   lake.persist();
 
   const modelSummary = writeModeledObjects(lake.state.entities);
-  const dmoAnalytics = writeDmoAnalytics(MODELED_OBJECTS_FILE, DMO_ANALYTICS_FILE);
+  const dmoAnalytics = await writeDmoAnalytics(MODELED_OBJECTS_FILE, DMO_ANALYTICS_FILE);
 
   const summary = {
     processedCsvFiles: files,

@@ -1,131 +1,90 @@
 const fs = require('fs');
 const path = require('path');
 
-function numberValue(value) {
-  const parsed = Number(value);
+function normalizeNumber(value) {
+  const parsed = Number(value ?? 0);
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
-function groupBySegment(customers = []) {
-  return customers.reduce((acc, customer) => {
-    const segment = customer.segment || 'Unknown';
-    if (!acc[segment]) {
-      acc[segment] = [];
-    }
-    acc[segment].push(customer.customerId);
-    return acc;
-  }, {});
-}
+function buildChartsFromSemantic(semanticView = {}) {
+  const segmentSummaries = Array.isArray(semanticView.segmentSummaries) ? semanticView.segmentSummaries : [];
+  const monthlyRefunds = Array.isArray(semanticView.monthlyRefunds) ? semanticView.monthlyRefunds : [];
 
-function monthKey(dateValue) {
-  const raw = String(dateValue || '');
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-    return 'Unknown';
-  }
-  return raw.slice(0, 7);
-}
-
-function analyzeDmoEntities(modeled = {}) {
-  const customers = modeled.Customer_DMO || [];
-  const orders = modeled.Order_DMO || [];
-  const returns = modeled.Return_DMO || [];
-  const subscriptions = modeled.Subscription_DMO || [];
-  const tickets = modeled.SupportTicket_DMO || [];
-
-  const customersBySegment = groupBySegment(customers);
-  const customerToSegment = new Map(
-    customers.map((customer) => [String(customer.customerId), customer.segment || 'Unknown'])
-  );
-
-  const segmentNames = Object.keys(customersBySegment).sort();
-
-  const netRevenueBySegment = segmentNames.map((segment) => {
-    const revenue = orders
-      .filter((order) => customerToSegment.get(String(order.customerId)) === segment)
-      .reduce((sum, order) => sum + numberValue(order.netRevenue), 0);
-
-    return { segment, value: Number(revenue.toFixed(2)) };
-  });
-
-  const refundBySegment = segmentNames.map((segment) => {
-    const segmentRevenue = netRevenueBySegment.find((entry) => entry.segment === segment)?.value || 0;
-    const refundAmount = returns
-      .filter((item) => customerToSegment.get(String(item.customerId)) === segment)
-      .reduce((sum, item) => sum + numberValue(item.refundAmount), 0);
-    const refundRate = segmentRevenue > 0 ? (refundAmount / segmentRevenue) * 100 : 0;
-
-    return {
-      segment,
-      refundAmount: Number(refundAmount.toFixed(2)),
-      refundRate: Number(refundRate.toFixed(2))
-    };
-  });
-
-  const refundsByMonthMap = returns.reduce((acc, item) => {
-    const month = monthKey(item.returnDate);
-    if (!acc[month]) {
-      acc[month] = { month, refundAmount: 0, refundsCount: 0 };
-    }
-
-    acc[month].refundAmount += numberValue(item.refundAmount);
-    acc[month].refundsCount += 1;
-    return acc;
-  }, {});
-
-  const refundsOverTime = Object.values(refundsByMonthMap)
-    .sort((a, b) => a.month.localeCompare(b.month))
-    .map((entry) => ({
-      month: entry.month,
-      refundAmount: Number(entry.refundAmount.toFixed(2)),
-      refundsCount: entry.refundsCount
-    }));
-
-  const customerMixBySegment = segmentNames.map((segment) => ({
-    segment,
-    customers: customersBySegment[segment].length
+  const netRevenueBySegment = segmentSummaries.map((segment) => ({
+    segment: segment.segment,
+    value: Number(normalizeNumber(segment.netRevenue).toFixed(2))
   }));
 
-  const heatmap = segmentNames.map((segment) => {
-    const customerIds = new Set(customersBySegment[segment].map((id) => String(id)));
+  const refundBySegment = segmentSummaries.map((segment) => ({
+    segment: segment.segment,
+    refundAmount: Number(normalizeNumber(segment.refundAmount).toFixed(2)),
+    refundRate: Number(normalizeNumber(segment.refundRate).toFixed(2))
+  }));
 
-    const segmentOrders = orders.filter((order) => customerIds.has(String(order.customerId)));
-    const segmentReturns = returns.filter((item) => customerIds.has(String(item.customerId)));
-    const segmentSubs = subscriptions.filter((item) => customerIds.has(String(item.customerId)));
-    const segmentTickets = tickets.filter((item) => customerIds.has(String(item.customerId)));
+  const refundsOverTime = monthlyRefunds.map((month) => ({
+    month: month.month,
+    refundAmount: Number(normalizeNumber(month.refundAmount).toFixed(2)),
+    refundsCount: Number(month.refundsCount || 0)
+  }));
 
-    const netRevenue = segmentOrders.reduce((sum, order) => sum + numberValue(order.netRevenue), 0);
-    const refundAmount = segmentReturns.reduce((sum, item) => sum + numberValue(item.refundAmount), 0);
-    const refundRate = netRevenue > 0 ? (refundAmount / netRevenue) * 100 : 0;
-    const activeSubscriptions = segmentSubs.filter((sub) => String(sub.status).toLowerCase() === 'active').length;
+  const customerMixBySegment = segmentSummaries.map((segment) => ({
+    segment: segment.segment,
+    customers: Number(segment.customerCount || 0)
+  }));
 
-    return {
-      segment,
-      metrics: {
-        netRevenue: Number(netRevenue.toFixed(2)),
-        refundAmount: Number(refundAmount.toFixed(2)),
-        refundRate: Number(refundRate.toFixed(2)),
-        activeSubscriptions,
-        ticketCount: segmentTickets.length
-      }
-    };
-  });
+  const heatmap = segmentSummaries.map((segment) => ({
+    segment: segment.segment,
+    metrics: {
+      netRevenue: Number(normalizeNumber(segment.netRevenue).toFixed(2)),
+      refundAmount: Number(normalizeNumber(segment.refundAmount).toFixed(2)),
+      refundRate: Number(normalizeNumber(segment.refundRate).toFixed(2)),
+      ticketRate: Number(normalizeNumber(segment.ticketRate).toFixed(2)),
+      orderCount: Number(segment.orderCount || 0)
+    }
+  }));
 
   return {
-    generatedAt: new Date().toISOString(),
-    charts: {
-      netRevenueBySegment,
-      refundBySegment,
-      refundsOverTime,
-      customerMixBySegment,
-      heatmap
-    }
+    netRevenueBySegment,
+    refundBySegment,
+    refundsOverTime,
+    customerMixBySegment,
+    heatmap
   };
 }
 
-function writeDmoAnalytics(modeledFilePath, outputFilePath) {
+async function analyzeDmoEntities(modeled = {}, options = {}) {
+  const semanticModule = await import('./semantic/buildSemanticView.js');
+  const aiModule = await import('./ai/insightGenerator.js');
+
+  const semanticView = semanticModule.buildSemanticView(modeled || {});
+  const charts = buildChartsFromSemantic(semanticView);
+  const managerInsights = await aiModule.generateManagerInsights(
+    {
+      ...semanticView,
+      comparisonFlags: {
+        highRefundSegments: semanticView.segmentSummaries
+          .filter((segment) => segment.flags?.highRefundPressure)
+          .map((segment) => segment.segment),
+        atRiskSegments: semanticView.segmentSummaries
+          .filter((segment) => segment.flags?.atRisk)
+          .map((segment) => segment.segment)
+      }
+    },
+    options.ai || {}
+  );
+
+  return {
+    generatedAt: new Date().toISOString(),
+    semanticView,
+    charts,
+    managerInsights
+  };
+}
+
+async function writeDmoAnalytics(modeledFilePath, outputFilePath, options = {}) {
   const modelRaw = fs.readFileSync(modeledFilePath, 'utf8');
   const parsed = JSON.parse(modelRaw);
-  const analytics = analyzeDmoEntities(parsed.entities || {});
+  const analytics = await analyzeDmoEntities(parsed.entities || {}, options);
 
   fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
   fs.writeFileSync(outputFilePath, JSON.stringify(analytics, null, 2));

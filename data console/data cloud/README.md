@@ -64,3 +64,14 @@ Then use `POST /api/ingest` from the dashboard **Run Ingest** button.
 ## DMO analytics script
 - Script: `src/analyzeDmo.js`
 - It analyzes `data/model-objects.json` and writes chart-ready metrics to `data/dmo-analytics.json` during each ingestion run.
+
+
+## Semantic layer
+- Folder: `src/semantic/`
+- Files: `metrics.js`, `dimensions.js`, `rules.js`, `buildSemanticView.js`
+- Purpose: reusable business-meaning summaries between DMO objects and analytics.
+
+## AI summary layer
+- Folder: `src/ai/`
+- Files: `promptBuilder.js`, `insightGenerator.js`, `schema.js`
+- Purpose: manager-friendly JSON insights from semantic/analysis outputs (never raw DMO rows).

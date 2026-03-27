@@ -49,3 +49,7 @@ npm run ingest:schedule
 - `dashboard view/js/components/*` — reusable UI components.
 - `dashboard view/js/plugins/pipelinePlugin.js` — pluggable dashboard module.
 - `dashboard view/js/app.js` — plugin bootstrap.
+
+
+## Pipeline flow
+`DMO -> semantic layer -> analyzeDMO -> AI summary layer -> dashboard`

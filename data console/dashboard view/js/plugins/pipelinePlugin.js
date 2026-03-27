@@ -18,11 +18,11 @@ function estimateRate(totalRecords, fileCount) {
   return { ingestRate, validationRate, writeRate };
 }
 
-function chartPanel(title, subtitle, className = '') {
-  const panel = document.createElement('article');
-  panel.className = `panel ${className}`.trim();
-  panel.innerHTML = `<div class="title">${title}</div><div class="legend">${subtitle}</div><div class="chart-body"></div>`;
-  return panel;
+function chartCard(title, type) {
+  const card = document.createElement('section');
+  card.className = 'chart-card';
+  card.innerHTML = `<div class="chart-title">${title}</div><div class="chart-type">${type}</div><div class="chart-body"></div>`;
+  return card;
 }
 
 export function pipelinePlugin(root) {
@@ -35,7 +35,7 @@ export function pipelinePlugin(root) {
     <div class="headline">
       <h1>Data Console • SIEM Dashboard</h1>
     </div>
-    <div class="legend">Live DMO analytics charts and pipeline runtime states.</div>
+    <div class="legend">Clean runtime monitoring with semantic DMO analytics.</div>
     <button class="run-btn" id="runIngestBtn">Run Ingest</button>
   `;
 
@@ -49,10 +49,10 @@ export function pipelinePlugin(root) {
   main.className = 'main-single';
 
   const processPanel = document.createElement('article');
-  processPanel.className = 'panel process-panel';
+  processPanel.className = 'panel process-panel compact';
   processPanel.innerHTML = `
-    <div class="title">Pipeline Runtime Animation</div>
-    <div class="legend">[ Ingestion Files ] → [ Data Streams ] → [ DLO ] → [ DMO ]</div>
+    <div class="title">Pipeline Runtime</div>
+    <div class="legend tiny">[ Ingestion Files ] → [ Data Streams ] → [ DLO ] → [ DMO ]</div>
     <div class="pipeline-runtime" id="pipelineRuntime">
       <div class="pipeline-node" data-node="files">Ingestion Files</div>
       <div class="pipeline-node" data-node="streams">Data Streams</div>
@@ -62,33 +62,43 @@ export function pipelinePlugin(root) {
   `;
 
   const speedPanel = document.createElement('article');
-  speedPanel.className = 'panel';
-  speedPanel.innerHTML = `<div class="title">Data Fuel Speedometers</div><div class="legend">Track ingestion throughput and processing rates.</div>`;
+  speedPanel.className = 'panel compact';
+  speedPanel.innerHTML = `<div class="title">Speedometers</div><div class="legend tiny">Ingest, validate, and lake write rates.</div>`;
 
-  const ingestGauge = createSpeedometer({ label: 'Ingest Rate', value: 0, max: 1000, unit: ' r/m' });
-  const validationGauge = createSpeedometer({ label: 'Validation Rate', value: 0, max: 1000, unit: ' r/m' });
-  const writeGauge = createSpeedometer({ label: 'Lake Write Rate', value: 0, max: 1000, unit: ' r/m' });
+  const ingestGauge = createSpeedometer({ label: 'Ingest', value: 0, max: 1000, unit: ' r/m' });
+  const validationGauge = createSpeedometer({ label: 'Validate', value: 0, max: 1000, unit: ' r/m' });
+  const writeGauge = createSpeedometer({ label: 'Write', value: 0, max: 1000, unit: ' r/m' });
 
   const gaugeGrid = document.createElement('div');
   gaugeGrid.className = 'gauge-grid';
   gaugeGrid.append(ingestGauge.element, validationGauge.element, writeGauge.element);
   speedPanel.append(gaugeGrid);
 
-  const netRevenuePanel = chartPanel('Net Revenue by Segment', 'Bar chart');
-  const refundRatePanel = chartPanel('Refund Amount / Refund Rate by Segment', 'Bar chart');
-  const refundsOverTimePanel = chartPanel('Refunds Over Time', 'Line chart');
-  const customerMixPanel = chartPanel('Customer Mix by Segment', 'Donut chart');
-  const heatmapPanel = chartPanel('Segment × Metric View', 'Heatmap');
+  const chartsPanel = document.createElement('article');
+  chartsPanel.className = 'panel charts-panel compact';
+  chartsPanel.innerHTML = `<div class="title">DMO Analytics Charts</div><div class="legend tiny">All chart views in one block.</div><div class="charts-grid"></div>`;
+  const chartsGrid = chartsPanel.querySelector('.charts-grid');
 
-  main.append(
-    processPanel,
-    speedPanel,
-    netRevenuePanel,
-    refundRatePanel,
-    refundsOverTimePanel,
-    customerMixPanel,
-    heatmapPanel
-  );
+  const netRevenueCard = chartCard('Net Revenue by Segment', 'Bar');
+  const refundCard = chartCard('Refund by Segment', 'Bar');
+  const refundsOverTimeCard = chartCard('Refunds Over Time', 'Line');
+  const customerMixCard = chartCard('Customer Mix by Segment', 'Donut');
+  const heatmapCard = chartCard('Segment × Metric', 'Heatmap');
+
+  chartsGrid.append(netRevenueCard, refundCard, refundsOverTimeCard, customerMixCard, heatmapCard);
+
+  const aiPanel = document.createElement('article');
+  aiPanel.className = 'panel compact';
+  aiPanel.innerHTML = `
+    <div class="title">AI Summary</div>
+    <div class="legend tiny">Manager-friendly insights from semantic and analytics outputs.</div>
+    <div class="ai-headline" id="aiHeadline">No insight yet.</div>
+    <div class="ai-summary" id="aiSummary">Run ingest to generate semantic + AI summary.</div>
+    <ul class="ai-list" id="aiAlerts"></ul>
+    <ul class="ai-list" id="aiActions"></ul>
+  `;
+
+  main.append(processPanel, speedPanel, chartsPanel, aiPanel);
   root.append(topbar, main);
 
   const [csvValueNode] = csvCard.querySelectorAll('.value');
@@ -97,6 +107,10 @@ export function pipelinePlugin(root) {
   const runButton = titlePanel.querySelector('#runIngestBtn');
   const runtimeNode = processPanel.querySelector('#pipelineRuntime');
   const pipelineNodes = Array.from(processPanel.querySelectorAll('.pipeline-node'));
+  const aiHeadline = aiPanel.querySelector('#aiHeadline');
+  const aiSummary = aiPanel.querySelector('#aiSummary');
+  const aiAlerts = aiPanel.querySelector('#aiAlerts');
+  const aiActions = aiPanel.querySelector('#aiActions');
 
   function clearPipelineNodeStates() {
     pipelineNodes.forEach((node) => node.classList.remove('active', 'done', 'failed'));
@@ -105,58 +119,55 @@ export function pipelinePlugin(root) {
   function playPipelineSquares() {
     clearPipelineNodeStates();
     pipelineNodes.forEach((node, index) => {
-      setTimeout(() => {
-        node.classList.add('active');
-      }, index * 320);
+      setTimeout(() => node.classList.add('active'), index * 260);
       setTimeout(() => {
         node.classList.remove('active');
         node.classList.add('done');
-      }, index * 320 + 280);
+      }, index * 260 + 220);
     });
   }
 
   function setPipelineState(state) {
     runtimeNode.classList.remove('is-running', 'is-finished', 'is-failed');
-    if (state) {
-      runtimeNode.classList.add(state);
-    }
+    if (state) runtimeNode.classList.add(state);
 
     if (state === 'is-running') {
       playPipelineSquares();
-    }
-
-    if (state === 'is-failed') {
+    } else if (state === 'is-failed') {
       clearPipelineNodeStates();
       pipelineNodes.forEach((node) => node.classList.add('failed'));
     }
   }
 
+  function renderAiSummary(managerInsights = {}) {
+    aiHeadline.textContent = managerInsights.headline || 'No insight yet.';
+    aiSummary.textContent = managerInsights.summary || 'Run ingest to generate semantic + AI summary.';
+
+    aiAlerts.innerHTML = '';
+    (managerInsights.alerts || []).forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = `Alert: ${item}`;
+      aiAlerts.append(li);
+    });
+
+    aiActions.innerHTML = '';
+    (managerInsights.recommendedActions || []).forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = `Action: ${item}`;
+      aiActions.append(li);
+    });
+  }
+
   function renderAnalyticsCharts(analytics) {
     const charts = analytics?.charts || {};
 
-    renderBarChart(
-      netRevenuePanel.querySelector('.chart-body'),
-      (charts.netRevenueBySegment || []).map((item) => ({ label: item.segment, value: item.value })),
-      { decimals: 2 }
-    );
+    renderBarChart(netRevenueCard.querySelector('.chart-body'), (charts.netRevenueBySegment || []).map((item) => ({ label: item.segment, value: item.value })), { decimals: 1 });
+    renderBarChart(refundCard.querySelector('.chart-body'), (charts.refundBySegment || []).map((item) => ({ label: item.segment, value: item.refundAmount })), { decimals: 1 });
+    renderLineChart(refundsOverTimeCard.querySelector('.chart-body'), (charts.refundsOverTime || []).map((item) => ({ label: item.month, value: item.refundAmount })));
+    renderDonutChart(customerMixCard.querySelector('.chart-body'), (charts.customerMixBySegment || []).map((item) => ({ label: item.segment, value: item.customers })));
+    renderHeatmap(heatmapCard.querySelector('.chart-body'), charts.heatmap || []);
 
-    renderBarChart(
-      refundRatePanel.querySelector('.chart-body'),
-      (charts.refundBySegment || []).map((item) => ({ label: item.segment, value: item.refundAmount })),
-      { decimals: 2 }
-    );
-
-    renderLineChart(
-      refundsOverTimePanel.querySelector('.chart-body'),
-      (charts.refundsOverTime || []).map((item) => ({ label: item.month, value: item.refundAmount }))
-    );
-
-    renderDonutChart(
-      customerMixPanel.querySelector('.chart-body'),
-      (charts.customerMixBySegment || []).map((item) => ({ label: item.segment, value: item.customers }))
-    );
-
-    renderHeatmap(heatmapPanel.querySelector('.chart-body'), charts.heatmap || []);
+    renderAiSummary(analytics.managerInsights || {});
   }
 
   function resetMetrics() {
@@ -167,7 +178,7 @@ export function pipelinePlugin(root) {
     validationGauge.setValue(0);
     writeGauge.setValue(0);
     setPipelineState('');
-    renderAnalyticsCharts({ charts: {} });
+    renderAnalyticsCharts({ charts: {}, managerInsights: {} });
   }
 
   async function runIngest() {
@@ -179,9 +190,7 @@ export function pipelinePlugin(root) {
 
     try {
       const response = await fetch('/api/ingest', { method: 'POST' });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const payload = await response.json();
       const summary = payload.summary || {};
