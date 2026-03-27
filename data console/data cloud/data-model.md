@@ -107,3 +107,16 @@ Source mapping:
 - Revenue math checks for orders:
   - `netRevenue = grossRevenue - discountAmount`.
 - Date fields use `YYYY-MM-DD` and represent sensible ranges.
+
+## Runtime materialization
+
+These model objects are generated during ingestion and written to:
+- `data/model-objects.json`
+
+Generated entities:
+- `Customer_DMO`
+- `Order_DMO`
+- `Return_DMO`
+- `Subscription_DMO`
+- `SupportTicket_DMO`
+- `CustomerSnapshot_DMO`

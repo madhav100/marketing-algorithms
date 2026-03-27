@@ -23,7 +23,13 @@ function send(res, statusCode, body, contentType = 'text/plain; charset=utf-8') 
 
 function readSummary() {
   if (!fs.existsSync(SUMMARY_FILE)) {
-    return { processedCsvFiles: [], entityCounts: {}, metadata: { ingestedFiles: [] } };
+    return {
+      processedCsvFiles: [],
+      entityCounts: {},
+      modelObjectCounts: {},
+      metadata: { ingestedFiles: [] },
+      modelMetadata: { unresolvedLinks: {} }
+    };
   }
 
   return JSON.parse(fs.readFileSync(SUMMARY_FILE, 'utf8'));

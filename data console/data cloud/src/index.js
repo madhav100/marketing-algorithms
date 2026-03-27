@@ -3,11 +3,28 @@ const path = require('path');
 const DataObjectsLake = require('./dataObjectsLake');
 const { ingestAllCsv } = require('./csvDataStream');
 const { STREAM_DEFINITIONS } = require('./dataStreams');
+const { buildDataModelObjects } = require('./dataModelObjects');
 
 const ROOT = path.resolve(__dirname, '..');
 const CSV_EXPORTS = path.join(ROOT, 'csv-exports');
 const OBJECTS_LAKE_FILE = path.join(ROOT, 'data', 'objects-lake.json');
+const MODELED_OBJECTS_FILE = path.join(ROOT, 'data', 'model-objects.json');
 const SUMMARY_FILE = path.join(ROOT, 'data', 'lake-summary.json');
+
+function writeModeledObjects(rawEntities) {
+  const modeled = buildDataModelObjects(rawEntities);
+  fs.mkdirSync(path.dirname(MODELED_OBJECTS_FILE), { recursive: true });
+  fs.writeFileSync(MODELED_OBJECTS_FILE, JSON.stringify(modeled, null, 2));
+
+  const modelObjectCounts = Object.fromEntries(
+    Object.entries(modeled.entities).map(([entity, records]) => [entity, records.length])
+  );
+
+  return {
+    modelObjectCounts,
+    modelMetadata: modeled.metadata
+  };
+}
 
 async function runIngestion() {
   const lake = new DataObjectsLake(OBJECTS_LAKE_FILE);
@@ -21,6 +38,8 @@ async function runIngestion() {
   const files = await ingestAllCsv(CSV_EXPORTS, lake, STREAM_DEFINITIONS);
   lake.persist();
 
+  const modelSummary = writeModeledObjects(lake.state.entities);
+
   const summary = {
     processedCsvFiles: files,
     streamDefinitions: STREAM_DEFINITIONS.map(({ streamName, fileName, dloName, primaryKey }) => ({
@@ -29,7 +48,8 @@ async function runIngestion() {
       dloName,
       primaryKey
     })),
-    ...lake.getSummary()
+    ...lake.getSummary(),
+    ...modelSummary
   };
 
   fs.writeFileSync(SUMMARY_FILE, JSON.stringify(summary, null, 2));

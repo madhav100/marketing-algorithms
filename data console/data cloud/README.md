@@ -1,6 +1,6 @@
 # Data Cloud
 
-This folder contains a standalone stream-ingestion layer and raw Data Lake Objects (DLOs).
+This folder contains a standalone stream-ingestion layer, raw Data Lake Objects (DLOs), and runtime-generated Data Model Objects (DMOs).
 
 ## Data Streams (CSV -> Stream)
 - `customer_profiles_stream` -> `customer_profiles.csv`
@@ -23,6 +23,7 @@ This folder contains a standalone stream-ingestion layer and raw Data Lake Objec
 - Upserts rows into DLO collections through `src/dataObjectsLake.js`.
 - Writes runtime-generated artifacts:
   - `data/objects-lake.json`
+  - `data/model-objects.json`
   - `data/lake-summary.json`
 
 > Note: files in `data/` are generated at ingestion time and are not source-controlled.
@@ -55,5 +56,5 @@ Then use `POST /api/ingest` from the dashboard **Run Ingest** button.
 
 ## References
 - Streams + DLO mapping: `csvs_info.md`
-- Business model: `data-model.md`
+- Business model: `data-model.md` (materialized into `data/model-objects.json` during ingestion)
 - Governance: `data-governance.md`
