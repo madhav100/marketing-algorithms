@@ -88,6 +88,11 @@
         if (accountDropdownMenu && !customer) {
             accountDropdownMenu.hidden = true;
         }
+
+        var accountToggle = document.getElementById('account-dropdown-toggle');
+        if (accountToggle && (!customer || (accountDropdownMenu && accountDropdownMenu.hidden))) {
+            accountToggle.setAttribute('aria-expanded', 'false');
+        }
     }
 
     function bindAccountDropdown() {
@@ -97,13 +102,33 @@
             return;
         }
 
+        function closeMenu() {
+            menu.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function openMenu() {
+            menu.hidden = false;
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+
         toggle.addEventListener('click', function () {
-            menu.hidden = !menu.hidden;
+            if (menu.hidden) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
         });
 
         document.addEventListener('click', function (event) {
             if (!toggle.contains(event.target) && !menu.contains(event.target)) {
-                menu.hidden = true;
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeMenu();
             }
         });
     }
@@ -224,6 +249,22 @@
         });
     }
 
+    function bindCarouselControls() {
+        document.querySelectorAll('.carousel-arrow').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var targetId = button.getAttribute('data-carousel-target');
+                var carousel = targetId ? document.getElementById(targetId) : null;
+                if (!carousel) {
+                    return;
+                }
+
+                var direction = button.classList.contains('carousel-arrow--prev') ? -1 : 1;
+                var scrollAmount = Math.max(260, Math.floor(carousel.clientWidth * 0.75));
+                carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
         updateAccountLinks();
@@ -234,5 +275,6 @@
         bindSignOut();
         bindAccountDropdown();
         bindSearch();
+        bindCarouselControls();
     });
 }());
