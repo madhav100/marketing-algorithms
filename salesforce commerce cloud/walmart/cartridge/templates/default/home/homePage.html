@@ -33,7 +33,7 @@
     <div class="container category-navbar__row">
       <a class="category-navbar__link is-active" href="/walmart">Home</a>
       {% for category in categorySections %}
-        <a class="category-navbar__link" href="/walmart?category={{category.slug}}#category-{{category.slug}}">{{category.name}}</a>
+        <a class="category-navbar__link" href="/category?category={{category.slug}}">{{category.name}}</a>
       {% endfor %}
     </div>
   </nav>
@@ -64,7 +64,9 @@
               {% else %}
                 <article class="card wm-card feature-box box-b6">
               {% endif %}
-                <img src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
+                <div class="hero-3d-media">
+                  <img class="hero-3d-image" src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
+                </div>
               </article>
               {% set boxCount = boxCount + 1 %}
             {% endif %}
@@ -132,24 +134,6 @@
         <button type="button" class="carousel-arrow carousel-arrow--next" aria-label="Scroll right" data-carousel-target="explore-carousel">›</button>
       </div>
     </section>
-
-    {% for category in categorySections %}
-      <section id="category-{{category.slug}}" class="section category-section">
-        <div class="section-header">
-          <h2>{{category.name}}</h2>
-        </div>
-        <div class="products">
-          {% for product in category.products %}
-            <article class="card wm-card">
-              <img src="{{product.image}}" alt="{{product.title}}" width="260" height="160" />
-              <h3>{{product.title}}</h3>
-              <p class="price">{{product.price}}</p>
-              <a class="product-link" href="/product/{{product.id}}">View item</a>
-            </article>
-          {% endfor %}
-        </div>
-      </section>
-    {% endfor %}
 
   </main>
 
