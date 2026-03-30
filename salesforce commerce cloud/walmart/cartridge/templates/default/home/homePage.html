@@ -47,22 +47,6 @@
 
 
 
-    <section class="section design-card-section" aria-label="Featured design highlights">
-      <div class="design-card-grid">
-        {% set designCardCount = 0 %}
-        {% for category in categorySections %}
-          {% for product in category.products %}
-            {% if designCardCount < 6 %}
-              <article class="design-card-tile">
-                <img src="{{product.image}}" alt="{{product.title}}" width="260" height="200" />
-                <h2>{{product.title}}</h2>
-              </article>
-              {% set designCardCount = designCardCount + 1 %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-      </div>
-    </section>
     <section class="section carousel-section">
       <div class="section-header">
         <h2>Shop trending Items</h2>
@@ -135,26 +119,6 @@
             {% for product in category.products %}
               <article class="card wm-card">
                 <img src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
-                <p class="eyebrow">{{product.categoryName}}</p>
-                <h3>{{product.title}}</h3>
-                <p class="description">{{product.description}}</p>
-                <p class="price">{{product.price}}</p>
-                <p class="stock">{{product.stockLabel}}</p>
-                <div class="card-actions">
-                  <a class="product-link" href="/product/{{product.id}}">View details</a>
-                  <button
-                    type="button"
-                    data-action="add-to-cart"
-                    data-product-id="{{product.id}}"
-                    data-product-title="{{product.title}}"
-                    data-product-image="{{product.image}}"
-                    data-product-price="{{product.priceValue}}"
-                    data-product-display-price="{{product.price}}"
-                    data-category-name="{{product.categoryName}}"
-                  >
-                    Add to cart
-                  </button>
-                </div>
               </article>
             {% endfor %}
           </div>
