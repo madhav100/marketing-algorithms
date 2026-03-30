@@ -249,6 +249,22 @@
         });
     }
 
+    function bindCarouselControls() {
+        document.querySelectorAll('.carousel-arrow').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var targetId = button.getAttribute('data-carousel-target');
+                var carousel = targetId ? document.getElementById(targetId) : null;
+                if (!carousel) {
+                    return;
+                }
+
+                var direction = button.classList.contains('carousel-arrow--prev') ? -1 : 1;
+                var scrollAmount = Math.max(260, Math.floor(carousel.clientWidth * 0.75));
+                carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
         updateAccountLinks();
@@ -259,5 +275,6 @@
         bindSignOut();
         bindAccountDropdown();
         bindSearch();
+        bindCarouselControls();
     });
 }());

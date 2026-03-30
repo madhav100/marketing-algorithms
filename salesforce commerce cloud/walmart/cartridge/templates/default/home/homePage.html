@@ -39,30 +39,10 @@
   </nav>
 
   <main class="container">
-    <section class="section feature-grid-section">
-      <div class="section-header">
-        <h2>Featured by Category</h2>
-        <p>Quick picks from each department.</p>
-      </div>
-      <div class="feature-grid">
-        {% for category in categorySections %}
-          {% set keyProduct = category.products[0] %}
-          <article class="feature-card">
-            <div class="feature-card__media">
-              <img
-                src="{{keyProduct.image if keyProduct else category.image}}"
-                alt="{{category.name}} featured product"
-                width="260"
-                height="160"
-              />
-            </div>
-            <p class="eyebrow">{{category.name}}</p>
-            <h3>{{keyProduct.title if keyProduct else ('Top picks in ' + category.name)}}</h3>
-            <p class="description">{{keyProduct.description if keyProduct else (category.productCount + ' product(s) available.')}}</p>
-            <a class="feature-card__link" href="#category-{{category.slug}}">Shop {{category.name}}</a>
-          </article>
-        {% endfor %}
-      </div>
+    <section class="section welcome-intro">
+      <h1>Welcome to Walmart</h1>
+      <p>We are glad you are here—discover everyday essentials, trending finds, and favorites picked for you.</p>
+      <p class="welcome-intro__name">Divesh Totoo</p>
     </section>
 
     <section class="section carousel-section">
@@ -70,7 +50,9 @@
         <h2>Shop trending Items</h2>
         <p>Popular picks across Walmart categories.</p>
       </div>
-      <div class="product-carousel">
+      <div class="carousel-shell">
+        <button type="button" class="carousel-arrow carousel-arrow--prev" aria-label="Scroll left" data-carousel-target="trending-carousel">‹</button>
+        <div id="trending-carousel" class="product-carousel">
         {% set trendingCount = 0 %}
         {% for category in categorySections %}
           {% for product in category.products %}
@@ -86,6 +68,8 @@
             {% endif %}
           {% endfor %}
         {% endfor %}
+        </div>
+        <button type="button" class="carousel-arrow carousel-arrow--next" aria-label="Scroll right" data-carousel-target="trending-carousel">›</button>
       </div>
     </section>
 
@@ -94,7 +78,9 @@
         <h2>More items to explore</h2>
         <p>Discover more products you might like.</p>
       </div>
-      <div class="product-carousel">
+      <div class="carousel-shell">
+        <button type="button" class="carousel-arrow carousel-arrow--prev" aria-label="Scroll left" data-carousel-target="explore-carousel">‹</button>
+        <div id="explore-carousel" class="product-carousel">
         {% set exploreCount = 0 %}
         {% for category in categorySections %}
           {% for product in category.products %}
@@ -112,6 +98,8 @@
             {% endif %}
           {% endfor %}
         {% endfor %}
+        </div>
+        <button type="button" class="carousel-arrow carousel-arrow--next" aria-label="Scroll right" data-carousel-target="explore-carousel">›</button>
       </div>
     </section>
 
