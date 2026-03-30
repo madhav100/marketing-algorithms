@@ -1,7 +1,9 @@
 @use 'variables' as *;
 
 :root {
-  --font-primary: 'Bogle', 'Helvetica Neue', Arial, sans-serif;
+  --font-primary: 'Everyday Sans', 'Bogle', 'Helvetica Neue', Arial, sans-serif;
+  --font-headline: 'Everyday Sans Headline', 'Everyday Sans', 'Bogle', 'Helvetica Neue', Arial, sans-serif;
+  --font-ui: 'Everyday Sans UI', 'Everyday Sans', 'Bogle', 'Helvetica Neue', Arial, sans-serif;
   --wm-blue: #{$wm-blue};
   --wm-blue-dark: #{$wm-blue-dark};
   --wm-blue-light: #e8f4fd;
@@ -29,6 +31,21 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+.brand {
+  font-family: var(--font-headline);
+}
+
+button,
+input,
+.category-navbar__link,
+.top-links a,
+.top-links button {
+  font-family: var(--font-ui);
 }
 
 .home-page {
@@ -210,8 +227,8 @@ body {
   }
 
   .welcome-intro {
-    background: #fff;
-    border: 1px solid var(--line);
+    background: var(--wm-yellow);
+    border: 1px solid var(--wm-yellow-dark);
     border-radius: var(--radius);
     padding: 20px;
 
@@ -219,11 +236,12 @@ body {
       margin: 0 0 8px;
       font-size: 2rem;
       line-height: 1.3;
+      color: #fff;
     }
 
     p {
       margin: 0;
-      color: var(--muted);
+      color: #fff;
       font-size: 1.05rem;
     }
   }
@@ -269,6 +287,7 @@ body {
     h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
+      font-family: var(--font-headline);
     }
 
     .price {
@@ -276,6 +295,7 @@ body {
       font-size: 1.1rem;
       font-weight: 700;
       margin: 0 0 10px;
+      font-family: var(--font-ui);
     }
   }
 
@@ -341,6 +361,32 @@ body {
     }
   }
 
+  .featured-boxes-section {
+    margin-top: 28px;
+  }
+
+  .category-products-section {
+    margin-top: 26px;
+  }
+
+  .featured-boxes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(120px, auto);
+    gap: 14px;
+  }
+
+  .feature-box {
+    min-height: 220px;
+
+    &.box-b1 { grid-column: 1; grid-row: 1 / 3; min-height: 300px; }
+    &.box-b2 { grid-column: 2 / 4; grid-row: 2; min-height: 260px; }
+    &.box-b3 { grid-column: 4; grid-row: 1 / 3; min-height: 300px; }
+    &.box-b4 { grid-column: 1; grid-row: 3; }
+    &.box-b5 { grid-column: 2 / 4; grid-row: 3; }
+    &.box-b6 { grid-column: 4; grid-row: 3; }
+  }
+
 
 
   .products {
@@ -387,6 +433,7 @@ body {
     h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
+      font-family: var(--font-headline);
     }
 
     .description {
@@ -400,6 +447,7 @@ body {
       font-size: 1.1rem;
       font-weight: 700;
       margin: 0 0 6px;
+      font-family: var(--font-ui);
     }
 
     .stock {
@@ -425,6 +473,7 @@ body {
       text-decoration: none;
       cursor: pointer;
       transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      font-family: var(--font-primary);
     }
 
     button:hover {
@@ -537,6 +586,23 @@ body {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .featured-boxes-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feature-box {
+      &.box-b1,
+      &.box-b2,
+      &.box-b3,
+      &.box-b4,
+      &.box-b5,
+      &.box-b6 {
+        grid-column: auto;
+        grid-row: auto;
+      }
+    }
+
+
     .empty-category {
       grid-template-columns: 1fr;
     }
@@ -582,6 +648,11 @@ body {
     .products {
       grid-template-columns: 1fr;
     }
+
+    .featured-boxes-grid {
+      grid-template-columns: 1fr;
+    }
+
 
     #account-dropdown-menu {
       right: auto;

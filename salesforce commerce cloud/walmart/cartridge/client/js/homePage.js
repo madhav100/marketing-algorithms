@@ -187,13 +187,54 @@
     }
 
     function bindCategoryClicks() {
-        document.querySelectorAll('.category-card').forEach(function (link) {
-            link.addEventListener('click', function () {
+        var categoryLinks = document.querySelectorAll('.category-navbar__link[data-category-filter]');
+        var homeLink = document.querySelector('.category-navbar__link[data-category-reset]');
+        var categorySections = document.querySelectorAll('[data-category-section]');
+        var categoryHeaders = document.querySelectorAll('[data-category-header]');
+
+        function setActiveLink(targetLink) {
+            document.querySelectorAll('.category-navbar__link').forEach(function (link) {
+                link.classList.toggle('is-active', link === targetLink);
+            });
+        }
+
+        function showCategory(slug) {
+            categorySections.forEach(function (section) {
+                section.hidden = section.getAttribute('data-category-section') !== slug;
+            });
+
+            categoryHeaders.forEach(function (header) {
+                header.hidden = header.getAttribute('data-category-header') !== slug;
+            });
+        }
+
+        categoryLinks.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                var slug = link.getAttribute('data-category-filter');
+                if (!slug) {
+                    return;
+                }
+
+                setActiveLink(link);
+                showCategory(slug);
+
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
-                    window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
+                    window.SfraCategoryTracker.trackCategoryClick(slug, link.textContent.trim());
                 }
             });
         });
+
+        if (homeLink) {
+            homeLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                setActiveLink(homeLink);
+                if (categorySections.length > 0) {
+                    var firstSlug = categorySections[0].getAttribute('data-category-section');
+                    showCategory(firstSlug);
+                }
+            });
+        }
     }
 
     function bindProductClicks() {
