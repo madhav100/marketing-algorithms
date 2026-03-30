@@ -32,8 +32,8 @@
   <nav class="category-navbar" aria-label="Shop categories">
     <div class="container category-navbar__row">
       <a class="category-navbar__link is-active" href="/walmart">Home</a>
-      {% for category in categories %}
-        <a class="category-navbar__link" href="#category-{{category.slug}}">{{category.name}}</a>
+      {% for category in categorySections %}
+        <a class="category-navbar__link" href="/walmart?category={{category.slug}}#category-{{category.slug}}">{{category.name}}</a>
       {% endfor %}
     </div>
   </nav>

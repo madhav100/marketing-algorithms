@@ -196,6 +196,24 @@
         });
     }
 
+    function highlightActiveCategoryFromUrl() {
+        var params = new URLSearchParams(window.location.search || '');
+        var selectedCategory = params.get('category');
+        if (!selectedCategory) {
+            return;
+        }
+
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
+            var href = link.getAttribute('href') || '';
+            link.classList.toggle('is-active', href.indexOf('category=' + selectedCategory) !== -1);
+        });
+
+        var section = document.getElementById('category-' + selectedCategory);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
     function bindProductClicks() {
         document.querySelectorAll('.product-link').forEach(function (link) {
             link.addEventListener('click', function () {
@@ -276,5 +294,6 @@
         bindAccountDropdown();
         bindSearch();
         bindCarouselControls();
+        highlightActiveCategoryFromUrl();
     });
 }());
