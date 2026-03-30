@@ -64,12 +64,14 @@
 
     function updateAccountUI() {
         var customer = getCurrentCustomer();
+        var isAuthenticated = Boolean(customer && customer.id);
         var accountToggle = document.getElementById('account-dropdown-toggle');
         var accountDropdownMenu = document.getElementById('account-dropdown-menu');
         var welcomeUserName = document.getElementById('welcome-user-name');
 
         if (accountToggle) {
             accountToggle.textContent = customer && customer.name ? customer.name : 'Account';
+            accountToggle.dataset.authenticated = isAuthenticated ? 'true' : 'false';
             accountToggle.setAttribute('aria-expanded', 'false');
         }
 
@@ -100,7 +102,15 @@
             toggle.setAttribute('aria-expanded', 'true');
         }
 
+        function isAuthenticated() {
+            return toggle.dataset.authenticated === 'true';
+        }
+
         toggle.addEventListener('click', function () {
+            if (!isAuthenticated()) {
+                window.location.href = '/account';
+                return;
+            }
             if (menu.hidden) {
                 openMenu();
             } else {
@@ -108,8 +118,16 @@
             }
         });
 
-        toggle.addEventListener('mouseenter', openMenu);
-        menu.addEventListener('mouseenter', openMenu);
+        toggle.addEventListener('mouseenter', function () {
+            if (isAuthenticated()) {
+                openMenu();
+            }
+        });
+        menu.addEventListener('mouseenter', function () {
+            if (isAuthenticated()) {
+                openMenu();
+            }
+        });
 
         var dropdownContainer = document.getElementById('account-dropdown');
         if (dropdownContainer) {
