@@ -329,6 +329,7 @@ input,
     h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
+      font-family: var(--font-headline);
     }
 
     .price {
@@ -336,6 +337,7 @@ input,
       font-size: 1.1rem;
       font-weight: 700;
       margin: 0 0 10px;
+      font-family: var(--font-ui);
     }
   }
 
@@ -405,6 +407,10 @@ input,
     margin-top: 28px;
   }
 
+  .category-products-section {
+    margin-top: 26px;
+  }
+
   .featured-boxes-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -469,6 +475,7 @@ input,
     h3 {
       margin: 0 0 8px;
       font-size: 1.05rem;
+      font-family: var(--font-headline);
     }
 
     .description {
@@ -482,6 +489,7 @@ input,
       font-size: 1.1rem;
       font-weight: 700;
       margin: 0 0 6px;
+      font-family: var(--font-ui);
     }
 
     .stock {
@@ -507,6 +515,7 @@ input,
       text-decoration: none;
       cursor: pointer;
       transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      font-family: var(--font-primary);
     }
 
     button:hover {

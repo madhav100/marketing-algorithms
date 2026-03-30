@@ -31,9 +31,9 @@
 
   <nav class="category-navbar" aria-label="Shop categories">
     <div class="container category-navbar__row">
-      <a class="category-navbar__link is-active" href="/walmart">Home</a>
+      <a class="category-navbar__link is-active" href="#category-products" data-category-reset="true">Home</a>
       {% for category in categories %}
-        <a class="category-navbar__link" href="#category-{{category.slug}}">{{category.name}}</a>
+        <a class="category-navbar__link" href="#category-products" data-category-filter="{{category.slug}}">{{category.name}}</a>
       {% endfor %}
     </div>
   </nav>
@@ -131,6 +131,24 @@
         </div>
         <button type="button" class="carousel-arrow carousel-arrow--next" aria-label="Scroll right" data-carousel-target="explore-carousel">›</button>
       </div>
+    </section>
+
+    <section id="category-products" class="section category-products-section">
+      {% for category in categorySections %}
+        <div class="section-header category-products-header" data-category-header="{{category.slug}}" {% if not loop.first %}hidden{% endif %}>
+          <h2>{{category.name}}</h2>
+        </div>
+        <div class="products category-products" data-category-section="{{category.slug}}" {% if not loop.first %}hidden{% endif %}>
+          {% for product in category.products %}
+            <article class="card wm-card">
+              <img src="{{product.image}}" alt="{{product.title}}" width="260" height="160" />
+              <h3>{{product.title}}</h3>
+              <p class="price">{{product.price}}</p>
+              <a class="product-link" href="/product/{{product.id}}">View item</a>
+            </article>
+          {% endfor %}
+        </div>
+      {% endfor %}
     </section>
 
   </main>
