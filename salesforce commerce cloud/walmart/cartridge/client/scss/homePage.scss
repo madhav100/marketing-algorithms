@@ -537,6 +537,7 @@ body {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+
     .empty-category {
       grid-template-columns: 1fr;
     }
@@ -582,6 +583,7 @@ body {
     .products {
       grid-template-columns: 1fr;
     }
+
 
     #account-dropdown-menu {
       right: auto;
