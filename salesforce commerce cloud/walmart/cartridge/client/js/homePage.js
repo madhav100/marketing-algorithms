@@ -78,14 +78,14 @@
         }
 
         if (guestAccountLink) {
-            guestAccountLink.hidden = Boolean(customer);
+            guestAccountLink.hidden = true;
         }
 
         if (accountDropdown) {
-            accountDropdown.hidden = !customer;
+            accountDropdown.hidden = false;
         }
 
-        if (accountDropdownMenu && !customer) {
+        if (accountDropdownMenu) {
             accountDropdownMenu.hidden = true;
         }
 
