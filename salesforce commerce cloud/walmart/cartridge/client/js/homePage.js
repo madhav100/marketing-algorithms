@@ -187,7 +187,7 @@
     }
 
     function bindCategoryClicks() {
-        document.querySelectorAll('.category-card').forEach(function (link) {
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
             link.addEventListener('click', function () {
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
                     window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
