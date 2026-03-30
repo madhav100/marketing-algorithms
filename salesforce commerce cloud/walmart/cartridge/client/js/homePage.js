@@ -120,6 +120,14 @@
             }
         });
 
+        toggle.addEventListener('mouseenter', openMenu);
+        menu.addEventListener('mouseenter', openMenu);
+
+        var dropdownContainer = document.getElementById('account-dropdown');
+        if (dropdownContainer) {
+            dropdownContainer.addEventListener('mouseleave', closeMenu);
+        }
+
         document.addEventListener('click', function (event) {
             if (!toggle.contains(event.target) && !menu.contains(event.target)) {
                 closeMenu();
