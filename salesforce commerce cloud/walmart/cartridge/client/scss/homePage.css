@@ -38,7 +38,7 @@ button,input,.category-navbar__link,.top-links a,.top-links button { font-family
 #account-dropdown-auth { position: relative; }
 #account-dropdown-auth[hidden],#account-dropdown-menu[hidden] { display: none; }
 #account-dropdown-toggle::after { content: "▾"; font-size: 0.8rem; margin-left: 8px; }
-#account-dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 190px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2); padding: 8px; display: grid; gap: 2px; z-index: 30; }
+#account-dropdown-menu { position: absolute; top: 100%; right: 0; min-width: 190px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2); padding: 8px; display: grid; gap: 2px; z-index: 30; }
 #account-dropdown-menu a,#account-dropdown-menu button { color: var(--wm-blue-dark); border-radius: 8px; padding: 10px 12px; text-decoration: none; text-align: left; border: 0; font-weight: 700; background: transparent; cursor: pointer; }
 #account-dropdown-menu a:hover,#account-dropdown-menu button:hover { background: var(--wm-blue-light); }
 #account-dropdown-menu #home-sign-out { color: var(--sale-red); }
