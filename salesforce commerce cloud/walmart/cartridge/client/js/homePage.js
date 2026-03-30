@@ -190,10 +190,21 @@
         document.querySelectorAll('.category-navbar__link').forEach(function (link) {
             link.addEventListener('click', function () {
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
-                    window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
+                    window.SfraCategoryTracker.trackCategoryClick(slug, link.textContent.trim());
                 }
             });
         });
+
+        if (homeLink) {
+            homeLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                setActiveLink(homeLink);
+                if (categorySections.length > 0) {
+                    var firstSlug = categorySections[0].getAttribute('data-category-section');
+                    showCategory(firstSlug);
+                }
+            });
+        }
     }
 
     function highlightActiveCategoryFromUrl() {
