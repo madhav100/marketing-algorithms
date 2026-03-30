@@ -65,9 +65,19 @@
     function updateAccountUI() {
         var customer = getCurrentCustomer();
         var isAuthenticated = Boolean(customer && customer.id);
+        var guestLink = document.getElementById('account-link-guest');
+        var authDropdown = document.getElementById('account-dropdown-auth');
         var accountToggle = document.getElementById('account-dropdown-toggle');
         var accountDropdownMenu = document.getElementById('account-dropdown-menu');
         var welcomeUserName = document.getElementById('welcome-user-name');
+
+        if (guestLink) {
+            guestLink.hidden = isAuthenticated;
+        }
+
+        if (authDropdown) {
+            authDropdown.hidden = !isAuthenticated;
+        }
 
         if (accountToggle) {
             accountToggle.textContent = customer && customer.name ? customer.name : 'Account';
@@ -118,18 +128,10 @@
             }
         });
 
-        toggle.addEventListener('mouseenter', function () {
-            if (isAuthenticated()) {
-                openMenu();
-            }
-        });
-        menu.addEventListener('mouseenter', function () {
-            if (isAuthenticated()) {
-                openMenu();
-            }
-        });
+        toggle.addEventListener('mouseenter', openMenu);
+        menu.addEventListener('mouseenter', openMenu);
 
-        var dropdownContainer = document.getElementById('account-dropdown');
+        var dropdownContainer = document.getElementById('account-dropdown-auth');
         if (dropdownContainer) {
             dropdownContainer.addEventListener('mouseleave', closeMenu);
         }
@@ -313,10 +315,10 @@
         updateAccountUI();
         renderCartCount();
         bindAddToCart();
+        bindAccountDropdown();
         bindCategoryClicks();
         bindProductClicks();
         bindSignOut();
-        bindAccountDropdown();
         bindSearch();
         bindCarouselControls();
         highlightActiveCategoryFromUrl();

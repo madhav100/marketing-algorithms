@@ -132,11 +132,15 @@ input,
     }
   }
 
-  #account-dropdown {
+  #account-area {
     position: relative;
   }
 
-  #account-dropdown[hidden],
+  #account-dropdown-auth {
+    position: relative;
+  }
+
+  #account-dropdown-auth[hidden],
   #account-dropdown-menu[hidden] {
     display: none;
   }

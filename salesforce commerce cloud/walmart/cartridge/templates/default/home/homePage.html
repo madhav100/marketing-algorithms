@@ -15,11 +15,25 @@
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <div id="account-dropdown">
-          <button id="account-dropdown-toggle" type="button">Account</button>
-          <div id="account-dropdown-menu" hidden>
-            <a href="/my-orders">My Orders</a>
-            <button id="home-sign-out" type="button">Sign out</button>
+        <div id="account-area">
+          <a id="account-link-guest" href="/account">Account</a>
+
+          <div id="account-dropdown-auth" hidden>
+            <button
+              id="account-dropdown-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="account-dropdown-menu"
+              data-authenticated="false"
+            >
+              Account
+            </button>
+
+            <div id="account-dropdown-menu" hidden>
+              <a href="/account">Account</a>
+              <a href="/my-orders">My Orders</a>
+              <button id="home-sign-out" type="button">Sign out</button>
+            </div>
           </div>
         </div>
         <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
