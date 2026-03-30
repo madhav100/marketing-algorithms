@@ -62,36 +62,26 @@
         }, 0);
     }
 
-    function updateAccountLinks() {
+    function updateAccountUI() {
         var customer = getCurrentCustomer();
-        document.querySelectorAll('[data-account-link]').forEach(function (link) {
-            link.textContent = customer ? customer.name : 'Account';
-        });
-
-        var signOutButton = document.getElementById('home-sign-out');
-        var guestAccountLink = document.getElementById('guest-account-link');
-        var accountDropdown = document.getElementById('account-dropdown');
+        var isAuthenticated = Boolean(customer && customer.id);
+        var accountToggle = document.getElementById('account-dropdown-toggle');
         var accountDropdownMenu = document.getElementById('account-dropdown-menu');
+        var welcomeUserName = document.getElementById('welcome-user-name');
 
-        if (signOutButton) {
-            signOutButton.hidden = !customer;
+        if (accountToggle) {
+            accountToggle.textContent = customer && customer.name ? customer.name : 'Account';
+            accountToggle.dataset.authenticated = isAuthenticated ? 'true' : 'false';
+            accountToggle.setAttribute('aria-expanded', 'false');
         }
 
-        if (guestAccountLink) {
-            guestAccountLink.hidden = Boolean(customer);
-        }
-
-        if (accountDropdown) {
-            accountDropdown.hidden = !customer;
-        }
-
-        if (accountDropdownMenu && !customer) {
+        if (accountDropdownMenu) {
             accountDropdownMenu.hidden = true;
         }
 
-        var accountToggle = document.getElementById('account-dropdown-toggle');
-        if (accountToggle && (!customer || (accountDropdownMenu && accountDropdownMenu.hidden))) {
-            accountToggle.setAttribute('aria-expanded', 'false');
+        if (welcomeUserName) {
+            welcomeUserName.textContent = customer && customer.name ? customer.name : '';
+            welcomeUserName.hidden = !customer || !customer.name;
         }
     }
 
@@ -112,13 +102,37 @@
             toggle.setAttribute('aria-expanded', 'true');
         }
 
+        function isAuthenticated() {
+            return toggle.dataset.authenticated === 'true';
+        }
+
         toggle.addEventListener('click', function () {
+            if (!isAuthenticated()) {
+                window.location.href = '/account';
+                return;
+            }
             if (menu.hidden) {
                 openMenu();
             } else {
                 closeMenu();
             }
         });
+
+        toggle.addEventListener('mouseenter', function () {
+            if (isAuthenticated()) {
+                openMenu();
+            }
+        });
+        menu.addEventListener('mouseenter', function () {
+            if (isAuthenticated()) {
+                openMenu();
+            }
+        });
+
+        var dropdownContainer = document.getElementById('account-dropdown');
+        if (dropdownContainer) {
+            dropdownContainer.addEventListener('mouseleave', closeMenu);
+        }
 
         document.addEventListener('click', function (event) {
             if (!toggle.contains(event.target) && !menu.contains(event.target)) {
@@ -187,7 +201,7 @@
     }
 
     function bindCategoryClicks() {
-        document.querySelectorAll('.category-card').forEach(function (link) {
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
             link.addEventListener('click', function () {
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
                     window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
@@ -267,7 +281,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
-        updateAccountLinks();
+        updateAccountUI();
         renderCartCount();
         bindAddToCart();
         bindCategoryClicks();
