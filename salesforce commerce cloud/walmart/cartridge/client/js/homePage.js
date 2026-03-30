@@ -88,6 +88,11 @@
         if (accountDropdownMenu && !customer) {
             accountDropdownMenu.hidden = true;
         }
+
+        var accountToggle = document.getElementById('account-dropdown-toggle');
+        if (accountToggle && (!customer || (accountDropdownMenu && accountDropdownMenu.hidden))) {
+            accountToggle.setAttribute('aria-expanded', 'false');
+        }
     }
 
     function bindAccountDropdown() {
@@ -97,13 +102,33 @@
             return;
         }
 
+        function closeMenu() {
+            menu.hidden = true;
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function openMenu() {
+            menu.hidden = false;
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+
         toggle.addEventListener('click', function () {
-            menu.hidden = !menu.hidden;
+            if (menu.hidden) {
+                openMenu();
+            } else {
+                closeMenu();
+            }
         });
 
         document.addEventListener('click', function (event) {
             if (!toggle.contains(event.target) && !menu.contains(event.target)) {
-                menu.hidden = true;
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeMenu();
             }
         });
     }
