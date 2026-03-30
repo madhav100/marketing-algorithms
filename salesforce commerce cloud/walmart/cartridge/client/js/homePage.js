@@ -78,14 +78,14 @@
         }
 
         if (guestAccountLink) {
-            guestAccountLink.hidden = Boolean(customer);
+            guestAccountLink.hidden = true;
         }
 
         if (accountDropdown) {
-            accountDropdown.hidden = !customer;
+            accountDropdown.hidden = false;
         }
 
-        if (accountDropdownMenu && !customer) {
+        if (accountDropdownMenu) {
             accountDropdownMenu.hidden = true;
         }
 
@@ -187,7 +187,7 @@
     }
 
     function bindCategoryClicks() {
-        document.querySelectorAll('.category-card').forEach(function (link) {
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
             link.addEventListener('click', function () {
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
                     window.SfraCategoryTracker.trackCategoryClick(link.getAttribute('href') || '', link.textContent.trim());
