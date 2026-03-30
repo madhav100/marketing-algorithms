@@ -15,11 +15,9 @@
         <button type="submit">Search</button>
       </form>
       <nav class="top-links">
-        <a id="guest-account-link" data-account-link href="/account">Account</a>
         <div id="account-dropdown">
-          <button id="account-dropdown-toggle" type="button" data-account-link>Account</button>
+          <button id="account-dropdown-toggle" type="button">Account</button>
           <div id="account-dropdown-menu" hidden>
-            <a href="/account">Account</a>
             <a href="/my-orders">My Orders</a>
             <button id="home-sign-out" type="button">Sign out</button>
           </div>
@@ -42,7 +40,7 @@
     <section class="section welcome-intro">
       <h1>Welcome to Walmart</h1>
       <p>We are glad you are here—discover everyday essentials, trending finds, and favorites picked for you.</p>
-      <p class="welcome-intro__name">Divesh Totoo</p>
+      <p id="welcome-user-name" class="welcome-intro__name" hidden></p>
     </section>
 
     <section class="section featured-boxes-section" aria-label="Featured products">

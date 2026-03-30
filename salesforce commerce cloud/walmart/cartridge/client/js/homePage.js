@@ -62,36 +62,24 @@
         }, 0);
     }
 
-    function updateAccountLinks() {
+    function updateAccountUI() {
         var customer = getCurrentCustomer();
-        document.querySelectorAll('[data-account-link]').forEach(function (link) {
-            link.textContent = customer ? customer.name : 'Account';
-        });
-
-        var signOutButton = document.getElementById('home-sign-out');
-        var guestAccountLink = document.getElementById('guest-account-link');
-        var accountDropdown = document.getElementById('account-dropdown');
+        var accountToggle = document.getElementById('account-dropdown-toggle');
         var accountDropdownMenu = document.getElementById('account-dropdown-menu');
+        var welcomeUserName = document.getElementById('welcome-user-name');
 
-        if (signOutButton) {
-            signOutButton.hidden = !customer;
-        }
-
-        if (guestAccountLink) {
-            guestAccountLink.hidden = true;
-        }
-
-        if (accountDropdown) {
-            accountDropdown.hidden = false;
+        if (accountToggle) {
+            accountToggle.textContent = customer && customer.name ? customer.name : 'Account';
+            accountToggle.setAttribute('aria-expanded', 'false');
         }
 
         if (accountDropdownMenu) {
             accountDropdownMenu.hidden = true;
         }
 
-        var accountToggle = document.getElementById('account-dropdown-toggle');
-        if (accountToggle && (!customer || (accountDropdownMenu && accountDropdownMenu.hidden))) {
-            accountToggle.setAttribute('aria-expanded', 'false');
+        if (welcomeUserName) {
+            welcomeUserName.textContent = customer && customer.name ? customer.name : '';
+            welcomeUserName.hidden = !customer || !customer.name;
         }
     }
 
@@ -304,7 +292,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
-        updateAccountLinks();
+        updateAccountUI();
         renderCartCount();
         bindAddToCart();
         bindCategoryClicks();
