@@ -103,33 +103,6 @@
       </div>
     </section>
 
-    <section class="hero">
-      <h1>Welcome to {{storeName}}</h1>
-      <p>{{welcomeMessage}}</p>
-      <a class="hero-account-link" data-account-link href="/account">Account</a>
-    </section>
-
-    <section class="section promo-banner">
-      <p>{{promoMessage}}</p>
-      <p><strong>{{totalProducts}}</strong> product(s) are currently available across <strong>{{categorySections.length}}</strong> shopping categories.</p>
-    </section>
-
-    <section class="section">
-      <div class="section-header">
-        <h2>Shop by Category</h2>
-        <p>Browse the store by category to find the products that fit your day.</p>
-      </div>
-      <div class="categories">
-        {% for category in categories %}
-          <a class="category-card" href="#category-{{category.slug}}">
-            <img src="{{category.image}}" alt="{{category.name}}" width="260" height="160" />
-            <span class="category-name">{{category.name}}</span>
-            <span class="category-meta">{{category.productCount}} product(s)</span>
-          </a>
-        {% endfor %}
-      </div>
-    </section>
-
     {% for category in categorySections %}
       <section id="category-{{category.slug}}" class="section category-section">
         <div class="section-header">
