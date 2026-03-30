@@ -71,7 +71,6 @@ button,input,.category-navbar__link,.top-links a,.top-links button { font-family
 .section-header { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin-bottom: 12px; }
 .section-header p { margin: 0; color: var(--muted); }
 .featured-boxes-section { margin-top: 28px; }
-.category-products-section { margin-top: 26px; }
 .featured-boxes-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(120px, auto); gap: 14px; }
 .feature-box { min-height: 220px; }
 .feature-box.box-b1 { grid-column: 1; grid-row: 1/3; min-height: 300px; }

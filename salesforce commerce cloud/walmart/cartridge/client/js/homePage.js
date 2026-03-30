@@ -187,38 +187,8 @@
     }
 
     function bindCategoryClicks() {
-        var categoryLinks = document.querySelectorAll('.category-navbar__link[data-category-filter]');
-        var homeLink = document.querySelector('.category-navbar__link[data-category-reset]');
-        var categorySections = document.querySelectorAll('[data-category-section]');
-        var categoryHeaders = document.querySelectorAll('[data-category-header]');
-
-        function setActiveLink(targetLink) {
-            document.querySelectorAll('.category-navbar__link').forEach(function (link) {
-                link.classList.toggle('is-active', link === targetLink);
-            });
-        }
-
-        function showCategory(slug) {
-            categorySections.forEach(function (section) {
-                section.hidden = section.getAttribute('data-category-section') !== slug;
-            });
-
-            categoryHeaders.forEach(function (header) {
-                header.hidden = header.getAttribute('data-category-header') !== slug;
-            });
-        }
-
-        categoryLinks.forEach(function (link) {
-            link.addEventListener('click', function (event) {
-                event.preventDefault();
-                var slug = link.getAttribute('data-category-filter');
-                if (!slug) {
-                    return;
-                }
-
-                setActiveLink(link);
-                showCategory(slug);
-
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
+            link.addEventListener('click', function () {
                 if (window.SfraCategoryTracker && typeof window.SfraCategoryTracker.trackCategoryClick === 'function') {
                     window.SfraCategoryTracker.trackCategoryClick(slug, link.textContent.trim());
                 }
@@ -234,6 +204,24 @@
                     showCategory(firstSlug);
                 }
             });
+        }
+    }
+
+    function highlightActiveCategoryFromUrl() {
+        var params = new URLSearchParams(window.location.search || '');
+        var selectedCategory = params.get('category');
+        if (!selectedCategory) {
+            return;
+        }
+
+        document.querySelectorAll('.category-navbar__link').forEach(function (link) {
+            var href = link.getAttribute('href') || '';
+            link.classList.toggle('is-active', href.indexOf('category=' + selectedCategory) !== -1);
+        });
+
+        var section = document.getElementById('category-' + selectedCategory);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
@@ -317,5 +305,6 @@
         bindAccountDropdown();
         bindSearch();
         bindCarouselControls();
+        highlightActiveCategoryFromUrl();
     });
 }());
