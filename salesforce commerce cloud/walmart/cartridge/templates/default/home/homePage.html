@@ -39,6 +39,82 @@
   </nav>
 
   <main class="container">
+    <section class="section feature-grid-section">
+      <div class="section-header">
+        <h2>Featured by Category</h2>
+        <p>Quick picks from each department.</p>
+      </div>
+      <div class="feature-grid">
+        {% for category in categorySections %}
+          {% set keyProduct = category.products[0] %}
+          <article class="feature-card">
+            <div class="feature-card__media">
+              <img
+                src="{{keyProduct.image if keyProduct else category.image}}"
+                alt="{{category.name}} featured product"
+                width="260"
+                height="160"
+              />
+            </div>
+            <p class="eyebrow">{{category.name}}</p>
+            <h3>{{keyProduct.title if keyProduct else ('Top picks in ' + category.name)}}</h3>
+            <p class="description">{{keyProduct.description if keyProduct else (category.productCount + ' product(s) available.')}}</p>
+            <a class="feature-card__link" href="#category-{{category.slug}}">Shop {{category.name}}</a>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section carousel-section">
+      <div class="section-header">
+        <h2>Shop trending Items</h2>
+        <p>Popular picks across Walmart categories.</p>
+      </div>
+      <div class="product-carousel">
+        {% set trendingCount = 0 %}
+        {% for category in categorySections %}
+          {% for product in category.products %}
+            {% if trendingCount < 12 %}
+              <article class="carousel-card">
+                <img src="{{product.image}}" alt="{{product.title}}" width="260" height="160" />
+                <p class="eyebrow">{{category.name}}</p>
+                <h3>{{product.title}}</h3>
+                <p class="price">{{product.price}}</p>
+                <a class="product-link" href="/product/{{product.id}}">View item</a>
+              </article>
+              {% set trendingCount = trendingCount + 1 %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="section carousel-section">
+      <div class="section-header">
+        <h2>More items to explore</h2>
+        <p>Discover more products you might like.</p>
+      </div>
+      <div class="product-carousel">
+        {% set exploreCount = 0 %}
+        {% for category in categorySections %}
+          {% for product in category.products %}
+            {% if exploreCount < 12 %}
+              {% if (loop.index0 + loop.revindex0) % 2 == 0 %}
+                <article class="carousel-card">
+                  <img src="{{product.image}}" alt="{{product.title}}" width="260" height="160" />
+                  <p class="eyebrow">{{category.name}}</p>
+                  <h3>{{product.title}}</h3>
+                  <p class="price">{{product.price}}</p>
+                  <a class="product-link" href="/product/{{product.id}}">View item</a>
+                </article>
+                {% set exploreCount = exploreCount + 1 %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </section>
+
     <section class="hero">
       <h1>Welcome to {{storeName}}</h1>
       <p>{{welcomeMessage}}</p>
@@ -117,10 +193,13 @@
   </main>
 
   <footer>
-    <div class="container footer-links">
-      <a data-account-link href="/account">Account</a>
-      <a href="/cart">Cart</a>
-      <a href="/walmart">Storefront Home</a>
+    <div class="container footer-content">
+      <p>© 2026 Walmart. All Rights Reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy and Data Trust Centre</a>
+        <a href="#">Privacy Notice</a>
+        <a href="#">Delete Account</a>
+      </div>
     </div>
   </footer>
   <script src="/client/default/js/analytics/sessionTracker.js"></script>
