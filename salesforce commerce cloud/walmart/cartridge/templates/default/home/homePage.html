@@ -45,6 +45,36 @@
       <p class="welcome-intro__name">Divesh Totoo</p>
     </section>
 
+    <section class="section featured-boxes-section" aria-label="Featured products">
+      <div class="featured-boxes-grid">
+        {% set boxCount = 0 %}
+        {% for category in categorySections %}
+          {% for product in category.products %}
+            {% if boxCount < 6 %}
+              {% if boxCount == 0 %}
+                <article class="card wm-card feature-box box-b1">
+              {% elif boxCount == 1 %}
+                <article class="card wm-card feature-box box-b2">
+              {% elif boxCount == 2 %}
+                <article class="card wm-card feature-box box-b3">
+              {% elif boxCount == 3 %}
+                <article class="card wm-card feature-box box-b4">
+              {% elif boxCount == 4 %}
+                <article class="card wm-card feature-box box-b5">
+              {% else %}
+                <article class="card wm-card feature-box box-b6">
+              {% endif %}
+                <img src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
+              </article>
+              {% set boxCount = boxCount + 1 %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </section>
+
+
+
     <section class="section carousel-section">
       <div class="section-header">
         <h2>Shop trending Items</h2>
@@ -103,54 +133,6 @@
       </div>
     </section>
 
-    {% for category in categorySections %}
-      <section id="category-{{category.slug}}" class="section category-section">
-        <div class="section-header">
-          <div>
-            <h2>{{category.name}}</h2>
-            <p>{{category.productCount}} product(s) available in this category.</p>
-          </div>
-        </div>
-
-        {% if category.products.length %}
-          <div class="products">
-            {% for product in category.products %}
-              <article class="card wm-card">
-                <img src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
-                <p class="eyebrow">{{product.categoryName}}</p>
-                <h3>{{product.title}}</h3>
-                <p class="description">{{product.description}}</p>
-                <p class="price">{{product.price}}</p>
-                <p class="stock">{{product.stockLabel}}</p>
-                <div class="card-actions">
-                  <a class="product-link" href="/product/{{product.id}}">View details</a>
-                  <button
-                    type="button"
-                    data-action="add-to-cart"
-                    data-product-id="{{product.id}}"
-                    data-product-title="{{product.title}}"
-                    data-product-image="{{product.image}}"
-                    data-product-price="{{product.priceValue}}"
-                    data-product-display-price="{{product.price}}"
-                    data-category-name="{{product.categoryName}}"
-                  >
-                    Add to cart
-                  </button>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="empty-category">
-            <img src="{{category.image}}" alt="{{category.name}}" width="260" height="160" />
-            <div>
-              <h3>No products yet in {{category.name}}</h3>
-              <p>Check back soon for new arrivals in this category.</p>
-            </div>
-          </div>
-        {% endif %}
-      </section>
-    {% endfor %}
   </main>
 
   <footer>
