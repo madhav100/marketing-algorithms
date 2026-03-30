@@ -45,6 +45,24 @@
       <p class="welcome-intro__name">Divesh Totoo</p>
     </section>
 
+
+
+    <section class="section design-card-section" aria-label="Featured design highlights">
+      <div class="design-card-grid">
+        {% set designCardCount = 0 %}
+        {% for category in categorySections %}
+          {% for product in category.products %}
+            {% if designCardCount < 6 %}
+              <article class="design-card-tile">
+                <img src="{{product.image}}" alt="{{product.title}}" width="260" height="200" />
+                <h2>{{product.title}}</h2>
+              </article>
+              {% set designCardCount = designCardCount + 1 %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </section>
     <section class="section carousel-section">
       <div class="section-header">
         <h2>Shop trending Items</h2>
