@@ -1,8 +1,11 @@
 const { createUserSession } = require('../models/userSession');
 const { createSessionEvent } = require('../models/sessionEvent');
 const { readJsonFile } = require('../utils/fileStore');
+const fs = require('fs/promises');
+const path = require('path');
 
 const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
+const EXPORT_DIR = path.join(__dirname, '../../admin-console/database/data-console-exports');
 
 class AnalyticsService {
   constructor() {
@@ -228,7 +231,7 @@ class AnalyticsService {
   }
 
   async getBusinessMetrics() {
-    const sessions = this.getAllSessions();
+    const sessions = this.getAllSessions().filter((session) => session.customerId && session.customerId !== 'guest');
     const products = await readJsonFile('products.json');
     const orders = await readJsonFile('orders.json');
 
@@ -236,17 +239,18 @@ class AnalyticsService {
     const purchaseOrders = orders.filter((order) => !['cancelled', 'failed'].includes(String(order.status || '').toLowerCase()));
     const returnOrders = orders.filter((order) => ['returned', 'refunded'].includes(String(order.status || '').toLowerCase()));
 
-    const productViews = this.getEventsByType('product_click');
-    const addToCartEvents = this.getEventsByType('add_to_cart');
-    const checkoutStarts = this.getEventsByType('checkout_start');
-    const completedPurchasesFromEvents = this.getEventsByType('purchase_complete');
-    const cartAbandons = this.getEventsByType('cart_abandon');
+    const signedInSessionIds = new Set(sessions.map((session) => session.sessionId));
+    const signedInEvents = this.events.filter((event) => signedInSessionIds.has(event.sessionId));
 
-    const uniqueVisitorIds = new Set(
-      sessions.map((session) => (session.customerId && session.customerId !== 'guest'
-        ? String(session.customerId)
-        : `guest:${session.sessionId}`))
-    );
+    const productViews = signedInEvents.filter((event) => event.eventType === 'product_click');
+    const addToCartEvents = signedInEvents.filter((event) => event.eventType === 'add_to_cart');
+    const checkoutStarts = signedInEvents.filter((event) => event.eventType === 'checkout_start');
+    const completedPurchasesFromEvents = signedInEvents.filter((event) => event.eventType === 'purchase_complete');
+    const cartAbandons = signedInEvents.filter((event) => event.eventType === 'cart_abandon');
+    const loginEvents = signedInEvents.filter((event) => event.eventType === 'login');
+    const logoutEvents = signedInEvents.filter((event) => event.eventType === 'logout');
+
+    const uniqueVisitorIds = new Set(sessions.map((session) => String(session.customerId)));
     const purchasingCustomers = new Map();
     purchaseOrders.forEach((order) => {
       const customerId = String(order.customerId || 'guest');
@@ -326,6 +330,18 @@ class AnalyticsService {
     const repeatPurchaseRate = purchasingCustomers.size
       ? Number((repeatCustomerCount / purchasingCustomers.size).toFixed(4))
       : 0;
+    const avgSessionDurationMinutes = sessions.length
+      ? Number((sessions.reduce((sum, session) => sum + Number(session.sessionDurationMinutes || 0), 0) / sessions.length).toFixed(2))
+      : 0;
+    const avgLoggedInMinutes = sessions.length
+      ? Number((sessions.reduce((sum, session) => sum + Number(session.loggedInMinutes || 0), 0) / sessions.length).toFixed(2))
+      : 0;
+    const cartToCheckoutRate = addToCartEvents.length
+      ? Number((checkoutStarts.length / addToCartEvents.length).toFixed(4))
+      : 0;
+    const checkoutToPurchaseRate = checkoutStarts.length
+      ? Number((Math.max(completedPurchasesFromEvents.length, purchaseOrders.length) / checkoutStarts.length).toFixed(4))
+      : 0;
 
     const revenueByCategory = [...revenueByCategoryMap.entries()]
       .map(([category, revenue]) => ({ category, revenue: Number(revenue.toFixed(2)) }))
@@ -340,6 +356,16 @@ class AnalyticsService {
       return inventory > 0 && inventory < 10;
     }).length;
     const outOfStockCount = products.filter((product) => Number(product.inventory || 0) === 0).length;
+    const activeProductsCount = products.filter((product) => !product.retired).length;
+    const retiredProductsCount = products.filter((product) => Boolean(product.retired)).length;
+    const totalInventoryUnits = products.reduce((sum, product) => sum + Number(product.inventory || 0), 0);
+    const inventoryTurnoverRate = totalInventoryUnits > 0 ? Number((unitsSold / totalInventoryUnits).toFixed(4)) : 0;
+    const sellThroughRate = (unitsSold + totalInventoryUnits) > 0
+      ? Number((unitsSold / (unitsSold + totalInventoryUnits)).toFixed(4))
+      : 0;
+    const grossRevenuePerVisitor = uniqueVisitorIds.size > 0
+      ? Number((totalRevenue / uniqueVisitorIds.size).toFixed(2))
+      : 0;
 
     const productInsights = products.map((product) => {
       const productId = String(product.id);
@@ -395,6 +421,12 @@ class AnalyticsService {
         completedPurchaseCount: Math.max(completedPurchasesFromEvents.length, purchaseOrders.length),
         repeatCustomerCount,
         repeatPurchaseRate,
+        avgSessionDurationMinutes,
+        avgLoggedInMinutes,
+        loginEventCount: loginEvents.length,
+        logoutEventCount: logoutEvents.length,
+        cartToCheckoutRate,
+        checkoutToPurchaseRate,
       },
       producer: {
         totalRevenue: Number(totalRevenue.toFixed(2)),
@@ -407,6 +439,11 @@ class AnalyticsService {
         outOfStockCount,
         returnCount: returnOrders.length,
         returnRate: purchaseOrders.length ? Number((returnOrders.length / purchaseOrders.length).toFixed(4)) : 0,
+        activeProductsCount,
+        retiredProductsCount,
+        inventoryTurnoverRate,
+        sellThroughRate,
+        grossRevenuePerVisitor,
       },
       combinedInsights: {
         urgentRestocks,
@@ -415,6 +452,75 @@ class AnalyticsService {
         deadInventory,
       },
     };
+  }
+
+  async exportBusinessMetricsCsv(type = 'all') {
+    const metrics = await this.getBusinessMetrics();
+    await fs.mkdir(EXPORT_DIR, { recursive: true });
+    const stamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
+
+    const customerFile = `customer-analytics-${stamp}.csv`;
+    const producerFile = `producer-analytics-${stamp}.csv`;
+    const insightFile = `combined-insights-${stamp}.csv`;
+
+    const customerRows = [
+      ['metric', 'value'],
+      ...Object.entries(metrics.consumer).map(([key, value]) => [key, String(value)]),
+    ];
+    const producerRows = [
+      ['metric', 'value'],
+      ...Object.entries(metrics.producer)
+        .filter(([, value]) => !Array.isArray(value))
+        .map(([key, value]) => [key, String(value)]),
+    ];
+
+    const insightRows = [
+      ['insightType', 'productId', 'name', 'category', 'inventory', 'views', 'adds', 'purchases', 'returns', 'stockAgeDays'],
+    ];
+    const pushInsights = (type, items) => {
+      (items || []).forEach((item) => {
+        insightRows.push([
+          type,
+          String(item.productId || ''),
+          String(item.name || ''),
+          String(item.category || ''),
+          String(item.inventory || 0),
+          String(item.views || 0),
+          String(item.adds || 0),
+          String(item.purchases || 0),
+          String(item.returns || 0),
+          String(item.stockAgeDays || 0),
+        ]);
+      });
+    };
+    pushInsights('urgentRestocks', metrics.combinedInsights.urgentRestocks);
+    pushInsights('failingProducts', metrics.combinedInsights.failingProducts);
+    pushInsights('frictionProducts', metrics.combinedInsights.frictionProducts);
+    pushInsights('deadInventory', metrics.combinedInsights.deadInventory);
+
+    const toCsv = (rows) => rows
+      .map((row) => row.map((cell) => {
+        const normalized = String(cell ?? '');
+        if (/[,"\n]/.test(normalized)) return `"${normalized.replaceAll('"', '""')}"`;
+        return normalized;
+      }).join(','))
+      .join('\n');
+
+    const files = [];
+    if (type === 'all' || type === 'customer') {
+      await fs.writeFile(path.join(EXPORT_DIR, customerFile), toCsv(customerRows), 'utf8');
+      files.push({ type: 'customer', file: customerFile });
+    }
+    if (type === 'all' || type === 'producer') {
+      await fs.writeFile(path.join(EXPORT_DIR, producerFile), toCsv(producerRows), 'utf8');
+      files.push({ type: 'producer', file: producerFile });
+    }
+    if (type === 'all' || type === 'combined_insights') {
+      await fs.writeFile(path.join(EXPORT_DIR, insightFile), toCsv(insightRows), 'utf8');
+      files.push({ type: 'combined_insights', file: insightFile });
+    }
+
+    return { directory: EXPORT_DIR, files };
   }
 }
 

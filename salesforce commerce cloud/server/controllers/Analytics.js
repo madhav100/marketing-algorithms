@@ -81,4 +81,14 @@ module.exports = {
       return next(error);
     }
   },
+
+  async exportBusinessMetricsCsv(req, res, next) {
+    try {
+      const payload = getPayload(req);
+      const exportResult = await analyticsService.exportBusinessMetricsCsv(payload.type || 'all');
+      return jsonOk(res, exportResult);
+    } catch (error) {
+      return next(error);
+    }
+  },
 };

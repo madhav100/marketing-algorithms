@@ -516,7 +516,12 @@ textarea:focus-visible {
 .checkbox-label input { width: auto; }
 .metrics-grid--dashboard { margin-top: var(--space-4); }
 .dashboard-group-title {
-  margin: var(--space-5) 0 var(--space-2);
+  margin: 0;
+}
+
+.analytics-section {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
 }
 
 .dashboard-grid {
