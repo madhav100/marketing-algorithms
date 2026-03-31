@@ -7,7 +7,6 @@ const CSV_FIELDS = ['name', 'description', 'category', 'price', 'inventory', 'st
 const sidebarNav = document.getElementById('sidebarNav');
 const sidebarButtons = sidebarNav.querySelectorAll('.nav-item');
 const appSections = document.querySelectorAll('.app-section');
-const productsPreviewSection = document.getElementById('section-products-previews');
 
 const tableBody = document.getElementById('products-table-body');
 const inventoryTableBody = document.getElementById('inventory-table-body');
@@ -275,12 +274,6 @@ function showSection(sectionName) {
 
   const target = document.getElementById(`section-${sectionName}`);
   if (target) target.classList.add('is-visible');
-
-  if (sectionName === 'products') {
-    productsPreviewSection.classList.add('is-visible');
-  } else {
-    productsPreviewSection.classList.remove('is-visible');
-  }
 
   sidebarButtons.forEach((button) => {
     button.classList.toggle('active', button.dataset.section === sectionName);
