@@ -7,10 +7,6 @@
         }
     }
 
-    function clearCurrentCustomer() {
-        window.localStorage.removeItem('wmCurrentCustomer');
-    }
-
     function getServerBootId() {
         return document.body ? document.body.dataset.serverBootId || '' : '';
     }
@@ -330,7 +326,6 @@
         bindAccountDropdown();
         bindCategoryClicks();
         bindProductClicks();
-        bindSignOut();
         bindSearch();
         bindCarouselControls();
         highlightActiveCategoryFromUrl();
