@@ -88,13 +88,17 @@
             return;
         }
 
+        var signOutNavButton = document.getElementById('account-sign-out-nav');
+
         if (!customer) {
             if (introPanel) introPanel.hidden = false;
+            if (signOutNavButton) signOutNavButton.hidden = true;
             authForms.hidden = false;
             summary.hidden = true;
             return;
         }
 
+        if (signOutNavButton) signOutNavButton.hidden = false;
         if (introPanel) introPanel.hidden = true;
         authForms.hidden = true;
         summary.hidden = false;
@@ -161,6 +165,8 @@
             return;
         }
 
+        renderAccountSummary(customer, []);
+
         try {
             var orders = await fetchOrders(customer.id);
             renderAccountSummary(customer, orders);
@@ -199,6 +205,7 @@
         var signInForm = document.getElementById('sign-in-form');
         var signUpForm = document.getElementById('sign-up-form');
         var signOutButton = document.getElementById('account-sign-out');
+        var signOutNavButton = document.getElementById('account-sign-out-nav');
 
         signInForm.addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -240,8 +247,8 @@
             }
         });
 
-        if (signOutButton) {
-            signOutButton.addEventListener('click', function () {
+        [signOutButton, signOutNavButton].filter(Boolean).forEach(function (button) {
+            button.addEventListener('click', function () {
                 var customer = getCurrentCustomer();
                 if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
                     window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
@@ -253,7 +260,7 @@
                 setStatusMessage('Signed out.', '');
                 window.location.href = '/walmart';
             });
-        }
+        });
     }
 
     document.addEventListener('DOMContentLoaded', function () {
