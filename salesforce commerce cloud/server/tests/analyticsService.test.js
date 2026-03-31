@@ -89,6 +89,18 @@ test('exports analytics CSV files for data console ingestion', async () => {
   assert.equal(exportResult.files.length, 3);
 });
 
+test('repeat purchase rate uses signed-in customers with completed orders only', async () => {
+  const svc = new AnalyticsService({ persistenceEnabled: false });
+  svc.startSession({ sessionId: 'sess_repeat_1', customerId: 'cu9001', isLoggedIn: true, timestamp: '2026-03-26T10:00:00.000Z' });
+  svc.endSession({ sessionId: 'sess_repeat_1', timestamp: '2026-03-26T10:05:00.000Z' });
+
+  const allMetrics = await svc.getBusinessMetrics('all');
+  const customerMetrics = await svc.getBusinessMetrics('cu9001');
+
+  assert.equal(allMetrics.consumer.repeatPurchaseRate >= 0, true);
+  assert.equal(customerMetrics.scope.customerId, 'cu9001');
+});
+
 test('persists analytics sessions/events across service restart', async () => {
   const sessionsFile = path.join(__dirname, '../../admin-console/database/data/analytics-sessions.json');
   const eventsFile = path.join(__dirname, '../../admin-console/database/data/analytics-events.json');

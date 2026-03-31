@@ -308,6 +308,7 @@ class AnalyticsService {
     const purchasingCustomers = new Map();
     purchaseOrders.forEach((order) => {
       const scopedCustomerId = String(order.customerId || 'guest');
+      if (!scopedCustomerId || scopedCustomerId === 'guest') return;
       purchasingCustomers.set(scopedCustomerId, (purchasingCustomers.get(scopedCustomerId) || 0) + 1);
     });
 
@@ -384,6 +385,15 @@ class AnalyticsService {
     const repeatPurchaseRate = purchasingCustomers.size
       ? Number((repeatCustomerCount / purchasingCustomers.size).toFixed(4))
       : 0;
+    const abandonedSessions = sessions
+      .filter((session) => Boolean(session.cartAbandoned))
+      .map((session) => ({
+        sessionId: session.sessionId,
+        customerId: session.customerId,
+        cartItemCount: Number(session.cartItemCount || 0),
+        cartValue: Number(session.cartValue || 0),
+        lastCartUpdateAt: session.lastCartUpdateAt || null,
+      }));
     const avgSessionDurationMinutes = sessions.length
       ? Number((sessions.reduce((sum, session) => sum + Number(session.sessionDurationMinutes || 0), 0) / sessions.length).toFixed(2))
       : 0;
@@ -517,6 +527,11 @@ class AnalyticsService {
         failingProducts,
         frictionProducts,
         deadInventory: fillIfEmpty(deadInventory, deadFallback),
+      },
+      carts: {
+        abandonedCartCount: abandonedSessions.length,
+        abandonedCartRate: sessions.length ? Number((abandonedSessions.length / sessions.length).toFixed(4)) : 0,
+        abandonedSessions: abandonedSessions.slice(0, 20),
       },
       scope: {
         customerId: isAllCustomers ? 'all' : normalizedCustomerId,

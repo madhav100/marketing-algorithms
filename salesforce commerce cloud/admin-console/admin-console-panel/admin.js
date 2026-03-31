@@ -1,6 +1,7 @@
 let products = [];
 let categories = [];
 let customers = [];
+let orders = [];
 let selectedAnalyticsCustomerId = 'all';
 
 const CSV_FIELDS = ['name', 'description', 'category', 'price', 'inventory', 'status'];
@@ -77,6 +78,10 @@ const inventoryFilterSearch = document.getElementById('inventory-filter-search')
 const inventoryFilterStatus = document.getElementById('inventory-filter-status');
 const inventoryFilterStorefront = document.getElementById('inventory-filter-storefront');
 const inventoryResetFiltersButton = document.getElementById('inventory-reset-filters');
+const ordersCards = document.getElementById('orders-cards');
+const cartsAbandonedCountEl = document.getElementById('carts-abandoned-count');
+const cartsAbandonedRateEl = document.getElementById('carts-abandoned-rate');
+const cartsAbandonedListEl = document.getElementById('carts-abandoned-list');
 
 function setMessage(element, text, variant) {
   element.textContent = text;
@@ -334,6 +339,36 @@ function renderCustomersSection() {
   `).join('');
 }
 
+function renderOrdersSection() {
+  if (!ordersCards) return;
+  if (!orders.length) {
+    ordersCards.innerHTML = '<p class="section-note">No orders yet.</p>';
+    return;
+  }
+
+  ordersCards.innerHTML = orders.map((order) => `
+    <article class="card preview-card">
+      <h3>Order ${escapeHtml(order.id)}</h3>
+      <p>Status: ${escapeHtml(order.status || 'pending')}</p>
+      <p>Customer: ${escapeHtml(order.customer || order.customerId || 'N/A')}</p>
+      <p>Total: ${formatMoney(order.total || 0)}</p>
+      <p>Items: ${Number((order.items || []).length)}</p>
+    </article>
+  `).join('');
+}
+
+function renderCartsSection(metrics) {
+  const cartsMetrics = metrics.carts || {};
+  cartsAbandonedCountEl.textContent = String(cartsMetrics.abandonedCartCount || 0);
+  cartsAbandonedRateEl.textContent = formatPercent(cartsMetrics.abandonedCartRate || 0);
+
+  renderSimpleList(
+    cartsAbandonedListEl,
+    cartsMetrics.abandonedSessions || [],
+    (item) => `<strong>${escapeHtml(item.customerId || item.sessionId)}</strong> — ${Number(item.cartItemCount || 0)} item(s), ${formatMoney(item.cartValue || 0)}`
+  );
+}
+
 function formatMoney(value) {
   return `$${Number(value || 0).toFixed(2)}`;
 }
@@ -428,6 +463,8 @@ function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
     combined.deadInventory || [],
     (item) => `<strong>${escapeHtml(item.name)}</strong> — stock age ${Number(item.stockAgeDays || 0)}d<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
   );
+
+  renderCartsSection(customerMetrics);
 }
 
 async function fetchBusinessMetrics(customerId) {
@@ -526,19 +563,21 @@ function showSection(sectionName) {
 }
 
 async function loadData() {
-  const [productsResponse, categoriesResponse, customersResponse] = await Promise.all([
+  const [productsResponse, categoriesResponse, customersResponse, ordersResponse] = await Promise.all([
     fetch('/api/products'),
     fetch('/api/categories'),
-    fetch('/api/customers')
+    fetch('/api/customers'),
+    fetch('/api/orders')
   ]);
 
-  if (!productsResponse.ok || !categoriesResponse.ok || !customersResponse.ok) {
+  if (!productsResponse.ok || !categoriesResponse.ok || !customersResponse.ok || !ordersResponse.ok) {
     throw new Error('Failed to load admin data.');
   }
 
   products = await productsResponse.json();
   categories = await categoriesResponse.json();
   customers = await customersResponse.json();
+  orders = await ordersResponse.json();
 
   renderCategoryOptions();
   renderProductsTable();
@@ -546,6 +585,7 @@ async function loadData() {
   renderCategoriesSection();
   renderInventoryTable();
   renderCustomersSection();
+  renderOrdersSection();
   renderAnalyticsCustomerScopeOptions();
   await loadAnalyticsMetrics();
 }

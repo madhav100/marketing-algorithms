@@ -306,7 +306,8 @@
 
       <section id="section-orders" class="app-section card">
         <h2>Orders</h2>
-        <p class="section-note">Order operations will appear here.</p>
+        <p class="section-note">All orders are shown below.</p>
+        <div id="orders-cards" class="dashboard-grid"></div>
       </section>
 
       <section id="section-customers" class="app-section card">
@@ -331,7 +332,14 @@
 
       <section id="section-carts" class="app-section card">
         <h2>Carts</h2>
-        <p class="section-note">Customer cart controls will appear here.</p>
+        <p class="section-note">Abandoned cart analytics.</p>
+        <div class="metrics-grid metrics-grid--dashboard">
+          <article class="metric-card"><p>Abandoned Carts</p><h2 id="carts-abandoned-count">0</h2></article>
+          <article class="metric-card"><p>Abandoned Rate</p><h2 id="carts-abandoned-rate">0%</h2></article>
+        </div>
+        <section class="card table-card table-card--embedded" aria-label="Abandoned cart sessions">
+          <ul id="carts-abandoned-list" class="insight-list"></ul>
+        </section>
       </section>
 
     </main>
