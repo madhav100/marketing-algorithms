@@ -73,9 +73,9 @@ module.exports = {
     });
   },
 
-  async getBusinessMetrics(_req, res, next) {
+  async getBusinessMetrics(req, res, next) {
     try {
-      const metrics = await analyticsService.getBusinessMetrics();
+      const metrics = await analyticsService.getBusinessMetrics(req.query.customerId || 'all');
       return jsonOk(res, metrics);
     } catch (error) {
       return next(error);

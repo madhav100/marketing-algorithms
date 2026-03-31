@@ -219,38 +219,6 @@ class AnalyticsService {
     return session;
   }
 
-  trackCheckoutStart(payload) {
-    const session = this.getOrCreateSession(payload);
-    this.logEvent(session, 'checkout_start', {
-      cartItemCount: session.cartItemCount,
-      cartValue: session.cartValue,
-      timestamp: payload.timestamp || this.nowIso(),
-    }, payload.timestamp);
-    return session;
-  }
-
-  trackPurchaseComplete(payload) {
-    const session = this.getOrCreateSession(payload);
-    session.hasPurchase = true;
-    session.cartAbandoned = false;
-    this.logEvent(session, 'purchase_complete', {
-      orderId: payload.orderId,
-      total: Number(payload.total || 0),
-      timestamp: payload.timestamp || this.nowIso(),
-    }, payload.timestamp);
-    return session;
-  }
-
-  trackReturn(payload) {
-    const session = this.getOrCreateSession(payload);
-    this.logEvent(session, 'purchase_return', {
-      orderId: payload.orderId,
-      reason: payload.reason || '',
-      timestamp: payload.timestamp || this.nowIso(),
-    }, payload.timestamp);
-    return session;
-  }
-
   endSession(payload) {
     const session = this.getOrCreateSession(payload);
     const now = payload.timestamp || this.nowIso();
@@ -310,14 +278,20 @@ class AnalyticsService {
     return this.events.filter((evt) => evt.eventType === eventType);
   }
 
-  async getBusinessMetrics() {
-    const sessions = this.getAllSessions().filter((session) => session.customerId && session.customerId !== 'guest');
+  async getBusinessMetrics(customerId = 'all') {
+    const normalizedCustomerId = String(customerId || 'all');
+    const isAllCustomers = normalizedCustomerId === 'all';
+    const matchesCustomer = (value) => isAllCustomers || String(value || '') === normalizedCustomerId;
+
+    const sessions = this.getAllSessions().filter((session) => session.customerId && session.customerId !== 'guest' && matchesCustomer(session.customerId));
     const products = await readJsonFile('products.json');
     const orders = await readJsonFile('orders.json');
+    const customers = await readJsonFile('customers.json');
 
     const productById = new Map(products.map((product) => [String(product.id), product]));
-    const purchaseOrders = orders.filter((order) => !['cancelled', 'failed'].includes(String(order.status || '').toLowerCase()));
-    const returnOrders = orders.filter((order) => ['returned', 'refunded'].includes(String(order.status || '').toLowerCase()));
+    const scopedOrders = orders.filter((order) => matchesCustomer(order.customerId));
+    const purchaseOrders = scopedOrders.filter((order) => !['cancelled', 'failed'].includes(String(order.status || '').toLowerCase()));
+    const returnOrders = scopedOrders.filter((order) => ['returned', 'refunded'].includes(String(order.status || '').toLowerCase()));
 
     const signedInSessionIds = new Set(sessions.map((session) => session.sessionId));
     const signedInEvents = this.events.filter((event) => signedInSessionIds.has(event.sessionId));
@@ -333,8 +307,8 @@ class AnalyticsService {
     const uniqueVisitorIds = new Set(sessions.map((session) => String(session.customerId)));
     const purchasingCustomers = new Map();
     purchaseOrders.forEach((order) => {
-      const customerId = String(order.customerId || 'guest');
-      purchasingCustomers.set(customerId, (purchasingCustomers.get(customerId) || 0) + 1);
+      const scopedCustomerId = String(order.customerId || 'guest');
+      purchasingCustomers.set(scopedCustomerId, (purchasingCustomers.get(scopedCustomerId) || 0) + 1);
     });
 
     const revenueByCategoryMap = new Map();
@@ -523,7 +497,7 @@ class AnalyticsService {
       },
       producer: {
         totalRevenue: Number(totalRevenue.toFixed(2)),
-        totalOrders: orders.length,
+        totalOrders: scopedOrders.length,
         averageOrderValue: purchaseOrders.length ? Number((totalRevenue / purchaseOrders.length).toFixed(2)) : 0,
         unitsSold,
         revenueByCategory,
@@ -543,6 +517,10 @@ class AnalyticsService {
         failingProducts,
         frictionProducts,
         deadInventory: fillIfEmpty(deadInventory, deadFallback),
+      },
+      scope: {
+        customerId: isAllCustomers ? 'all' : normalizedCustomerId,
+        totalCustomers: customers.length,
       },
     };
   }

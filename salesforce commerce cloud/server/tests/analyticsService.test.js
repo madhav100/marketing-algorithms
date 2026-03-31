@@ -50,6 +50,7 @@ test('computes consumer, producer, and combined business metrics', async () => {
   svc.endSession({ sessionId: 'sess_101', timestamp: '2026-03-26T10:05:00.000Z' });
 
   const metrics = await svc.getBusinessMetrics();
+  const scopedMetrics = await svc.getBusinessMetrics('cu9001');
 
   assert.equal(metrics.consumer.sessionCount, 1);
   assert.equal(metrics.consumer.uniqueVisitorsOrCustomers, 1);
@@ -72,6 +73,9 @@ test('computes consumer, producer, and combined business metrics', async () => {
   assert.equal(Array.isArray(metrics.combinedInsights.deadInventory), true);
   assert.equal(metrics.combinedInsights.failingProducts.length, 0);
   assert.equal(metrics.combinedInsights.frictionProducts.length, 0);
+  assert.equal(metrics.scope.customerId, 'all');
+  assert.equal(scopedMetrics.scope.customerId, 'cu9001');
+  assert.equal(scopedMetrics.consumer.sessionCount, 1);
 });
 
 test('exports analytics CSV files for data console ingestion', async () => {

@@ -1,6 +1,7 @@
 let products = [];
 let categories = [];
 let customers = [];
+let selectedAnalyticsCustomerId = 'all';
 
 const CSV_FIELDS = ['name', 'description', 'category', 'price', 'inventory', 'status'];
 
@@ -56,6 +57,8 @@ const analyticsDeadInventoryEl = document.getElementById('analytics-dead-invento
 const exportCustomerAnalyticsCsvButton = document.getElementById('export-customer-analytics-csv');
 const exportProducerAnalyticsCsvButton = document.getElementById('export-producer-analytics-csv');
 const exportCombinedInsightsCsvButton = document.getElementById('export-combined-insights-csv');
+const analyticsCustomerScopeSelect = document.getElementById('analytics-customer-scope');
+const analyticsScopeSummary = document.getElementById('analytics-scope-summary');
 
 const productForm = document.getElementById('product-form');
 const productCategorySelect = document.getElementById('product-category');
@@ -352,6 +355,18 @@ function renderAnalyticsDashboard(metrics) {
   const consumer = metrics.consumer || {};
   const producer = metrics.producer || {};
   const combined = metrics.combinedInsights || {};
+  const scope = metrics.scope || {};
+
+  if (analyticsScopeSummary) {
+    if (scope.customerId && scope.customerId !== 'all') {
+      const selectedCustomer = customers.find((customer) => String(customer.id) === String(scope.customerId));
+      analyticsScopeSummary.textContent = selectedCustomer
+        ? `Showing analytics for ${selectedCustomer.name}.`
+        : `Showing analytics for customer ${scope.customerId}.`;
+    } else {
+      analyticsScopeSummary.textContent = `All customers selected (${Number(scope.totalCustomers || customers.length || 0)} total customers).`;
+    }
+  }
 
   analyticsSessionCountEl.textContent = String(consumer.sessionCount || 0);
   analyticsUniqueVisitorsEl.textContent = String(consumer.uniqueVisitorsOrCustomers || 0);
@@ -415,7 +430,10 @@ function renderAnalyticsDashboard(metrics) {
 }
 
 async function fetchBusinessMetrics() {
-  const endpoints = ['/admin/api/analytics/business-metrics', '/api/analytics/business-metrics'];
+  const query = selectedAnalyticsCustomerId && selectedAnalyticsCustomerId !== 'all'
+    ? `?customerId=${encodeURIComponent(selectedAnalyticsCustomerId)}`
+    : '';
+  const endpoints = [`/admin/api/analytics/business-metrics${query}`, `/api/analytics/business-metrics${query}`];
 
   for (const endpoint of endpoints) {
     const response = await fetch(endpoint);
@@ -444,6 +462,31 @@ async function exportAnalyticsCsv(type) {
   return response.json();
 }
 
+function renderAnalyticsCustomerScopeOptions() {
+  if (!analyticsCustomerScopeSelect) return;
+
+  const options = [
+    '<option value="all">All customers</option>',
+    ...customers.map((customer) => `<option value="${escapeHtml(customer.id)}">${escapeHtml(customer.name)} (${escapeHtml(customer.phone)})</option>`)
+  ];
+
+  analyticsCustomerScopeSelect.innerHTML = options.join('');
+  if (selectedAnalyticsCustomerId !== 'all' && !customers.some((customer) => String(customer.id) === String(selectedAnalyticsCustomerId))) {
+    selectedAnalyticsCustomerId = 'all';
+  }
+  analyticsCustomerScopeSelect.value = selectedAnalyticsCustomerId;
+}
+
+async function loadAnalyticsMetrics() {
+  try {
+    const analyticsMetrics = await fetchBusinessMetrics();
+    renderAnalyticsDashboard(analyticsMetrics);
+  } catch (error) {
+    renderAnalyticsDashboard({});
+    analyticsRevenueByCategoryEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
+  }
+}
+
 function bindAnalyticsExports() {
   const handleExportClick = async (type) => {
     try {
@@ -458,6 +501,13 @@ function bindAnalyticsExports() {
   exportCustomerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('customer'));
   exportProducerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('producer'));
   exportCombinedInsightsCsvButton?.addEventListener('click', () => handleExportClick('combined_insights'));
+}
+
+function bindAnalyticsScopeFilter() {
+  analyticsCustomerScopeSelect?.addEventListener('change', async () => {
+    selectedAnalyticsCustomerId = analyticsCustomerScopeSelect.value || 'all';
+    await loadAnalyticsMetrics();
+  });
 }
 
 function showSection(sectionName) {
@@ -492,19 +542,8 @@ async function loadData() {
   renderCategoriesSection();
   renderInventoryTable();
   renderCustomersSection();
-
-  try {
-    const analyticsMetrics = await fetchBusinessMetrics();
-    renderAnalyticsDashboard(analyticsMetrics);
-  } catch (error) {
-    renderAnalyticsDashboard({});
-    renderSimpleList(
-      analyticsRevenueByCategoryEl,
-      [],
-      () => ''
-    );
-    analyticsRevenueByCategoryEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
-  }
+  renderAnalyticsCustomerScopeOptions();
+  await loadAnalyticsMetrics();
 }
 
 function createProductPayload(formData) {
@@ -796,6 +835,7 @@ bindInventoryFilters();
 bindInventoryRetireToggle();
 bindCustomerActions();
 bindAnalyticsExports();
+bindAnalyticsScopeFilter();
 showSection('products');
 loadData().catch((error) => {
   tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
