@@ -79,6 +79,7 @@
     }
 
     function renderAccountSummary(customer, orders) {
+        var introPanel = document.getElementById('account-intro-panel');
         var authForms = document.getElementById('account-auth-forms');
         var summary = document.getElementById('account-summary');
         var ordersList = document.getElementById('account-orders-list');
@@ -87,12 +88,18 @@
             return;
         }
 
+        var signOutNavButton = document.getElementById('account-sign-out-nav');
+
         if (!customer) {
+            if (introPanel) introPanel.hidden = false;
+            if (signOutNavButton) signOutNavButton.hidden = true;
             authForms.hidden = false;
             summary.hidden = true;
             return;
         }
 
+        if (signOutNavButton) signOutNavButton.hidden = false;
+        if (introPanel) introPanel.hidden = true;
         authForms.hidden = true;
         summary.hidden = false;
         document.getElementById('account-customer-name').textContent = customer.name;
@@ -158,6 +165,8 @@
             return;
         }
 
+        renderAccountSummary(customer, []);
+
         try {
             var orders = await fetchOrders(customer.id);
             renderAccountSummary(customer, orders);
@@ -196,6 +205,7 @@
         var signInForm = document.getElementById('sign-in-form');
         var signUpForm = document.getElementById('sign-up-form');
         var signOutButton = document.getElementById('account-sign-out');
+        var signOutNavButton = document.getElementById('account-sign-out-nav');
 
         signInForm.addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -237,17 +247,19 @@
             }
         });
 
-        signOutButton.addEventListener('click', function () {
-            var customer = getCurrentCustomer();
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
-                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
-            }
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
-                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
-            }
-            clearCurrentCustomer();
-            setStatusMessage('Signed out.', '');
-            window.location.href = '/walmart';
+        [signOutButton, signOutNavButton].filter(Boolean).forEach(function (button) {
+            button.addEventListener('click', function () {
+                var customer = getCurrentCustomer();
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
+                    window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
+                }
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                    window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+                }
+                clearCurrentCustomer();
+                setStatusMessage('Signed out.', '');
+                window.location.href = '/walmart';
+            });
         });
     }
 

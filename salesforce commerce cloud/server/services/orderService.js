@@ -1,12 +1,9 @@
-const { readJsonFile } = require('../utils/fileStore');
+const { readJsonFile, writeJsonFile } = require('../utils/fileStore');
 
 const ORDERS_FILE = 'orders.json';
-const livePaymentOrders = [];
 
-// Return all orders from shared data plus live payment orders created in runtime.
 async function getAllOrders() {
-  const persisted = await readJsonFile(ORDERS_FILE);
-  return [...persisted, ...livePaymentOrders];
+  return readJsonFile(ORDERS_FILE);
 }
 
 async function getOrdersByCustomerId(customerId) {
@@ -14,7 +11,8 @@ async function getOrdersByCustomerId(customerId) {
   return orders.filter((order) => String(order.customerId || '') === String(customerId || ''));
 }
 
-function createPaymentOrder({ customerId, amount, currency, items, status, paymentStatus }) {
+async function createPaymentOrder({ customerId, amount, currency, items, status, paymentStatus }) {
+  const orders = await getAllOrders();
   const order = {
     id: `ord_live_${Date.now()}_${Math.floor(Math.random() * 10000)}`,
     customerId,
@@ -27,33 +25,41 @@ function createPaymentOrder({ customerId, amount, currency, items, status, payme
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  livePaymentOrders.push(order);
+
+  orders.push(order);
+  await writeJsonFile(ORDERS_FILE, orders);
   return order;
 }
 
-function linkOrderPaymentIntent(orderId, paymentIntentId) {
-  const order = livePaymentOrders.find((item) => item.id === orderId);
+async function linkOrderPaymentIntent(orderId, paymentIntentId) {
+  const orders = await getAllOrders();
+  const order = orders.find((item) => item.id === orderId);
   if (!order) return null;
   order.paymentIntentId = paymentIntentId;
   order.updatedAt = new Date().toISOString();
+  await writeJsonFile(ORDERS_FILE, orders);
   return order;
 }
 
-function updateOrderByPaymentIntent(paymentIntentId, paymentStatus) {
-  const order = livePaymentOrders.find((item) => item.paymentIntentId === paymentIntentId);
+async function updateOrderByPaymentIntent(paymentIntentId, paymentStatus) {
+  const orders = await getAllOrders();
+  const order = orders.find((item) => item.paymentIntentId === paymentIntentId);
   if (!order) return null;
   order.paymentStatus = paymentStatus;
   order.status = paymentStatus === 'paid' ? 'paid' : paymentStatus;
   order.updatedAt = new Date().toISOString();
+  await writeJsonFile(ORDERS_FILE, orders);
   return order;
 }
 
-function updateOrderPaymentStatus(orderId, paymentStatus) {
-  const order = livePaymentOrders.find((item) => item.id === orderId);
+async function updateOrderPaymentStatus(orderId, paymentStatus) {
+  const orders = await getAllOrders();
+  const order = orders.find((item) => item.id === orderId);
   if (!order) return null;
   order.paymentStatus = paymentStatus;
   order.status = paymentStatus === 'paid' ? 'paid' : paymentStatus;
   order.updatedAt = new Date().toISOString();
+  await writeJsonFile(ORDERS_FILE, orders);
   return order;
 }
 
