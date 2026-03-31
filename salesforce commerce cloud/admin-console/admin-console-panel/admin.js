@@ -317,12 +317,14 @@ function renderCustomersSection() {
 
 function renderOrdersSection() {
   if (!ordersCards) return;
-  if (!orders.length) {
+  const visibleOrders = orders.filter((order) => String(order.id || '').startsWith('ord_live_'));
+
+  if (!visibleOrders.length) {
     ordersCards.innerHTML = '<p class="section-note">No orders yet.</p>';
     return;
   }
 
-  ordersCards.innerHTML = orders.map((order) => `
+  ordersCards.innerHTML = visibleOrders.map((order) => `
     <article class="card preview-card">
       <h3>Order ${escapeHtml(order.id)}</h3>
       <p>Customer: ${escapeHtml(customers.find((customer) => String(customer.id) === String(order.customerId))?.name || order.customer || 'Unknown customer')}</p>
@@ -338,7 +340,10 @@ function renderCartsSection(metrics) {
   renderSimpleList(
     cartsAbandonedListEl,
     cartsMetrics.abandonedSessions || [],
-    (item) => `<strong>${escapeHtml(item.customerId || item.sessionId)}</strong> — ${Number(item.cartItemCount || 0)} item(s), ${formatMoney(item.cartValue || 0)}`
+    (item) => {
+      const customerName = customers.find((customer) => String(customer.id) === String(item.customerId || ''))?.name;
+      return `<strong>${escapeHtml(customerName || item.customerId || item.sessionId)}</strong> — ${Number(item.cartItemCount || 0)} item(s), ${formatMoney(item.cartValue || 0)}`;
+    }
   );
 }
 
@@ -412,17 +417,25 @@ async function fetchBusinessMetrics(customerId) {
 }
 
 async function exportAnalyticsCsv(type) {
-  const response = await fetch('/admin/api/analytics/export-csv', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: type || 'all' }),
-  });
+  const endpoints = ['/admin/api/analytics/export-csv', '/api/analytics/export-csv'];
 
-  if (!response.ok) {
-    throw new Error('Failed to export analytics CSV files.');
+  for (const endpoint of endpoints) {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: type || 'all' }),
+    });
+
+    if (response.ok) {
+      return response.json();
+    }
+
+    if (response.status !== 404) {
+      throw new Error('Failed to export analytics CSV files.');
+    }
   }
 
-  return response.json();
+  throw new Error('Analytics export endpoint not available in this runtime.');
 }
 
 function renderAnalyticsCustomerScopeOptions() {
@@ -458,7 +471,7 @@ function bindAnalyticsExports() {
     try {
       const result = await exportAnalyticsCsv(type);
       const exportedFileNames = (result.files || []).map((entry) => entry.file).join(', ');
-      setMessage(productCsvMessage, `Analytics CSV export generated: ${exportedFileNames}`, 'success');
+      setMessage(productCsvMessage, `Analytics CSV export generated in ${result.directory || 'export folder'}: ${exportedFileNames}`, 'success');
     } catch (error) {
       setMessage(productCsvMessage, error.message, 'error');
     }

@@ -18,5 +18,6 @@ router.get('/admin/api/customer-sessions', AnalyticsController.getCustomerSessio
 router.get('/admin/api/customer-sessions/:sessionId', AnalyticsController.getCustomerSessionById);
 router.get('/admin/api/analytics/business-metrics', AnalyticsController.getBusinessMetrics);
 router.post('/admin/api/analytics/export-csv', AnalyticsController.exportBusinessMetricsCsv);
+router.post('/api/analytics/export-csv', AnalyticsController.exportBusinessMetricsCsv);
 
 module.exports = router;
