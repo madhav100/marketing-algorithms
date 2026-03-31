@@ -2,15 +2,22 @@ const { createUserSession } = require('../models/userSession');
 const { createSessionEvent } = require('../models/sessionEvent');
 const { readJsonFile } = require('../utils/fileStore');
 const fs = require('fs/promises');
+const fsSync = require('fs');
 const path = require('path');
 
 const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 const EXPORT_DIR = path.join(__dirname, '../../admin-console/database/data-console-exports');
+const ANALYTICS_SESSIONS_FILE = path.join(__dirname, '../../admin-console/database/data/analytics-sessions.json');
+const ANALYTICS_EVENTS_FILE = path.join(__dirname, '../../admin-console/database/data/analytics-events.json');
 
 class AnalyticsService {
-  constructor() {
+  constructor(options = {}) {
+    this.persistenceEnabled = options.persistenceEnabled !== false;
     this.sessions = new Map();
     this.events = [];
+    if (this.persistenceEnabled) {
+      this.hydrateFromDisk();
+    }
   }
 
   nowIso() {
@@ -32,7 +39,38 @@ class AnalyticsService {
       createdAt,
     });
     this.events.push(event);
+    this.persistState();
     return event;
+  }
+
+  hydrateFromDisk() {
+    try {
+      if (fsSync.existsSync(ANALYTICS_SESSIONS_FILE)) {
+        const sessionsPayload = fsSync.readFileSync(ANALYTICS_SESSIONS_FILE, 'utf8');
+        const sessionRows = JSON.parse(sessionsPayload || '[]');
+        this.sessions = new Map(sessionRows.map((session) => [session.sessionId, session]));
+      }
+
+      if (fsSync.existsSync(ANALYTICS_EVENTS_FILE)) {
+        const eventsPayload = fsSync.readFileSync(ANALYTICS_EVENTS_FILE, 'utf8');
+        this.events = JSON.parse(eventsPayload || '[]');
+      }
+    } catch (error) {
+      this.sessions = new Map();
+      this.events = [];
+    }
+  }
+
+  persistState() {
+    if (!this.persistenceEnabled) {
+      return;
+    }
+    try {
+      fsSync.writeFileSync(ANALYTICS_SESSIONS_FILE, JSON.stringify(this.getAllSessions(), null, 2), 'utf8');
+      fsSync.writeFileSync(ANALYTICS_EVENTS_FILE, JSON.stringify(this.events, null, 2), 'utf8');
+    } catch (error) {
+      // Intentionally swallow persistence errors to avoid blocking request flow in local dev.
+    }
   }
 
   recordLoggedInDuration(session, endedAt) {
@@ -77,6 +115,7 @@ class AnalyticsService {
     }
 
     this.logEvent(session, 'session_start', {}, payload.timestamp);
+    this.persistState();
     return session;
   }
 
@@ -88,6 +127,7 @@ class AnalyticsService {
     }
     session.lastLoginAt = payload.timestamp || this.nowIso();
     this.logEvent(session, 'login', {}, payload.timestamp);
+    this.persistState();
     return session;
   }
 
@@ -97,6 +137,7 @@ class AnalyticsService {
     this.recordLoggedInDuration(session, now);
     session.isLoggedIn = false;
     this.logEvent(session, 'logout', { loggedInMinutes: session.loggedInMinutes }, now);
+    this.persistState();
     return session;
   }
 
@@ -108,6 +149,7 @@ class AnalyticsService {
       categoryName: payload.categoryName,
       timestamp: payload.timestamp || this.nowIso(),
     }, payload.timestamp);
+    this.persistState();
     return session;
   }
 
@@ -121,6 +163,7 @@ class AnalyticsService {
       sourceSection: payload.sourceSection,
       timestamp: payload.timestamp || this.nowIso(),
     }, payload.timestamp);
+    this.persistState();
     return session;
   }
 
@@ -137,6 +180,42 @@ class AnalyticsService {
       price: payload.price || 0,
       timestamp: payload.timestamp || this.nowIso(),
     }, payload.timestamp);
+    this.persistState();
+    return session;
+  }
+
+  trackCheckoutStart(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'checkout_start', {
+      cartItemCount: session.cartItemCount,
+      cartValue: session.cartValue,
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    this.persistState();
+    return session;
+  }
+
+  trackPurchaseComplete(payload) {
+    const session = this.getOrCreateSession(payload);
+    session.hasPurchase = true;
+    session.cartAbandoned = false;
+    this.logEvent(session, 'purchase_complete', {
+      orderId: payload.orderId,
+      total: Number(payload.total || 0),
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    this.persistState();
+    return session;
+  }
+
+  trackReturn(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'purchase_return', {
+      orderId: payload.orderId,
+      reason: payload.reason || '',
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    this.persistState();
     return session;
   }
 
@@ -190,6 +269,7 @@ class AnalyticsService {
     }, now);
 
     this.evaluateCartAbandonment(session.sessionId);
+    this.persistState();
     return session;
   }
 
@@ -210,7 +290,7 @@ class AnalyticsService {
         abandonedAt: this.nowIso(),
       });
     }
-
+    this.persistState();
     return session;
   }
 

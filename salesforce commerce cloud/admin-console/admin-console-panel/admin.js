@@ -70,6 +70,10 @@ const filterCategory = document.getElementById('filter-category');
 const filterStatus = document.getElementById('filter-status');
 const filterStock = document.getElementById('filter-stock');
 const resetFiltersButton = document.getElementById('reset-filters');
+const inventoryFilterSearch = document.getElementById('inventory-filter-search');
+const inventoryFilterStatus = document.getElementById('inventory-filter-status');
+const inventoryFilterStorefront = document.getElementById('inventory-filter-storefront');
+const inventoryResetFiltersButton = document.getElementById('inventory-reset-filters');
 
 function setMessage(element, text, variant) {
   element.textContent = text;
@@ -260,12 +264,13 @@ function renderCategoriesSection() {
 }
 
 function renderInventoryTable() {
-  if (!products.length) {
+  const visibleProducts = getFilteredInventoryProducts();
+  if (!visibleProducts.length) {
     inventoryTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No products available.</td></tr>';
     return;
   }
 
-  inventoryTableBody.innerHTML = products.map((product) => {
+  inventoryTableBody.innerHTML = visibleProducts.map((product) => {
     const status = getComputedStatus(product);
     const storefrontState = getStorefrontState(product);
     return `
@@ -288,9 +293,27 @@ function renderInventoryTable() {
   }).join('');
 }
 
+function getFilteredInventoryProducts() {
+  const searchValue = String(inventoryFilterSearch?.value || '').trim().toLowerCase();
+  const statusValue = String(inventoryFilterStatus?.value || 'all');
+  const storefrontValue = String(inventoryFilterStorefront?.value || 'all');
+
+  return products.filter((product) => {
+    const name = String(product.name || '').toLowerCase();
+    const category = String(product.category || '').toLowerCase();
+    const status = getComputedStatus(product);
+    const storefront = product.retired ? 'archived' : 'visible';
+
+    const matchesSearch = !searchValue || name.includes(searchValue) || category.includes(searchValue);
+    const matchesStatus = statusValue === 'all' || status === statusValue;
+    const matchesStorefront = storefrontValue === 'all' || storefront === storefrontValue;
+    return matchesSearch && matchesStatus && matchesStorefront;
+  });
+}
+
 function renderCustomersSection() {
   if (!customers.length) {
-    customersTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No customer accounts yet.</td></tr>';
+    customersTableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No customer accounts yet.</td></tr>';
     return;
   }
 
@@ -301,6 +324,9 @@ function renderCustomersSection() {
       <td>${escapeHtml(customer.address)}</td>
       <td>${Number(customer.orderCount || 0)}</td>
       <td>${escapeHtml(customer.lastOrderStatus || 'No orders yet')}</td>
+      <td>
+        <button class="btn" data-action="delete-customer" data-customer-id="${escapeHtml(customer.id)}" type="button">Delete</button>
+      </td>
     </tr>
   `).join('');
 }
@@ -508,6 +534,13 @@ async function saveProduct(payload, productId) {
   return response.json();
 }
 
+async function deleteCustomer(customerId) {
+  const response = await fetch(`/api/customers/${customerId}`, { method: 'DELETE' });
+  if (!response.ok) {
+    throw new Error('Unable to delete customer.');
+  }
+}
+
 async function handleProductSubmit(event) {
   event.preventDefault();
   setMessage(productFormMessage, 'Saving product...', '');
@@ -683,6 +716,20 @@ function bindFilters() {
   });
 }
 
+function bindInventoryFilters() {
+  [inventoryFilterSearch, inventoryFilterStatus, inventoryFilterStorefront].forEach((input) => {
+    input?.addEventListener('input', renderInventoryTable);
+    input?.addEventListener('change', renderInventoryTable);
+  });
+
+  inventoryResetFiltersButton?.addEventListener('click', () => {
+    if (inventoryFilterSearch) inventoryFilterSearch.value = '';
+    if (inventoryFilterStatus) inventoryFilterStatus.value = 'all';
+    if (inventoryFilterStorefront) inventoryFilterStorefront.value = 'all';
+    renderInventoryTable();
+  });
+}
+
 function bindInventoryRetireToggle() {
   document.addEventListener('change', async function (event) {
     const checkbox = event.target.closest('[data-action="toggle-retired"]');
@@ -712,6 +759,28 @@ function bindInventoryRetireToggle() {
   });
 }
 
+function bindCustomerActions() {
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-action="delete-customer"]');
+    if (!button) return;
+
+    const customerId = button.dataset.customerId;
+    const customer = customers.find((item) => String(item.id) === String(customerId));
+    if (!customer) return;
+
+    const confirmed = window.confirm(`Delete customer ${customer.name}? This permanently removes them from the database.`);
+    if (!confirmed) return;
+
+    try {
+      await deleteCustomer(customerId);
+      await loadData();
+      setMessage(productCsvMessage, `Deleted customer ${customer.name}.`, 'success');
+    } catch (error) {
+      setMessage(productCsvMessage, error.message, 'error');
+    }
+  });
+}
+
 sidebarNav.addEventListener('click', (event) => {
   const btn = event.target.closest('.nav-item');
   if (!btn) return;
@@ -723,13 +792,15 @@ importCsvButton.addEventListener('click', () => productCsvFileInput.click());
 exportCsvButton.addEventListener('click', handleCsvExport);
 productCsvFileInput.addEventListener('change', handleCsvImport);
 bindFilters();
+bindInventoryFilters();
 bindInventoryRetireToggle();
+bindCustomerActions();
 bindAnalyticsExports();
 showSection('products');
 loadData().catch((error) => {
   tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   inventoryTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
-  customersTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+  customersTableBody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   categoriesList.innerHTML = `<p class="section-note">${escapeHtml(error.message)}</p>`;
   setMessage(productCsvMessage, error.message, 'error');
 });

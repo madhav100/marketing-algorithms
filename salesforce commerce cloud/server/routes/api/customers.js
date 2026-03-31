@@ -7,5 +7,6 @@ router.get('/', customerApiController.getCustomers);
 router.post('/sign-up', customerApiController.signUpCustomer);
 router.post('/sign-in', customerApiController.signInCustomer);
 router.get('/:id/orders', customerApiController.getCustomerOrders);
+router.delete('/:id', customerApiController.deleteCustomer);
 
 module.exports = router;

@@ -266,6 +266,26 @@
             <p>Retire products to keep them in the console/database while hiding them from the storefront.</p>
           </div>
         </div>
+        <section class="card filters" aria-label="Filter inventory">
+          <label>Search<input id="inventory-filter-search" type="search" placeholder="Find by product or category" /></label>
+          <label>Catalog Status
+            <select id="inventory-filter-status">
+              <option value="all">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Draft">Draft</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Retired">Retired</option>
+            </select>
+          </label>
+          <label>Storefront
+            <select id="inventory-filter-storefront">
+              <option value="all">All</option>
+              <option value="visible">Visible</option>
+              <option value="archived">Archived</option>
+            </select>
+          </label>
+          <button id="inventory-reset-filters" class="btn" type="button">Reset Filters</button>
+        </section>
         <section class="card table-card table-card--embedded" aria-label="Inventory table">
           <table>
             <thead>
@@ -295,7 +315,7 @@
           <table>
             <thead>
               <tr>
-                <th>Name</th><th>Phone</th><th>Home Address</th><th>Orders</th><th>Last Order Status</th>
+                <th>Name</th><th>Phone</th><th>Home Address</th><th>Orders</th><th>Last Order Status</th><th>Actions</th>
               </tr>
             </thead>
             <tbody id="customers-table-body"></tbody>

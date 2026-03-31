@@ -48,7 +48,20 @@ async function getCustomerOrders(req, res, next) {
   }
 }
 
+async function deleteCustomer(req, res, next) {
+  try {
+    const removed = await customerService.deleteCustomer(req.params.id);
+    if (!removed) {
+      return res.status(404).json({ message: 'Customer not found.' });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
+  deleteCustomer,
   getCustomerOrders,
   getCustomers,
   signInCustomer,
