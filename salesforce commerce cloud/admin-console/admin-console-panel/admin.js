@@ -309,7 +309,6 @@ function renderCustomersSection() {
       <td>${escapeHtml(customer.phone)}</td>
       <td>${escapeHtml(customer.address)}</td>
       <td>${Number(customer.orderCount || 0)}</td>
-      <td>${escapeHtml(customer.lastOrderStatus || 'No orders yet')}</td>
       <td>
         <button class="btn" data-action="delete-customer" data-customer-id="${escapeHtml(customer.id)}" type="button">Delete</button>
       </td>

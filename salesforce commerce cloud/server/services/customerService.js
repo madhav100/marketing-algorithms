@@ -33,7 +33,6 @@ async function getCustomersWithStats() {
     return {
       ...sanitizeCustomer(customer),
       orderCount: customerOrders.length,
-      lastOrderStatus: customerOrders.length ? customerOrders[0].status : 'No orders yet',
     };
   });
 }
