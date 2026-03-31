@@ -2,6 +2,9 @@ const { readJsonFile, writeJsonFile } = require('../utils/fileStore');
 const orderService = require('./orderService');
 
 const CUSTOMERS_FILE = 'customers.json';
+const ORDERS_FILE = 'orders.json';
+const ANALYTICS_SESSIONS_FILE = 'analytics-sessions.json';
+const ANALYTICS_EVENTS_FILE = 'analytics-events.json';
 
 function sanitizeCustomer(customer) {
   if (!customer) {
@@ -14,6 +17,33 @@ function sanitizeCustomer(customer) {
 
 async function getAllCustomers() {
   return readJsonFile(CUSTOMERS_FILE);
+}
+
+async function safeRead(fileName) {
+  try {
+    return await readJsonFile(fileName);
+  } catch (error) {
+    return [];
+  }
+}
+
+async function pruneCustomerOperationalData(customerId) {
+  const [orders, sessions, events] = await Promise.all([
+    safeRead(ORDERS_FILE),
+    safeRead(ANALYTICS_SESSIONS_FILE),
+    safeRead(ANALYTICS_EVENTS_FILE),
+  ]);
+
+  const normalizedCustomerId = String(customerId);
+  const filteredOrders = orders.filter((order) => String(order.customerId || '') !== normalizedCustomerId);
+  const filteredSessions = sessions.filter((session) => String(session.customerId || '') !== normalizedCustomerId);
+  const filteredEvents = events.filter((event) => String(event.customerId || '') !== normalizedCustomerId);
+
+  await Promise.all([
+    writeJsonFile(ORDERS_FILE, filteredOrders),
+    writeJsonFile(ANALYTICS_SESSIONS_FILE, filteredSessions),
+    writeJsonFile(ANALYTICS_EVENTS_FILE, filteredEvents),
+  ]);
 }
 
 async function getCustomerById(id) {
@@ -89,8 +119,10 @@ async function deleteCustomer(id) {
   const customers = await getAllCustomers();
   const index = customers.findIndex((customer) => String(customer.id) === String(id));
   if (index === -1) return false;
+  const removedCustomer = customers[index];
   customers.splice(index, 1);
   await writeJsonFile(CUSTOMERS_FILE, customers);
+  await pruneCustomerOperationalData(removedCustomer.id);
   return true;
 }
 

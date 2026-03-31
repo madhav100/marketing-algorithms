@@ -1,5 +1,6 @@
 const customerService = require('../../services/customerService');
 const orderService = require('../../services/orderService');
+const { analyticsService } = require('../Analytics');
 
 async function getCustomers(req, res, next) {
   try {
@@ -54,6 +55,7 @@ async function deleteCustomer(req, res, next) {
     if (!removed) {
       return res.status(404).json({ message: 'Customer not found.' });
     }
+    analyticsService.purgeCustomerData(req.params.id);
     return res.status(204).send();
   } catch (error) {
     return next(error);

@@ -266,6 +266,20 @@ class AnalyticsService {
     return [...this.sessions.values()];
   }
 
+  purgeCustomerData(customerId) {
+    const normalizedCustomerId = String(customerId || '');
+    if (!normalizedCustomerId) return;
+
+    for (const [sessionId, session] of this.sessions.entries()) {
+      if (String(session.customerId || '') === normalizedCustomerId) {
+        this.sessions.delete(sessionId);
+      }
+    }
+
+    this.events = this.events.filter((event) => String(event.customerId || '') !== normalizedCustomerId);
+    this.persistState();
+  }
+
   getSessionById(sessionId) {
     return this.sessions.get(sessionId) || null;
   }
@@ -521,13 +535,7 @@ class AnalyticsService {
     await fs.mkdir(EXPORT_DIR, { recursive: true });
     const stamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
 
-    const customerFile = `customer-analytics-${stamp}.csv`;
     const cartsFile = `carts-analytics-${stamp}.csv`;
-
-    const customerRows = [
-      ['metric', 'value'],
-      ...Object.entries(metrics.consumer).map(([key, value]) => [key, String(value)]),
-    ];
     const cartsRows = [
       ['metric', 'value'],
       ['abandonedCartCount', String(metrics.carts?.abandonedCartCount || 0)],
@@ -550,8 +558,19 @@ class AnalyticsService {
 
     const files = [];
     if (type === 'all' || type === 'customer') {
-      await fs.writeFile(path.join(EXPORT_DIR, customerFile), toCsv(customerRows), 'utf8');
-      files.push({ type: 'customer', file: customerFile });
+      const customers = await readJsonFile('customers.json');
+      for (const customer of customers) {
+        const customerMetrics = await this.getBusinessMetrics(customer.id);
+        const customerFile = `customer-analytics-${customer.id}-${stamp}.csv`;
+        const customerRows = [
+          ['metric', 'value'],
+          ['customerId', String(customer.id || '')],
+          ['customerName', String(customer.name || '')],
+          ...Object.entries(customerMetrics.consumer || {}).map(([key, value]) => [key, String(value)]),
+        ];
+        await fs.writeFile(path.join(EXPORT_DIR, customerFile), toCsv(customerRows), 'utf8');
+        files.push({ type: 'customer', file: customerFile, customerId: String(customer.id || '') });
+      }
     }
     if (type === 'all' || type === 'carts') {
       await fs.writeFile(path.join(EXPORT_DIR, cartsFile), toCsv(cartsRows), 'utf8');

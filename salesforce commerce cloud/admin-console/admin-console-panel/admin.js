@@ -58,7 +58,6 @@ const inventoryFilterStorefront = document.getElementById('inventory-filter-stor
 const inventoryResetFiltersButton = document.getElementById('inventory-reset-filters');
 const ordersCards = document.getElementById('orders-cards');
 const cartsAbandonedCountEl = document.getElementById('carts-abandoned-count');
-const cartsAbandonedRateEl = document.getElementById('carts-abandoned-rate');
 const cartsAbandonedListEl = document.getElementById('carts-abandoned-list');
 
 function setMessage(element, text, variant) {
@@ -326,8 +325,7 @@ function renderOrdersSection() {
   ordersCards.innerHTML = orders.map((order) => `
     <article class="card preview-card">
       <h3>Order ${escapeHtml(order.id)}</h3>
-      <p>Status: ${escapeHtml(order.status || 'pending')}</p>
-      <p>Customer: ${escapeHtml(order.customer || order.customerId || 'N/A')}</p>
+      <p>Customer: ${escapeHtml(customers.find((customer) => String(customer.id) === String(order.customerId))?.name || order.customer || 'Unknown customer')}</p>
       <p>Total: ${formatMoney(order.total || 0)}</p>
       <p>Items: ${Number((order.items || []).length)}</p>
     </article>
@@ -337,8 +335,6 @@ function renderOrdersSection() {
 function renderCartsSection(metrics) {
   const cartsMetrics = metrics.carts || {};
   cartsAbandonedCountEl.textContent = String(cartsMetrics.abandonedCartCount || 0);
-  cartsAbandonedRateEl.textContent = formatPercent(cartsMetrics.abandonedCartRate || 0);
-
   renderSimpleList(
     cartsAbandonedListEl,
     cartsMetrics.abandonedSessions || [],

@@ -75,7 +75,8 @@ test('exports analytics CSV files for data console ingestion', async () => {
 
   const exportResult = await svc.exportBusinessMetricsCsv('all');
   assert.equal(Array.isArray(exportResult.files), true);
-  assert.equal(exportResult.files.length, 2);
+  assert.equal(exportResult.files.some((entry) => entry.type === 'customer'), true);
+  assert.equal(exportResult.files.some((entry) => entry.type === 'carts'), true);
 });
 
 test('repeat purchase rate uses signed-in customers with completed orders only', async () => {
