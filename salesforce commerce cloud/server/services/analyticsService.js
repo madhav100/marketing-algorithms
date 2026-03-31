@@ -497,36 +497,12 @@ class AnalyticsService {
         checkoutStartCount: checkoutStarts.length,
         completedPurchaseCount: Math.max(completedPurchasesFromEvents.length, purchaseOrders.length),
         repeatCustomerCount,
-        repeatPurchaseRate,
         avgSessionDurationMinutes,
         avgLoggedInMinutes,
         loginEventCount: loginEvents.length,
         logoutEventCount: logoutEvents.length,
         cartToCheckoutRate,
         checkoutToPurchaseRate,
-      },
-      producer: {
-        totalRevenue: Number(totalRevenue.toFixed(2)),
-        totalOrders: scopedOrders.length,
-        averageOrderValue: purchaseOrders.length ? Number((totalRevenue / purchaseOrders.length).toFixed(2)) : 0,
-        unitsSold,
-        revenueByCategory,
-        topSellingProducts,
-        lowStockCount,
-        outOfStockCount,
-        returnCount: returnOrders.length,
-        returnRate: purchaseOrders.length ? Number((returnOrders.length / purchaseOrders.length).toFixed(4)) : 0,
-        activeProductsCount,
-        retiredProductsCount,
-        inventoryTurnoverRate,
-        sellThroughRate,
-        grossRevenuePerVisitor,
-      },
-      combinedInsights: {
-        urgentRestocks: fillIfEmpty(urgentRestocks, urgentRestocksFallback),
-        failingProducts,
-        frictionProducts,
-        deadInventory: fillIfEmpty(deadInventory, deadFallback),
       },
       carts: {
         abandonedCartCount: abandonedSessions.length,
@@ -546,43 +522,23 @@ class AnalyticsService {
     const stamp = new Date().toISOString().replaceAll(':', '-').replaceAll('.', '-');
 
     const customerFile = `customer-analytics-${stamp}.csv`;
-    const producerFile = `producer-analytics-${stamp}.csv`;
-    const insightFile = `combined-insights-${stamp}.csv`;
+    const cartsFile = `carts-analytics-${stamp}.csv`;
 
     const customerRows = [
       ['metric', 'value'],
       ...Object.entries(metrics.consumer).map(([key, value]) => [key, String(value)]),
     ];
-    const producerRows = [
+    const cartsRows = [
       ['metric', 'value'],
-      ...Object.entries(metrics.producer)
-        .filter(([, value]) => !Array.isArray(value))
-        .map(([key, value]) => [key, String(value)]),
+      ['abandonedCartCount', String(metrics.carts?.abandonedCartCount || 0)],
+      ['abandonedCartRate', String(metrics.carts?.abandonedCartRate || 0)],
+      ['---', '---'],
+      ['sessionId', 'customerId,cartItemCount,cartValue,lastCartUpdateAt'],
+      ...(metrics.carts?.abandonedSessions || []).map((session) => [
+        String(session.sessionId || ''),
+        `${session.customerId || ''},${session.cartItemCount || 0},${session.cartValue || 0},${session.lastCartUpdateAt || ''}`
+      ]),
     ];
-
-    const insightRows = [
-      ['insightType', 'productId', 'name', 'category', 'inventory', 'views', 'adds', 'purchases', 'returns', 'stockAgeDays'],
-    ];
-    const pushInsights = (type, items) => {
-      (items || []).forEach((item) => {
-        insightRows.push([
-          type,
-          String(item.productId || ''),
-          String(item.name || ''),
-          String(item.category || ''),
-          String(item.inventory || 0),
-          String(item.views || 0),
-          String(item.adds || 0),
-          String(item.purchases || 0),
-          String(item.returns || 0),
-          String(item.stockAgeDays || 0),
-        ]);
-      });
-    };
-    pushInsights('urgentRestocks', metrics.combinedInsights.urgentRestocks);
-    pushInsights('failingProducts', metrics.combinedInsights.failingProducts);
-    pushInsights('frictionProducts', metrics.combinedInsights.frictionProducts);
-    pushInsights('deadInventory', metrics.combinedInsights.deadInventory);
 
     const toCsv = (rows) => rows
       .map((row) => row.map((cell) => {
@@ -597,13 +553,9 @@ class AnalyticsService {
       await fs.writeFile(path.join(EXPORT_DIR, customerFile), toCsv(customerRows), 'utf8');
       files.push({ type: 'customer', file: customerFile });
     }
-    if (type === 'all' || type === 'producer') {
-      await fs.writeFile(path.join(EXPORT_DIR, producerFile), toCsv(producerRows), 'utf8');
-      files.push({ type: 'producer', file: producerFile });
-    }
-    if (type === 'all' || type === 'combined_insights') {
-      await fs.writeFile(path.join(EXPORT_DIR, insightFile), toCsv(insightRows), 'utf8');
-      files.push({ type: 'combined_insights', file: insightFile });
+    if (type === 'all' || type === 'carts') {
+      await fs.writeFile(path.join(EXPORT_DIR, cartsFile), toCsv(cartsRows), 'utf8');
+      files.push({ type: 'carts', file: cartsFile });
     }
 
     return { directory: EXPORT_DIR, files };

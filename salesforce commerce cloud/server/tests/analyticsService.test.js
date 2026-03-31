@@ -38,7 +38,7 @@ test('server-side cart abandonment decision', () => {
   assert.equal(session.cartAbandoned, true);
 });
 
-test('computes consumer, producer, and combined business metrics', async () => {
+test('computes consumer and carts business metrics', async () => {
   const svc = new AnalyticsService({ persistenceEnabled: false });
   svc.startSession({ sessionId: 'sess_101', customerId: 'cu9001', isLoggedIn: true, timestamp: '2026-03-26T10:00:00.000Z' });
   svc.logLogin({ sessionId: 'sess_101', customerId: 'cu9001', timestamp: '2026-03-26T10:00:30.000Z' });
@@ -60,19 +60,8 @@ test('computes consumer, producer, and combined business metrics', async () => {
   assert.equal(metrics.consumer.completedPurchaseCount, 2);
   assert.equal(metrics.consumer.loginEventCount, 1);
   assert.equal(metrics.consumer.logoutEventCount, 1);
-  assert.equal(metrics.producer.totalOrders, 2);
-  assert.equal(metrics.producer.totalRevenue, 308.98);
-  assert.equal(metrics.producer.unitsSold, 4);
-  assert.equal(metrics.producer.lowStockCount, 0);
-  assert.equal(metrics.producer.outOfStockCount, 0);
-  assert.equal(Array.isArray(metrics.producer.revenueByCategory), true);
-  assert.equal(Array.isArray(metrics.producer.topSellingProducts), true);
-  assert.equal(Array.isArray(metrics.combinedInsights.urgentRestocks), true);
-  assert.equal(Array.isArray(metrics.combinedInsights.failingProducts), true);
-  assert.equal(Array.isArray(metrics.combinedInsights.frictionProducts), true);
-  assert.equal(Array.isArray(metrics.combinedInsights.deadInventory), true);
-  assert.equal(metrics.combinedInsights.failingProducts.length, 0);
-  assert.equal(metrics.combinedInsights.frictionProducts.length, 0);
+  assert.equal(metrics.carts.abandonedCartCount >= 0, true);
+  assert.equal(Array.isArray(metrics.carts.abandonedSessions), true);
   assert.equal(metrics.scope.customerId, 'all');
   assert.equal(scopedMetrics.scope.customerId, 'cu9001');
   assert.equal(scopedMetrics.consumer.sessionCount, 1);
@@ -86,7 +75,7 @@ test('exports analytics CSV files for data console ingestion', async () => {
 
   const exportResult = await svc.exportBusinessMetricsCsv('all');
   assert.equal(Array.isArray(exportResult.files), true);
-  assert.equal(exportResult.files.length, 3);
+  assert.equal(exportResult.files.length, 2);
 });
 
 test('repeat purchase rate uses signed-in customers with completed orders only', async () => {
@@ -97,7 +86,7 @@ test('repeat purchase rate uses signed-in customers with completed orders only',
   const allMetrics = await svc.getBusinessMetrics('all');
   const customerMetrics = await svc.getBusinessMetrics('cu9001');
 
-  assert.equal(allMetrics.consumer.repeatPurchaseRate >= 0, true);
+  assert.equal(allMetrics.consumer.repeatCustomerCount >= 0, true);
   assert.equal(customerMetrics.scope.customerId, 'cu9001');
 });
 

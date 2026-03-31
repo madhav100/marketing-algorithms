@@ -29,35 +29,13 @@ const analyticsAddToCartEl = document.getElementById('analytics-add-to-cart');
 const analyticsCartAbandonmentEl = document.getElementById('analytics-cart-abandonment');
 const analyticsCheckoutStartsEl = document.getElementById('analytics-checkout-starts');
 const analyticsCompletedPurchasesEl = document.getElementById('analytics-completed-purchases');
-const analyticsRepeatRateEl = document.getElementById('analytics-repeat-rate');
 const analyticsAvgSessionMinutesEl = document.getElementById('analytics-avg-session-minutes');
 const analyticsAvgLoggedInMinutesEl = document.getElementById('analytics-avg-logged-in-minutes');
 const analyticsLoginEventsEl = document.getElementById('analytics-login-events');
 const analyticsLogoutEventsEl = document.getElementById('analytics-logout-events');
 const analyticsCartCheckoutRateEl = document.getElementById('analytics-cart-checkout-rate');
 const analyticsCheckoutPurchaseRateEl = document.getElementById('analytics-checkout-purchase-rate');
-const analyticsTotalRevenueEl = document.getElementById('analytics-total-revenue');
-const analyticsTotalOrdersEl = document.getElementById('analytics-total-orders');
-const analyticsAovEl = document.getElementById('analytics-aov');
-const analyticsUnitsSoldEl = document.getElementById('analytics-units-sold');
-const analyticsLowStockCountEl = document.getElementById('analytics-low-stock-count');
-const analyticsOutOfStockCountEl = document.getElementById('analytics-out-of-stock-count');
-const analyticsReturnCountEl = document.getElementById('analytics-return-count');
-const analyticsReturnRateEl = document.getElementById('analytics-return-rate');
-const analyticsActiveProductsEl = document.getElementById('analytics-active-products');
-const analyticsRetiredProductsEl = document.getElementById('analytics-retired-products');
-const analyticsInventoryTurnoverEl = document.getElementById('analytics-inventory-turnover');
-const analyticsSellThroughRateEl = document.getElementById('analytics-sell-through-rate');
-const analyticsRevenuePerVisitorEl = document.getElementById('analytics-revenue-per-visitor');
-const analyticsRevenueByCategoryEl = document.getElementById('analytics-revenue-by-category');
-const analyticsTopSellingProductsEl = document.getElementById('analytics-top-selling-products');
-const analyticsUrgentRestocksEl = document.getElementById('analytics-urgent-restocks');
-const analyticsFailingProductsEl = document.getElementById('analytics-failing-products');
-const analyticsFrictionProductsEl = document.getElementById('analytics-friction-products');
-const analyticsDeadInventoryEl = document.getElementById('analytics-dead-inventory');
 const exportCustomerAnalyticsCsvButton = document.getElementById('export-customer-analytics-csv');
-const exportProducerAnalyticsCsvButton = document.getElementById('export-producer-analytics-csv');
-const exportCombinedInsightsCsvButton = document.getElementById('export-combined-insights-csv');
 const analyticsCustomerScopeSelect = document.getElementById('analytics-customer-scope');
 const analyticsScopeSummary = document.getElementById('analytics-scope-summary');
 
@@ -388,8 +366,6 @@ function renderSimpleList(element, items, formatter) {
 
 function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
   const consumer = customerMetrics.consumer || {};
-  const producer = marketMetrics.producer || {};
-  const combined = marketMetrics.combinedInsights || {};
   const customerScope = customerMetrics.scope || {};
   const marketScope = marketMetrics.scope || {};
 
@@ -411,58 +387,12 @@ function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
   analyticsCartAbandonmentEl.textContent = String(consumer.cartAbandonmentCount || 0);
   analyticsCheckoutStartsEl.textContent = String(consumer.checkoutStartCount || 0);
   analyticsCompletedPurchasesEl.textContent = String(consumer.completedPurchaseCount || 0);
-  analyticsRepeatRateEl.textContent = formatPercent(consumer.repeatPurchaseRate || 0);
   analyticsAvgSessionMinutesEl.textContent = String(consumer.avgSessionDurationMinutes || 0);
   analyticsAvgLoggedInMinutesEl.textContent = String(consumer.avgLoggedInMinutes || 0);
   analyticsLoginEventsEl.textContent = String(consumer.loginEventCount || 0);
   analyticsLogoutEventsEl.textContent = String(consumer.logoutEventCount || 0);
   analyticsCartCheckoutRateEl.textContent = formatPercent(consumer.cartToCheckoutRate || 0);
   analyticsCheckoutPurchaseRateEl.textContent = formatPercent(consumer.checkoutToPurchaseRate || 0);
-
-  analyticsTotalRevenueEl.textContent = formatMoney(producer.totalRevenue || 0);
-  analyticsTotalOrdersEl.textContent = String(producer.totalOrders || 0);
-  analyticsAovEl.textContent = formatMoney(producer.averageOrderValue || 0);
-  analyticsUnitsSoldEl.textContent = String(producer.unitsSold || 0);
-  analyticsLowStockCountEl.textContent = String(producer.lowStockCount || 0);
-  analyticsOutOfStockCountEl.textContent = String(producer.outOfStockCount || 0);
-  analyticsReturnCountEl.textContent = String(producer.returnCount || 0);
-  analyticsReturnRateEl.textContent = formatPercent(producer.returnRate || 0);
-  analyticsActiveProductsEl.textContent = String(producer.activeProductsCount || 0);
-  analyticsRetiredProductsEl.textContent = String(producer.retiredProductsCount || 0);
-  analyticsInventoryTurnoverEl.textContent = formatPercent(producer.inventoryTurnoverRate || 0);
-  analyticsSellThroughRateEl.textContent = formatPercent(producer.sellThroughRate || 0);
-  analyticsRevenuePerVisitorEl.textContent = formatMoney(producer.grossRevenuePerVisitor || 0);
-
-  renderSimpleList(
-    analyticsRevenueByCategoryEl,
-    producer.revenueByCategory || [],
-    (item) => `<strong>${escapeHtml(item.category)}</strong>: ${formatMoney(item.revenue)}`
-  );
-  renderSimpleList(
-    analyticsTopSellingProductsEl,
-    producer.topSellingProducts || [],
-    (item) => `<strong>${escapeHtml(item.productName)}</strong> — ${Number(item.unitsSold || 0)} units (${formatMoney(item.revenue)})`
-  );
-  renderSimpleList(
-    analyticsUrgentRestocksEl,
-    combined.urgentRestocks || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — velocity ${Number(item.salesVelocity || 0)}, inventory ${Number(item.inventory || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
-  );
-  renderSimpleList(
-    analyticsFailingProductsEl,
-    combined.failingProducts || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — returns ${Number(item.returns || 0)}, conversion ${formatPercent(item.conversion || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
-  );
-  renderSimpleList(
-    analyticsFrictionProductsEl,
-    combined.frictionProducts || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — views ${Number(item.views || 0)}, adds ${Number(item.adds || 0)}, purchases ${Number(item.purchases || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
-  );
-  renderSimpleList(
-    analyticsDeadInventoryEl,
-    combined.deadInventory || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — stock age ${Number(item.stockAgeDays || 0)}d<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
-  );
 
   renderCartsSection(customerMetrics);
 }
@@ -524,7 +454,7 @@ async function loadAnalyticsMetrics() {
     renderAnalyticsDashboard(customerMetrics, marketMetrics);
   } catch (error) {
     renderAnalyticsDashboard({}, {});
-    analyticsRevenueByCategoryEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
+    cartsAbandonedListEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
   }
 }
 
@@ -540,8 +470,6 @@ function bindAnalyticsExports() {
   };
 
   exportCustomerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('customer'));
-  exportProducerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('producer'));
-  exportCombinedInsightsCsvButton?.addEventListener('click', () => handleExportClick('combined_insights'));
 }
 
 function bindAnalyticsScopeFilter() {
