@@ -94,7 +94,17 @@
         }
 
         button.addEventListener('click', function () {
-            upsertCartItem(buildCartItem(button));
+            var item = buildCartItem(button);
+            upsertCartItem(item);
+
+            if (window.SfraCartTracker && typeof window.SfraCartTracker.trackAddToCart === 'function') {
+                window.SfraCartTracker.trackAddToCart(
+                    item.id,
+                    item.title,
+                    1,
+                    item.price
+                );
+            }
             window.alert('Product added to cart for ' + (getCurrentCustomer() ? getCurrentCustomer().name : 'guest') + '.');
         });
     }
@@ -102,6 +112,15 @@
     document.addEventListener('DOMContentLoaded', function () {
         syncCartStorageWithServerBoot();
         updateAccountLinks();
+        var productButton = document.getElementById('product-add-to-cart');
+        if (productButton && window.SfraProductTracker && typeof window.SfraProductTracker.trackProductClick === 'function') {
+            window.SfraProductTracker.trackProductClick(
+                productButton.dataset.productId,
+                productButton.dataset.productTitle,
+                'product',
+                'product-detail'
+            );
+        }
         bindAddToCart();
     });
 }());

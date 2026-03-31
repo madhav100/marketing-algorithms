@@ -21,6 +21,30 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
   }
   currentOrderId = setup.orderId || '';
 
+  function trackCheckoutAnalytics(eventType, extraPayload) {
+    const analyticsSession = window.SfraAnalyticsSession;
+    const sessionId = analyticsSession && analyticsSession.getSessionId && analyticsSession.getSessionId();
+    const customerId = analyticsSession && analyticsSession.getCurrentCustomerId && analyticsSession.getCurrentCustomerId();
+    const isSignedIn = analyticsSession && analyticsSession.isSignedIn && analyticsSession.isSignedIn();
+    if (!sessionId || !isSignedIn || !customerId || customerId === 'guest') return;
+
+    fetch(`/analytics/${eventType}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        customerId,
+        ...extraPayload,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+  }
+
+  trackCheckoutAnalytics('checkout-start', {
+    cartItemCount: (checkoutPayload.items || []).reduce((sum, item) => sum + Number(item.quantity || 0), 0),
+    cartValue: Number(checkoutPayload.amount || 0),
+  });
+
   async function persistPaymentStatus(paymentStatus, paymentIntentId) {
     if (!currentOrderId) {
       return;
@@ -43,6 +67,7 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
       event.preventDefault();
       submitButton.disabled = true;
       await persistPaymentStatus('paid', setup.paymentIntentId);
+      trackCheckoutAnalytics('purchase-complete', { orderId: currentOrderId, total: Number(checkoutPayload.amount || 0) });
       setMessage('Mock payment succeeded. Add Stripe test keys for real Payment Element.');
       submitButton.disabled = false;
     });
@@ -81,6 +106,7 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
 
     if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
       await persistPaymentStatus('paid', result.paymentIntent.id);
+      trackCheckoutAnalytics('purchase-complete', { orderId: currentOrderId, total: Number(checkoutPayload.amount || 0) });
       setMessage('Payment successful. Your order is now visible on My Orders.');
       submitButton.disabled = false;
       return;
