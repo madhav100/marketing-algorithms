@@ -79,6 +79,7 @@
     }
 
     function renderAccountSummary(customer, orders) {
+        var introPanel = document.getElementById('account-intro-panel');
         var authForms = document.getElementById('account-auth-forms');
         var summary = document.getElementById('account-summary');
         var ordersList = document.getElementById('account-orders-list');
@@ -88,11 +89,13 @@
         }
 
         if (!customer) {
+            if (introPanel) introPanel.hidden = false;
             authForms.hidden = false;
             summary.hidden = true;
             return;
         }
 
+        if (introPanel) introPanel.hidden = true;
         authForms.hidden = true;
         summary.hidden = false;
         document.getElementById('account-customer-name').textContent = customer.name;
@@ -237,18 +240,20 @@
             }
         });
 
-        signOutButton.addEventListener('click', function () {
-            var customer = getCurrentCustomer();
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
-                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
-            }
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
-                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
-            }
-            clearCurrentCustomer();
-            setStatusMessage('Signed out.', '');
-            window.location.href = '/walmart';
-        });
+        if (signOutButton) {
+            signOutButton.addEventListener('click', function () {
+                var customer = getCurrentCustomer();
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
+                    window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
+                }
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                    window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+                }
+                clearCurrentCustomer();
+                setStatusMessage('Signed out.', '');
+                window.location.href = '/walmart';
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {

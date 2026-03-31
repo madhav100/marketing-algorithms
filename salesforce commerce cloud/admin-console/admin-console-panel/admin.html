@@ -31,8 +31,7 @@
           <li><button class="nav-item" type="button" data-section="inventory"><span>◆</span>Inventory</button></li>
           <li><button class="nav-item" type="button" data-section="orders"><span>▦</span>Orders</button></li>
           <li><button class="nav-item" type="button" data-section="customers"><span>◉</span>Customers</button></li>
-          <li><button class="nav-item" type="button" data-section="content"><span>▤</span>Content</button></li>
-          <li><button class="nav-item" type="button" data-section="settings"><span>⚙</span>Settings</button></li>
+          <li><button class="nav-item" type="button" data-section="carts"><span>▣</span>Carts</button></li>
         </ul>
       </nav>
     </aside>
@@ -147,12 +146,43 @@
             <p>Quick business totals across products, customers, and catalog health.</p>
           </div>
         </div>
+        <section class="card filters" aria-label="Analytics customer scope filter">
+          <label>Analytics Scope
+            <select id="analytics-customer-scope"></select>
+          </label>
+          <p class="section-note" id="analytics-scope-summary">All customers selected.</p>
+        </section>
         <div class="metrics-grid metrics-grid--dashboard">
           <article class="metric-card"><p>Customers</p><h2 id="dashboard-customers">0</h2></article>
           <article class="metric-card"><p>Retired Products</p><h2 id="dashboard-retired-products">0</h2></article>
           <article class="metric-card"><p>Visible Storefront Products</p><h2 id="dashboard-visible-products">0</h2></article>
           <article class="metric-card"><p>Categories</p><h2 id="dashboard-categories">0</h2></article>
         </div>
+
+        <section class="card analytics-section">
+          <div class="card-heading card-heading--split">
+            <div>
+              <h3 class="dashboard-group-title">Customer Analytics (Signed-in only)</h3>
+            </div>
+            <div class="card-heading__actions">
+              <button class="btn" id="export-customer-analytics-csv" type="button">Export Customer CSV</button>
+            </div>
+          </div>
+          <div class="metrics-grid metrics-grid--dashboard">
+            <article class="metric-card"><p>Sessions</p><h2 id="analytics-session-count">0</h2></article>
+            <article class="metric-card"><p>Unique Visitors/Customers</p><h2 id="analytics-unique-visitors">0</h2></article>
+            <article class="metric-card"><p>Product Views</p><h2 id="analytics-product-views">0</h2></article>
+            <article class="metric-card"><p>Add to Cart</p><h2 id="analytics-add-to-cart">0</h2></article>
+            <article class="metric-card"><p>Cart Abandonments</p><h2 id="analytics-cart-abandonment">0</h2></article>
+            <article class="metric-card"><p>Checkout Starts</p><h2 id="analytics-checkout-starts">0</h2></article>
+            <article class="metric-card"><p>Completed Purchases</p><h2 id="analytics-completed-purchases">0</h2></article>
+            <article class="metric-card"><p>Purchases Total</p><h2 id="analytics-purchases-total">$0.00</h2></article>
+            <article class="metric-card"><p>Avg Session (min)</p><h2 id="analytics-avg-session-minutes">0</h2></article>
+            <article class="metric-card"><p>Avg Logged-in (min)</p><h2 id="analytics-avg-logged-in-minutes">0</h2></article>
+            <article class="metric-card"><p>Login Events</p><h2 id="analytics-login-events">0</h2></article>
+            <article class="metric-card"><p>Logout Events</p><h2 id="analytics-logout-events">0</h2></article>
+          </div>
+        </section>
       </section>
 
       <section id="section-categories" class="app-section card">
@@ -172,6 +202,26 @@
             <p>Retire products to keep them in the console/database while hiding them from the storefront.</p>
           </div>
         </div>
+        <section class="card filters" aria-label="Filter inventory">
+          <label>Search<input id="inventory-filter-search" type="search" placeholder="Find by product or category" /></label>
+          <label>Catalog Status
+            <select id="inventory-filter-status">
+              <option value="all">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Draft">Draft</option>
+              <option value="Low Stock">Low Stock</option>
+              <option value="Retired">Retired</option>
+            </select>
+          </label>
+          <label>Storefront
+            <select id="inventory-filter-storefront">
+              <option value="all">All</option>
+              <option value="visible">Visible</option>
+              <option value="archived">Archived</option>
+            </select>
+          </label>
+          <button id="inventory-reset-filters" class="btn" type="button">Reset Filters</button>
+        </section>
         <section class="card table-card table-card--embedded" aria-label="Inventory table">
           <table>
             <thead>
@@ -186,7 +236,8 @@
 
       <section id="section-orders" class="app-section card">
         <h2>Orders</h2>
-        <p class="section-note">Order operations will appear here.</p>
+        <p class="section-note">All orders are shown below.</p>
+        <div id="orders-cards" class="dashboard-grid"></div>
       </section>
 
       <section id="section-customers" class="app-section card">
@@ -194,14 +245,13 @@
           <div>
             <h2>Customers</h2>
             <p>Customer accounts, their contact details, and linked order counts.</p>
-            <p><a href="/admin/customer-sessions/customer-sessions.html">Open User Sessions Analytics</a></p>
           </div>
         </div>
         <section class="card table-card table-card--embedded" aria-label="Customers table">
           <table>
             <thead>
               <tr>
-                <th>Name</th><th>Phone</th><th>Home Address</th><th>Orders</th><th>Last Order Status</th>
+                <th>Name</th><th>Phone</th><th>Home Address</th><th>Orders</th><th>Actions</th>
               </tr>
             </thead>
             <tbody id="customers-table-body"></tbody>
@@ -209,21 +259,17 @@
         </section>
       </section>
 
-      <section id="section-content" class="app-section card">
-        <h2>Content</h2>
-        <p class="section-note">Content controls will appear here.</p>
+      <section id="section-carts" class="app-section card">
+        <h2>Carts</h2>
+        <p class="section-note">Abandoned cart analytics.</p>
+        <div class="metrics-grid metrics-grid--dashboard">
+          <article class="metric-card"><p>Abandoned Carts</p><h2 id="carts-abandoned-count">0</h2></article>
+        </div>
+        <section class="card table-card table-card--embedded" aria-label="Abandoned cart sessions">
+          <ul id="carts-abandoned-list" class="insight-list"></ul>
+        </section>
       </section>
 
-      <section id="section-settings" class="app-section card">
-        <h2>Settings</h2>
-        <p class="section-note">System settings will appear here.</p>
-      </section>
-
-      <section id="section-products-previews" class="preview-grid app-section is-visible" aria-label="Additional admin previews">
-        <article class="card preview-card"><h3>Customer Accounts</h3><p>Customers now sign in with name, phone number, home address, and password from the storefront account page.</p></article>
-        <article class="card preview-card"><h3>Customer Cart Scope</h3><p>Each signed-in customer keeps a separate cart scope and order history reference.</p></article>
-        <article class="card preview-card"><h3>Retired Inventory</h3><p>Retired products stay available in admin and the database, but no longer appear on the storefront.</p></article>
-      </section>
     </main>
   </div>
 

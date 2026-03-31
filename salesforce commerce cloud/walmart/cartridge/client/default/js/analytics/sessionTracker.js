@@ -30,23 +30,40 @@
   }
 
   const sessionId = getSessionId();
-  post('/analytics/session/start', { sessionId, customerId: getCurrentCustomerId(), isLoggedIn: getCurrentCustomerId() !== 'guest' });
+  const currentCustomerId = getCurrentCustomerId();
+  if (currentCustomerId !== 'guest') {
+    post('/analytics/session/start', { sessionId, customerId: currentCustomerId, isLoggedIn: true });
+  }
 
   window.SfraAnalyticsSession = {
     getSessionId,
-    login(customerId) { return post('/analytics/session/login', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
-    logout(customerId) { return post('/analytics/session/logout', { sessionId, customerId: customerId || getCurrentCustomerId() }); },
+    getCurrentCustomerId,
+    isSignedIn() { return getCurrentCustomerId() !== 'guest'; },
+    login(customerId) {
+      const resolvedCustomerId = customerId || getCurrentCustomerId();
+      if (resolvedCustomerId === 'guest') return Promise.resolve();
+      return post('/analytics/session/login', { sessionId, customerId: resolvedCustomerId });
+    },
+    logout(customerId) {
+      const resolvedCustomerId = customerId || getCurrentCustomerId();
+      if (resolvedCustomerId === 'guest') return Promise.resolve();
+      return post('/analytics/session/logout', { sessionId, customerId: resolvedCustomerId });
+    },
     end(customerId) {
+      const resolvedCustomerId = customerId || getCurrentCustomerId();
       localStorage.removeItem(STORAGE_KEY);
-      return post('/analytics/session/end', { sessionId, customerId: customerId || getCurrentCustomerId() });
+      if (resolvedCustomerId === 'guest') return Promise.resolve();
+      return post('/analytics/session/end', { sessionId, customerId: resolvedCustomerId });
     },
   };
 
   window.addEventListener('beforeunload', () => {
+    const customerId = getCurrentCustomerId();
+    if (customerId === 'guest') return;
     fetch('/analytics/session/end', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, customerId: getCurrentCustomerId() }),
+      body: JSON.stringify({ sessionId, customerId }),
       keepalive: true,
     });
   });
