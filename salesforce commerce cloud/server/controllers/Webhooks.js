@@ -9,7 +9,7 @@ function mapPaymentStatus(eventType) {
   return 'pending_payment';
 }
 
-function handleStripeWebhook(req, res) {
+async function handleStripeWebhook(req, res) {
   try {
     const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body || {}));
     paymentService.verifyStripeWebhook(rawBody, req.headers['stripe-signature']);
@@ -19,7 +19,7 @@ function handleStripeWebhook(req, res) {
 
     if (paymentIntentId) {
       const paymentStatus = mapPaymentStatus(event.type);
-      orderService.updateOrderByPaymentIntent(paymentIntentId, paymentStatus);
+      await orderService.updateOrderByPaymentIntent(paymentIntentId, paymentStatus);
     }
 
     return res.status(200).json({ received: true });
