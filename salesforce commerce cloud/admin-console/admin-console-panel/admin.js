@@ -298,7 +298,7 @@ function getFilteredInventoryProducts() {
 
 function renderCustomersSection() {
   if (!customers.length) {
-    customersTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No customer accounts yet.</td></tr>';
+    customersTableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No customer accounts yet.</td></tr>';
     return;
   }
 
