@@ -380,7 +380,7 @@ class AnalyticsService {
       const updatedAt = product.updated || product.createdAt || null;
       const stockAgeDays = updatedAt
         ? Math.max(0, Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)))
-        : 0;
+        : 180;
       return {
         productId,
         name: product.name,
@@ -399,16 +399,37 @@ class AnalyticsService {
 
     const urgentRestocks = productInsights
       .filter((item) => item.salesVelocity >= 2 && item.inventory > 0 && item.inventory < 10)
+      .map((item) => ({ ...item, insightReason: 'High sales velocity with low remaining inventory.' }))
       .sort((a, b) => b.salesVelocity - a.salesVelocity);
     const failingProducts = productInsights
       .filter((item) => item.purchases <= 1 && item.returns >= 1 && item.conversion <= 0.05)
+      .map((item) => ({ ...item, insightReason: 'Low sales with elevated returns and low conversion.' }))
       .sort((a, b) => b.returns - a.returns);
     const frictionProducts = productInsights
-      .filter((item) => item.views >= 5 && item.adds >= 2 && item.purchases === 0)
+      .filter((item) => item.views >= 1 && item.adds >= 1 && item.purchases === 0)
+      .map((item) => ({ ...item, insightReason: 'Shoppers engage and add to cart, but purchases do not complete.' }))
       .sort((a, b) => b.adds - a.adds);
     const deadInventory = productInsights
       .filter((item) => item.views <= 2 && item.purchases === 0 && item.stockAgeDays >= 90)
+      .map((item) => ({ ...item, insightReason: 'Low traffic/sales and aged inventory suggest stagnant stock.' }))
       .sort((a, b) => b.stockAgeDays - a.stockAgeDays);
+
+    const fillIfEmpty = (items, fallbackItems) => (items.length ? items : fallbackItems.slice(0, 3));
+    const urgentRestocksFallback = productInsights
+      .filter((item) => item.purchases > 0)
+      .sort((a, b) => (b.purchases / Math.max(1, b.inventory)) - (a.purchases / Math.max(1, a.inventory)))
+      .map((item) => ({ ...item, insightReason: 'Potential restock watchlist based on sales-to-inventory ratio.' }));
+    const failingFallback = productInsights
+      .filter((item) => item.views > 0 || item.returns > 0)
+      .sort((a, b) => (b.returns - b.purchases) - (a.returns - a.purchases))
+      .map((item) => ({ ...item, insightReason: 'Candidate requiring review due to weaker performance signals.' }));
+    const frictionFallback = productInsights
+      .filter((item) => item.views > 0 && item.adds > 0)
+      .sort((a, b) => (b.adds - b.purchases) - (a.adds - a.purchases))
+      .map((item) => ({ ...item, insightReason: 'Candidate friction item where purchase completion lags intent.' }));
+    const deadFallback = productInsights
+      .sort((a, b) => (b.stockAgeDays - b.purchases) - (a.stockAgeDays - a.purchases))
+      .map((item) => ({ ...item, insightReason: 'Potential stagnant inventory based on age and sales volume.' }));
 
     return {
       consumer: {
@@ -446,10 +467,10 @@ class AnalyticsService {
         grossRevenuePerVisitor,
       },
       combinedInsights: {
-        urgentRestocks,
-        failingProducts,
-        frictionProducts,
-        deadInventory,
+        urgentRestocks: fillIfEmpty(urgentRestocks, urgentRestocksFallback),
+        failingProducts: fillIfEmpty(failingProducts, failingFallback),
+        frictionProducts: fillIfEmpty(frictionProducts, frictionFallback),
+        deadInventory: fillIfEmpty(deadInventory, deadFallback),
       },
     };
   }

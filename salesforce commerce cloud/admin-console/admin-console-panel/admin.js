@@ -369,22 +369,22 @@ function renderAnalyticsDashboard(metrics) {
   renderSimpleList(
     analyticsUrgentRestocksEl,
     combined.urgentRestocks || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — velocity ${Number(item.salesVelocity || 0)}, inventory ${Number(item.inventory || 0)}`
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — velocity ${Number(item.salesVelocity || 0)}, inventory ${Number(item.inventory || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
   );
   renderSimpleList(
     analyticsFailingProductsEl,
     combined.failingProducts || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — returns ${Number(item.returns || 0)}, conversion ${formatPercent(item.conversion || 0)}`
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — returns ${Number(item.returns || 0)}, conversion ${formatPercent(item.conversion || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
   );
   renderSimpleList(
     analyticsFrictionProductsEl,
     combined.frictionProducts || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — views ${Number(item.views || 0)}, adds ${Number(item.adds || 0)}, purchases ${Number(item.purchases || 0)}`
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — views ${Number(item.views || 0)}, adds ${Number(item.adds || 0)}, purchases ${Number(item.purchases || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
   );
   renderSimpleList(
     analyticsDeadInventoryEl,
     combined.deadInventory || [],
-    (item) => `<strong>${escapeHtml(item.name)}</strong> — stock age ${Number(item.stockAgeDays || 0)}d`
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — stock age ${Number(item.stockAgeDays || 0)}d<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
   );
 }
 
