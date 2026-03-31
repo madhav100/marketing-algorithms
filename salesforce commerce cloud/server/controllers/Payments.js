@@ -31,7 +31,7 @@ function validateCheckoutPayload(payload = {}) {
 async function createIntent(req, res) {
   try {
     const payload = validateCheckoutPayload(req.body || {});
-    const order = orderService.createPaymentOrder({
+    const order = await orderService.createPaymentOrder({
       customerId: payload.customerId,
       amount: payload.amount,
       currency: payload.currency,
@@ -46,7 +46,7 @@ async function createIntent(req, res) {
       metadata: { orderId: order.id, customerId: payload.customerId },
     });
 
-    orderService.linkOrderPaymentIntent(order.id, intent.id);
+    await orderService.linkOrderPaymentIntent(order.id, intent.id);
 
     return res.status(200).json({
       publishableKey: paymentService.getPublishableKey(),
@@ -60,7 +60,7 @@ async function createIntent(req, res) {
   }
 }
 
-function confirmIntent(req, res) {
+async function confirmIntent(req, res) {
   try {
     const orderId = String(req.body?.orderId || '').trim();
     const paymentIntentId = String(req.body?.paymentIntentId || '').trim();
@@ -70,13 +70,13 @@ function confirmIntent(req, res) {
       throw new Error('Missing order id.');
     }
 
-    const updatedOrder = orderService.updateOrderPaymentStatus(orderId, paymentStatus);
+    const updatedOrder = await orderService.updateOrderPaymentStatus(orderId, paymentStatus);
     if (!updatedOrder) {
       throw new Error('Order not found.');
     }
 
     if (paymentIntentId && !updatedOrder.paymentIntentId) {
-      orderService.linkOrderPaymentIntent(orderId, paymentIntentId);
+      await orderService.linkOrderPaymentIntent(orderId, paymentIntentId);
     }
 
     return res.status(200).json({
