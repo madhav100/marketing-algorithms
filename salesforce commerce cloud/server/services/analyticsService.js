@@ -1,5 +1,6 @@
 const { createUserSession } = require('../models/userSession');
 const { createSessionEvent } = require('../models/sessionEvent');
+const { readJsonFile } = require('../utils/fileStore');
 
 const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
@@ -136,6 +137,38 @@ class AnalyticsService {
     return session;
   }
 
+  trackCheckoutStart(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'checkout_start', {
+      cartItemCount: session.cartItemCount,
+      cartValue: session.cartValue,
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
+  trackPurchaseComplete(payload) {
+    const session = this.getOrCreateSession(payload);
+    session.hasPurchase = true;
+    session.cartAbandoned = false;
+    this.logEvent(session, 'purchase_complete', {
+      orderId: payload.orderId,
+      total: Number(payload.total || 0),
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
+  trackReturn(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'purchase_return', {
+      orderId: payload.orderId,
+      reason: payload.reason || '',
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
   endSession(payload) {
     const session = this.getOrCreateSession(payload);
     const now = payload.timestamp || this.nowIso();
@@ -188,6 +221,200 @@ class AnalyticsService {
 
   getSessionTimeline(sessionId) {
     return this.events.filter((evt) => evt.sessionId === sessionId);
+  }
+
+  getEventsByType(eventType) {
+    return this.events.filter((evt) => evt.eventType === eventType);
+  }
+
+  async getBusinessMetrics() {
+    const sessions = this.getAllSessions();
+    const products = await readJsonFile('products.json');
+    const orders = await readJsonFile('orders.json');
+
+    const productById = new Map(products.map((product) => [String(product.id), product]));
+    const purchaseOrders = orders.filter((order) => !['cancelled', 'failed'].includes(String(order.status || '').toLowerCase()));
+    const returnOrders = orders.filter((order) => ['returned', 'refunded'].includes(String(order.status || '').toLowerCase()));
+
+    const productViews = this.getEventsByType('product_click');
+    const addToCartEvents = this.getEventsByType('add_to_cart');
+    const checkoutStarts = this.getEventsByType('checkout_start');
+    const completedPurchasesFromEvents = this.getEventsByType('purchase_complete');
+    const cartAbandons = this.getEventsByType('cart_abandon');
+
+    const uniqueVisitorIds = new Set(
+      sessions.map((session) => (session.customerId && session.customerId !== 'guest'
+        ? String(session.customerId)
+        : `guest:${session.sessionId}`))
+    );
+    const purchasingCustomers = new Map();
+    purchaseOrders.forEach((order) => {
+      const customerId = String(order.customerId || 'guest');
+      purchasingCustomers.set(customerId, (purchasingCustomers.get(customerId) || 0) + 1);
+    });
+
+    const revenueByCategoryMap = new Map();
+    const soldByProductMap = new Map();
+    let unitsSold = 0;
+    let totalRevenue = 0;
+
+    purchaseOrders.forEach((order) => {
+      const orderTotal = Number(order.total || 0);
+      totalRevenue += orderTotal;
+
+      const items = Array.isArray(order.items) ? order.items : [];
+      items.forEach((item) => {
+        const quantity = Number(item.quantity || 0);
+        unitsSold += quantity;
+
+        const productId = String(item.productId || '');
+        const product = productById.get(productId);
+        const category = String(product?.category || 'Uncategorized');
+        const unitPrice = Number(product?.price || 0);
+        const itemRevenue = unitPrice * quantity;
+
+        revenueByCategoryMap.set(category, Number((revenueByCategoryMap.get(category) || 0) + itemRevenue));
+
+        const existing = soldByProductMap.get(productId) || {
+          productId,
+          productName: String(product?.name || 'Unknown product'),
+          category,
+          unitsSold: 0,
+          revenue: 0,
+          inventory: Number(product?.inventory || 0),
+        };
+
+        existing.unitsSold += quantity;
+        existing.revenue = Number((existing.revenue + itemRevenue).toFixed(2));
+        soldByProductMap.set(productId, existing);
+      });
+    });
+
+    const productViewCountByProduct = new Map();
+    const addToCartCountByProduct = new Map();
+    const completedPurchaseCountByProduct = new Map();
+    const returnCountByProduct = new Map();
+
+    productViews.forEach((event) => {
+      const productId = String(event.eventData.productId || '');
+      if (!productId) return;
+      productViewCountByProduct.set(productId, (productViewCountByProduct.get(productId) || 0) + 1);
+    });
+    addToCartEvents.forEach((event) => {
+      const productId = String(event.eventData.productId || '');
+      if (!productId) return;
+      addToCartCountByProduct.set(productId, (addToCartCountByProduct.get(productId) || 0) + 1);
+    });
+    purchaseOrders.forEach((order) => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      items.forEach((item) => {
+        const productId = String(item.productId || '');
+        if (!productId) return;
+        completedPurchaseCountByProduct.set(productId, (completedPurchaseCountByProduct.get(productId) || 0) + 1);
+      });
+    });
+    returnOrders.forEach((order) => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      items.forEach((item) => {
+        const productId = String(item.productId || '');
+        if (!productId) return;
+        returnCountByProduct.set(productId, (returnCountByProduct.get(productId) || 0) + 1);
+      });
+    });
+
+    const repeatCustomerCount = [...purchasingCustomers.values()].filter((count) => count > 1).length;
+    const repeatPurchaseRate = purchasingCustomers.size
+      ? Number((repeatCustomerCount / purchasingCustomers.size).toFixed(4))
+      : 0;
+
+    const revenueByCategory = [...revenueByCategoryMap.entries()]
+      .map(([category, revenue]) => ({ category, revenue: Number(revenue.toFixed(2)) }))
+      .sort((a, b) => b.revenue - a.revenue);
+
+    const topSellingProducts = [...soldByProductMap.values()]
+      .sort((a, b) => b.unitsSold - a.unitsSold)
+      .slice(0, 10);
+
+    const lowStockCount = products.filter((product) => {
+      const inventory = Number(product.inventory || 0);
+      return inventory > 0 && inventory < 10;
+    }).length;
+    const outOfStockCount = products.filter((product) => Number(product.inventory || 0) === 0).length;
+
+    const productInsights = products.map((product) => {
+      const productId = String(product.id);
+      const inventory = Number(product.inventory || 0);
+      const views = productViewCountByProduct.get(productId) || 0;
+      const adds = addToCartCountByProduct.get(productId) || 0;
+      const purchases = completedPurchaseCountByProduct.get(productId) || 0;
+      const returns = returnCountByProduct.get(productId) || 0;
+      const salesVelocity = purchases;
+      const conversion = views > 0 ? purchases / views : 0;
+      const returnRate = purchases > 0 ? returns / purchases : 0;
+      const updatedAt = product.updated || product.createdAt || null;
+      const stockAgeDays = updatedAt
+        ? Math.max(0, Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24)))
+        : 0;
+      return {
+        productId,
+        name: product.name,
+        category: product.category,
+        inventory,
+        views,
+        adds,
+        purchases,
+        returns,
+        salesVelocity,
+        conversion,
+        returnRate,
+        stockAgeDays,
+      };
+    });
+
+    const urgentRestocks = productInsights
+      .filter((item) => item.salesVelocity >= 2 && item.inventory > 0 && item.inventory < 10)
+      .sort((a, b) => b.salesVelocity - a.salesVelocity);
+    const failingProducts = productInsights
+      .filter((item) => item.purchases <= 1 && item.returns >= 1 && item.conversion <= 0.05)
+      .sort((a, b) => b.returns - a.returns);
+    const frictionProducts = productInsights
+      .filter((item) => item.views >= 5 && item.adds >= 2 && item.purchases === 0)
+      .sort((a, b) => b.adds - a.adds);
+    const deadInventory = productInsights
+      .filter((item) => item.views <= 2 && item.purchases === 0 && item.stockAgeDays >= 90)
+      .sort((a, b) => b.stockAgeDays - a.stockAgeDays);
+
+    return {
+      consumer: {
+        sessionCount: sessions.length,
+        uniqueVisitorsOrCustomers: uniqueVisitorIds.size,
+        productViewCount: productViews.length,
+        addToCartCount: addToCartEvents.length,
+        cartAbandonmentCount: cartAbandons.length,
+        checkoutStartCount: checkoutStarts.length,
+        completedPurchaseCount: Math.max(completedPurchasesFromEvents.length, purchaseOrders.length),
+        repeatCustomerCount,
+        repeatPurchaseRate,
+      },
+      producer: {
+        totalRevenue: Number(totalRevenue.toFixed(2)),
+        totalOrders: orders.length,
+        averageOrderValue: purchaseOrders.length ? Number((totalRevenue / purchaseOrders.length).toFixed(2)) : 0,
+        unitsSold,
+        revenueByCategory,
+        topSellingProducts,
+        lowStockCount,
+        outOfStockCount,
+        returnCount: returnOrders.length,
+        returnRate: purchaseOrders.length ? Number((returnOrders.length / purchaseOrders.length).toFixed(4)) : 0,
+      },
+      combinedInsights: {
+        urgentRestocks,
+        failingProducts,
+        frictionProducts,
+        deadInventory,
+      },
+    };
   }
 }
 
