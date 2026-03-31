@@ -33,7 +33,6 @@ async function getCustomersWithStats() {
     return {
       ...sanitizeCustomer(customer),
       orderCount: customerOrders.length,
-      lastOrderStatus: customerOrders.length ? customerOrders[0].status : 'No orders yet',
     };
   });
 }
@@ -86,9 +85,19 @@ async function authenticateCustomer(phone, password) {
   return sanitizeCustomer(customer);
 }
 
+async function deleteCustomer(id) {
+  const customers = await getAllCustomers();
+  const index = customers.findIndex((customer) => String(customer.id) === String(id));
+  if (index === -1) return false;
+  customers.splice(index, 1);
+  await writeJsonFile(CUSTOMERS_FILE, customers);
+  return true;
+}
+
 module.exports = {
   authenticateCustomer,
   createCustomer,
+  deleteCustomer,
   getAllCustomers,
   getCustomerById,
   getCustomersWithStats,
