@@ -25,13 +25,14 @@ test('tracks session lifecycle and timeline events', () => {
   assert.equal(session.sessionDurationMinutes, 15);
 
   const events = svc.getSessionTimeline('sess_001').map((e) => e.eventType);
-  assert.deepEqual(events, ['session_start', 'login', 'category_click', 'product_click', 'add_to_cart', 'logout', 'session_end', 'cart_abandon']);
+  assert.deepEqual(events, ['session_start', 'login', 'category_click', 'product_click', 'add_to_cart', 'logout', 'cart_abandon', 'session_end']);
 });
 
-test('server-side cart abandonment decision', () => {
+test('cart abandonment is captured from cart contents at logout', () => {
   const svc = new AnalyticsService({ persistenceEnabled: false });
   svc.startSession({ sessionId: 'sess_002' });
   svc.trackAddToCart({ sessionId: 'sess_002', productId: 'P2', quantity: 1, price: 20 });
+  svc.logLogout({ sessionId: 'sess_002' });
   svc.endSession({ sessionId: 'sess_002' });
 
   const session = svc.getSessionById('sess_002');
@@ -58,8 +59,10 @@ test('computes consumer and carts business metrics', async () => {
   assert.equal(metrics.consumer.addToCartCount, 1);
   assert.equal(metrics.consumer.checkoutStartCount, 1);
   assert.equal(metrics.consumer.completedPurchaseCount, 2);
+  assert.equal(metrics.consumer.purchasesTotal >= 0, true);
   assert.equal(metrics.consumer.loginEventCount, 1);
   assert.equal(metrics.consumer.logoutEventCount, 1);
+  assert.equal(metrics.consumer.abandonedCartsCount >= 0, true);
   assert.equal(metrics.carts.abandonedCartCount >= 0, true);
   assert.equal(Array.isArray(metrics.carts.abandonedSessions), true);
   assert.equal(metrics.scope.customerId, 'all');

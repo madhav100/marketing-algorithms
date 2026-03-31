@@ -7,10 +7,6 @@
         }
     }
 
-    function clearCurrentCustomer() {
-        window.localStorage.removeItem('wmCurrentCustomer');
-    }
-
     function getServerBootId() {
         return document.body ? document.body.dataset.serverBootId || '' : '';
     }
@@ -260,25 +256,6 @@
         });
     }
 
-    function bindSignOut() {
-        var signOutButton = document.getElementById('home-sign-out');
-        if (!signOutButton) {
-            return;
-        }
-
-        signOutButton.addEventListener('click', function () {
-            var customer = getCurrentCustomer();
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
-                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
-            }
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
-                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
-            }
-            clearCurrentCustomer();
-            window.location.reload();
-        });
-    }
-
     function bindSearch() {
         var form = document.getElementById('home-search-form');
         if (!form) {
@@ -318,7 +295,6 @@
         bindAccountDropdown();
         bindCategoryClicks();
         bindProductClicks();
-        bindSignOut();
         bindSearch();
         bindCarouselControls();
         highlightActiveCategoryFromUrl();

@@ -137,6 +137,16 @@ class AnalyticsService {
     this.recordLoggedInDuration(session, now);
     session.isLoggedIn = false;
     this.logEvent(session, 'logout', { loggedInMinutes: session.loggedInMinutes }, now);
+    if (Number(session.cartItemCount || 0) > 0 && !session.hasPurchase) {
+      session.cartAbandoned = true;
+      this.logEvent(session, 'cart_abandon', {
+        cartItemCount: session.cartItemCount,
+        cartValue: session.cartValue,
+        abandonedAt: now,
+      }, now);
+    } else {
+      session.cartAbandoned = false;
+    }
     this.persistState();
     return session;
   }
@@ -199,6 +209,8 @@ class AnalyticsService {
     const session = this.getOrCreateSession(payload);
     session.hasPurchase = true;
     session.cartAbandoned = false;
+    session.cartItemCount = 0;
+    session.cartValue = 0;
     this.logEvent(session, 'purchase_complete', {
       orderId: payload.orderId,
       total: Number(payload.total || 0),
@@ -242,24 +254,7 @@ class AnalyticsService {
   }
 
   evaluateCartAbandonment(sessionId) {
-    const session = this.sessions.get(sessionId);
-    if (!session) return null;
-
-    const last = new Date(session.lastActivityAt).getTime();
-    const now = Date.now();
-    const inactiveTooLong = now - last >= INACTIVITY_TIMEOUT_MS || session.status === 'ended';
-
-    if (inactiveTooLong && session.addToCartCount > 0 && !session.hasPurchase && !session.cartAbandoned) {
-      session.cartAbandoned = true;
-      this.logEvent(session, 'cart_abandon', {
-        cartItemCount: session.cartItemCount,
-        cartValue: session.cartValue,
-        lastCartUpdateAt: session.lastCartUpdateAt,
-        abandonedAt: this.nowIso(),
-      });
-    }
-    this.persistState();
-    return session;
+    return this.sessions.get(sessionId) || null;
   }
 
   getAllSessions() {
@@ -508,8 +503,10 @@ class AnalyticsService {
         productViewCount: productViews.length,
         addToCartCount: addToCartEvents.length,
         cartAbandonmentCount: cartAbandons.length,
+        abandonedCartsCount: cartAbandons.length,
         checkoutStartCount: checkoutStarts.length,
         completedPurchaseCount: Math.max(completedPurchasesFromEvents.length, purchaseOrders.length),
+        purchasesTotal: Number(totalRevenue.toFixed(2)),
         repeatCustomerCount,
         avgSessionDurationMinutes,
         avgLoggedInMinutes,

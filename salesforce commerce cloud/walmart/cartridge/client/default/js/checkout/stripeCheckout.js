@@ -8,6 +8,20 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
     if (messageNode) messageNode.textContent = message;
   }
 
+  function getCurrentCustomer() {
+    try {
+      return JSON.parse(window.localStorage.getItem('wmCurrentCustomer') || 'null');
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function clearCartAfterSuccessfulPayment() {
+    const customer = getCurrentCustomer();
+    const scope = customer && customer.id ? customer.id : 'guest';
+    window.localStorage.removeItem(`wmCartItems::${scope}`);
+  }
+
   const setupResponse = await fetch('/payments/create-intent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -68,8 +82,8 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
       submitButton.disabled = true;
       await persistPaymentStatus('paid', setup.paymentIntentId);
       trackCheckoutAnalytics('purchase-complete', { orderId: currentOrderId, total: Number(checkoutPayload.amount || 0) });
-      setMessage('Mock payment succeeded. Add Stripe test keys for real Payment Element.');
-      submitButton.disabled = false;
+      clearCartAfterSuccessfulPayment();
+      window.location.href = '/my-orders';
     });
     return;
   }
@@ -107,8 +121,8 @@ async function initializeStripeCheckout({ publishableKey, checkoutPayload }) {
     if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
       await persistPaymentStatus('paid', result.paymentIntent.id);
       trackCheckoutAnalytics('purchase-complete', { orderId: currentOrderId, total: Number(checkoutPayload.amount || 0) });
-      setMessage('Payment successful. Your order is now visible on My Orders.');
-      submitButton.disabled = false;
+      clearCartAfterSuccessfulPayment();
+      window.location.href = '/my-orders';
       return;
     }
 

@@ -29,12 +29,11 @@ const analyticsAddToCartEl = document.getElementById('analytics-add-to-cart');
 const analyticsCartAbandonmentEl = document.getElementById('analytics-cart-abandonment');
 const analyticsCheckoutStartsEl = document.getElementById('analytics-checkout-starts');
 const analyticsCompletedPurchasesEl = document.getElementById('analytics-completed-purchases');
+const analyticsPurchasesTotalEl = document.getElementById('analytics-purchases-total');
 const analyticsAvgSessionMinutesEl = document.getElementById('analytics-avg-session-minutes');
 const analyticsAvgLoggedInMinutesEl = document.getElementById('analytics-avg-logged-in-minutes');
 const analyticsLoginEventsEl = document.getElementById('analytics-login-events');
 const analyticsLogoutEventsEl = document.getElementById('analytics-logout-events');
-const analyticsCartCheckoutRateEl = document.getElementById('analytics-cart-checkout-rate');
-const analyticsCheckoutPurchaseRateEl = document.getElementById('analytics-checkout-purchase-rate');
 const exportCustomerAnalyticsCsvButton = document.getElementById('export-customer-analytics-csv');
 const analyticsCustomerScopeSelect = document.getElementById('analytics-customer-scope');
 const analyticsScopeSummary = document.getElementById('analytics-scope-summary');
@@ -387,12 +386,11 @@ function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
   analyticsCartAbandonmentEl.textContent = String(consumer.cartAbandonmentCount || 0);
   analyticsCheckoutStartsEl.textContent = String(consumer.checkoutStartCount || 0);
   analyticsCompletedPurchasesEl.textContent = String(consumer.completedPurchaseCount || 0);
+  analyticsPurchasesTotalEl.textContent = formatMoney(consumer.purchasesTotal || 0);
   analyticsAvgSessionMinutesEl.textContent = String(consumer.avgSessionDurationMinutes || 0);
   analyticsAvgLoggedInMinutesEl.textContent = String(consumer.avgLoggedInMinutes || 0);
   analyticsLoginEventsEl.textContent = String(consumer.loginEventCount || 0);
   analyticsLogoutEventsEl.textContent = String(consumer.logoutEventCount || 0);
-  analyticsCartCheckoutRateEl.textContent = formatPercent(consumer.cartToCheckoutRate || 0);
-  analyticsCheckoutPurchaseRateEl.textContent = formatPercent(consumer.checkoutToPurchaseRate || 0);
 
   renderCartsSection(customerMetrics);
 }
