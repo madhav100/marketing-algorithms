@@ -35,3 +35,48 @@ test('server-side cart abandonment decision', () => {
   const session = svc.getSessionById('sess_002');
   assert.equal(session.cartAbandoned, true);
 });
+
+test('computes consumer, producer, and combined business metrics', async () => {
+  const svc = new AnalyticsService();
+  svc.startSession({ sessionId: 'sess_101', customerId: 'cu9001', isLoggedIn: true, timestamp: '2026-03-26T10:00:00.000Z' });
+  svc.logLogin({ sessionId: 'sess_101', customerId: 'cu9001', timestamp: '2026-03-26T10:00:30.000Z' });
+  svc.trackProductClick({ sessionId: 'sess_101', productId: 'p1001', productName: 'Trail Running Shoes', timestamp: '2026-03-26T10:01:00.000Z' });
+  svc.trackAddToCart({ sessionId: 'sess_101', productId: 'p1001', productName: 'Trail Running Shoes', quantity: 1, price: 129.99, timestamp: '2026-03-26T10:02:00.000Z' });
+  svc.trackCheckoutStart({ sessionId: 'sess_101', timestamp: '2026-03-26T10:03:00.000Z' });
+  svc.trackPurchaseComplete({ sessionId: 'sess_101', orderId: 'o_test_1', total: 129.99, timestamp: '2026-03-26T10:04:00.000Z' });
+  svc.logLogout({ sessionId: 'sess_101', timestamp: '2026-03-26T10:04:30.000Z' });
+  svc.endSession({ sessionId: 'sess_101', timestamp: '2026-03-26T10:05:00.000Z' });
+
+  const metrics = await svc.getBusinessMetrics();
+
+  assert.equal(metrics.consumer.sessionCount, 1);
+  assert.equal(metrics.consumer.uniqueVisitorsOrCustomers, 1);
+  assert.equal(metrics.consumer.productViewCount, 1);
+  assert.equal(metrics.consumer.addToCartCount, 1);
+  assert.equal(metrics.consumer.checkoutStartCount, 1);
+  assert.equal(metrics.consumer.completedPurchaseCount, 2);
+  assert.equal(metrics.consumer.loginEventCount, 1);
+  assert.equal(metrics.consumer.logoutEventCount, 1);
+  assert.equal(metrics.producer.totalOrders, 2);
+  assert.equal(metrics.producer.totalRevenue, 308.98);
+  assert.equal(metrics.producer.unitsSold, 4);
+  assert.equal(metrics.producer.lowStockCount, 0);
+  assert.equal(metrics.producer.outOfStockCount, 0);
+  assert.equal(Array.isArray(metrics.producer.revenueByCategory), true);
+  assert.equal(Array.isArray(metrics.producer.topSellingProducts), true);
+  assert.equal(Array.isArray(metrics.combinedInsights.urgentRestocks), true);
+  assert.equal(Array.isArray(metrics.combinedInsights.failingProducts), true);
+  assert.equal(Array.isArray(metrics.combinedInsights.frictionProducts), true);
+  assert.equal(Array.isArray(metrics.combinedInsights.deadInventory), true);
+});
+
+test('exports analytics CSV files for data console ingestion', async () => {
+  const svc = new AnalyticsService();
+  svc.startSession({ sessionId: 'sess_301', customerId: 'cu9001', isLoggedIn: true, timestamp: '2026-03-26T10:00:00.000Z' });
+  svc.trackProductClick({ sessionId: 'sess_301', productId: 'p1001', productName: 'Trail Running Shoes', timestamp: '2026-03-26T10:01:00.000Z' });
+  svc.endSession({ sessionId: 'sess_301', timestamp: '2026-03-26T10:02:00.000Z' });
+
+  const exportResult = await svc.exportBusinessMetricsCsv('all');
+  assert.equal(Array.isArray(exportResult.files), true);
+  assert.equal(exportResult.files.length, 3);
+});
