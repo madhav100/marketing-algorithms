@@ -1,13 +1,13 @@
 let products = [];
 let categories = [];
 let customers = [];
+let selectedAnalyticsCustomerId = 'all';
 
 const CSV_FIELDS = ['name', 'description', 'category', 'price', 'inventory', 'status'];
 
 const sidebarNav = document.getElementById('sidebarNav');
 const sidebarButtons = sidebarNav.querySelectorAll('.nav-item');
 const appSections = document.querySelectorAll('.app-section');
-const productsPreviewSection = document.getElementById('section-products-previews');
 
 const tableBody = document.getElementById('products-table-body');
 const inventoryTableBody = document.getElementById('inventory-table-body');
@@ -21,6 +21,44 @@ const dashboardRetiredProductsEl = document.getElementById('dashboard-retired-pr
 const dashboardVisibleProductsEl = document.getElementById('dashboard-visible-products');
 const dashboardCategoriesEl = document.getElementById('dashboard-categories');
 const categoriesList = document.getElementById('categories-list');
+const analyticsSessionCountEl = document.getElementById('analytics-session-count');
+const analyticsUniqueVisitorsEl = document.getElementById('analytics-unique-visitors');
+const analyticsProductViewsEl = document.getElementById('analytics-product-views');
+const analyticsAddToCartEl = document.getElementById('analytics-add-to-cart');
+const analyticsCartAbandonmentEl = document.getElementById('analytics-cart-abandonment');
+const analyticsCheckoutStartsEl = document.getElementById('analytics-checkout-starts');
+const analyticsCompletedPurchasesEl = document.getElementById('analytics-completed-purchases');
+const analyticsRepeatRateEl = document.getElementById('analytics-repeat-rate');
+const analyticsAvgSessionMinutesEl = document.getElementById('analytics-avg-session-minutes');
+const analyticsAvgLoggedInMinutesEl = document.getElementById('analytics-avg-logged-in-minutes');
+const analyticsLoginEventsEl = document.getElementById('analytics-login-events');
+const analyticsLogoutEventsEl = document.getElementById('analytics-logout-events');
+const analyticsCartCheckoutRateEl = document.getElementById('analytics-cart-checkout-rate');
+const analyticsCheckoutPurchaseRateEl = document.getElementById('analytics-checkout-purchase-rate');
+const analyticsTotalRevenueEl = document.getElementById('analytics-total-revenue');
+const analyticsTotalOrdersEl = document.getElementById('analytics-total-orders');
+const analyticsAovEl = document.getElementById('analytics-aov');
+const analyticsUnitsSoldEl = document.getElementById('analytics-units-sold');
+const analyticsLowStockCountEl = document.getElementById('analytics-low-stock-count');
+const analyticsOutOfStockCountEl = document.getElementById('analytics-out-of-stock-count');
+const analyticsReturnCountEl = document.getElementById('analytics-return-count');
+const analyticsReturnRateEl = document.getElementById('analytics-return-rate');
+const analyticsActiveProductsEl = document.getElementById('analytics-active-products');
+const analyticsRetiredProductsEl = document.getElementById('analytics-retired-products');
+const analyticsInventoryTurnoverEl = document.getElementById('analytics-inventory-turnover');
+const analyticsSellThroughRateEl = document.getElementById('analytics-sell-through-rate');
+const analyticsRevenuePerVisitorEl = document.getElementById('analytics-revenue-per-visitor');
+const analyticsRevenueByCategoryEl = document.getElementById('analytics-revenue-by-category');
+const analyticsTopSellingProductsEl = document.getElementById('analytics-top-selling-products');
+const analyticsUrgentRestocksEl = document.getElementById('analytics-urgent-restocks');
+const analyticsFailingProductsEl = document.getElementById('analytics-failing-products');
+const analyticsFrictionProductsEl = document.getElementById('analytics-friction-products');
+const analyticsDeadInventoryEl = document.getElementById('analytics-dead-inventory');
+const exportCustomerAnalyticsCsvButton = document.getElementById('export-customer-analytics-csv');
+const exportProducerAnalyticsCsvButton = document.getElementById('export-producer-analytics-csv');
+const exportCombinedInsightsCsvButton = document.getElementById('export-combined-insights-csv');
+const analyticsCustomerScopeSelect = document.getElementById('analytics-customer-scope');
+const analyticsScopeSummary = document.getElementById('analytics-scope-summary');
 
 const productForm = document.getElementById('product-form');
 const productCategorySelect = document.getElementById('product-category');
@@ -35,6 +73,10 @@ const filterCategory = document.getElementById('filter-category');
 const filterStatus = document.getElementById('filter-status');
 const filterStock = document.getElementById('filter-stock');
 const resetFiltersButton = document.getElementById('reset-filters');
+const inventoryFilterSearch = document.getElementById('inventory-filter-search');
+const inventoryFilterStatus = document.getElementById('inventory-filter-status');
+const inventoryFilterStorefront = document.getElementById('inventory-filter-storefront');
+const inventoryResetFiltersButton = document.getElementById('inventory-reset-filters');
 
 function setMessage(element, text, variant) {
   element.textContent = text;
@@ -225,12 +267,13 @@ function renderCategoriesSection() {
 }
 
 function renderInventoryTable() {
-  if (!products.length) {
+  const visibleProducts = getFilteredInventoryProducts();
+  if (!visibleProducts.length) {
     inventoryTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No products available.</td></tr>';
     return;
   }
 
-  inventoryTableBody.innerHTML = products.map((product) => {
+  inventoryTableBody.innerHTML = visibleProducts.map((product) => {
     const status = getComputedStatus(product);
     const storefrontState = getStorefrontState(product);
     return `
@@ -253,9 +296,27 @@ function renderInventoryTable() {
   }).join('');
 }
 
+function getFilteredInventoryProducts() {
+  const searchValue = String(inventoryFilterSearch?.value || '').trim().toLowerCase();
+  const statusValue = String(inventoryFilterStatus?.value || 'all');
+  const storefrontValue = String(inventoryFilterStorefront?.value || 'all');
+
+  return products.filter((product) => {
+    const name = String(product.name || '').toLowerCase();
+    const category = String(product.category || '').toLowerCase();
+    const status = getComputedStatus(product);
+    const storefront = product.retired ? 'archived' : 'visible';
+
+    const matchesSearch = !searchValue || name.includes(searchValue) || category.includes(searchValue);
+    const matchesStatus = statusValue === 'all' || status === statusValue;
+    const matchesStorefront = storefrontValue === 'all' || storefront === storefrontValue;
+    return matchesSearch && matchesStatus && matchesStorefront;
+  });
+}
+
 function renderCustomersSection() {
   if (!customers.length) {
-    customersTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No customer accounts yet.</td></tr>';
+    customersTableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No customer accounts yet.</td></tr>';
     return;
   }
 
@@ -266,8 +327,191 @@ function renderCustomersSection() {
       <td>${escapeHtml(customer.address)}</td>
       <td>${Number(customer.orderCount || 0)}</td>
       <td>${escapeHtml(customer.lastOrderStatus || 'No orders yet')}</td>
+      <td>
+        <button class="btn" data-action="delete-customer" data-customer-id="${escapeHtml(customer.id)}" type="button">Delete</button>
+      </td>
     </tr>
   `).join('');
+}
+
+function formatMoney(value) {
+  return `$${Number(value || 0).toFixed(2)}`;
+}
+
+function formatPercent(value) {
+  return `${(Number(value || 0) * 100).toFixed(2)}%`;
+}
+
+function renderSimpleList(element, items, formatter) {
+  if (!element) return;
+  if (!items || !items.length) {
+    element.innerHTML = '<li class="empty-state">No records yet.</li>';
+    return;
+  }
+  element.innerHTML = items.map((item) => `<li>${formatter(item)}</li>`).join('');
+}
+
+function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
+  const consumer = customerMetrics.consumer || {};
+  const producer = marketMetrics.producer || {};
+  const combined = marketMetrics.combinedInsights || {};
+  const customerScope = customerMetrics.scope || {};
+  const marketScope = marketMetrics.scope || {};
+
+  if (analyticsScopeSummary) {
+    if (customerScope.customerId && customerScope.customerId !== 'all') {
+      const selectedCustomer = customers.find((customer) => String(customer.id) === String(customerScope.customerId));
+      analyticsScopeSummary.textContent = selectedCustomer
+        ? `Showing analytics for ${selectedCustomer.name}.`
+        : `Showing analytics for customer ${customerScope.customerId}.`;
+    } else {
+      analyticsScopeSummary.textContent = `All customers selected (${Number(marketScope.totalCustomers || customers.length || 0)} total customers).`;
+    }
+  }
+
+  analyticsSessionCountEl.textContent = String(consumer.sessionCount || 0);
+  analyticsUniqueVisitorsEl.textContent = String(consumer.uniqueVisitorsOrCustomers || 0);
+  analyticsProductViewsEl.textContent = String(consumer.productViewCount || 0);
+  analyticsAddToCartEl.textContent = String(consumer.addToCartCount || 0);
+  analyticsCartAbandonmentEl.textContent = String(consumer.cartAbandonmentCount || 0);
+  analyticsCheckoutStartsEl.textContent = String(consumer.checkoutStartCount || 0);
+  analyticsCompletedPurchasesEl.textContent = String(consumer.completedPurchaseCount || 0);
+  analyticsRepeatRateEl.textContent = formatPercent(consumer.repeatPurchaseRate || 0);
+  analyticsAvgSessionMinutesEl.textContent = String(consumer.avgSessionDurationMinutes || 0);
+  analyticsAvgLoggedInMinutesEl.textContent = String(consumer.avgLoggedInMinutes || 0);
+  analyticsLoginEventsEl.textContent = String(consumer.loginEventCount || 0);
+  analyticsLogoutEventsEl.textContent = String(consumer.logoutEventCount || 0);
+  analyticsCartCheckoutRateEl.textContent = formatPercent(consumer.cartToCheckoutRate || 0);
+  analyticsCheckoutPurchaseRateEl.textContent = formatPercent(consumer.checkoutToPurchaseRate || 0);
+
+  analyticsTotalRevenueEl.textContent = formatMoney(producer.totalRevenue || 0);
+  analyticsTotalOrdersEl.textContent = String(producer.totalOrders || 0);
+  analyticsAovEl.textContent = formatMoney(producer.averageOrderValue || 0);
+  analyticsUnitsSoldEl.textContent = String(producer.unitsSold || 0);
+  analyticsLowStockCountEl.textContent = String(producer.lowStockCount || 0);
+  analyticsOutOfStockCountEl.textContent = String(producer.outOfStockCount || 0);
+  analyticsReturnCountEl.textContent = String(producer.returnCount || 0);
+  analyticsReturnRateEl.textContent = formatPercent(producer.returnRate || 0);
+  analyticsActiveProductsEl.textContent = String(producer.activeProductsCount || 0);
+  analyticsRetiredProductsEl.textContent = String(producer.retiredProductsCount || 0);
+  analyticsInventoryTurnoverEl.textContent = formatPercent(producer.inventoryTurnoverRate || 0);
+  analyticsSellThroughRateEl.textContent = formatPercent(producer.sellThroughRate || 0);
+  analyticsRevenuePerVisitorEl.textContent = formatMoney(producer.grossRevenuePerVisitor || 0);
+
+  renderSimpleList(
+    analyticsRevenueByCategoryEl,
+    producer.revenueByCategory || [],
+    (item) => `<strong>${escapeHtml(item.category)}</strong>: ${formatMoney(item.revenue)}`
+  );
+  renderSimpleList(
+    analyticsTopSellingProductsEl,
+    producer.topSellingProducts || [],
+    (item) => `<strong>${escapeHtml(item.productName)}</strong> — ${Number(item.unitsSold || 0)} units (${formatMoney(item.revenue)})`
+  );
+  renderSimpleList(
+    analyticsUrgentRestocksEl,
+    combined.urgentRestocks || [],
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — velocity ${Number(item.salesVelocity || 0)}, inventory ${Number(item.inventory || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
+  );
+  renderSimpleList(
+    analyticsFailingProductsEl,
+    combined.failingProducts || [],
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — returns ${Number(item.returns || 0)}, conversion ${formatPercent(item.conversion || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
+  );
+  renderSimpleList(
+    analyticsFrictionProductsEl,
+    combined.frictionProducts || [],
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — views ${Number(item.views || 0)}, adds ${Number(item.adds || 0)}, purchases ${Number(item.purchases || 0)}<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
+  );
+  renderSimpleList(
+    analyticsDeadInventoryEl,
+    combined.deadInventory || [],
+    (item) => `<strong>${escapeHtml(item.name)}</strong> — stock age ${Number(item.stockAgeDays || 0)}d<small class="cell-meta">${escapeHtml(item.insightReason || '')}</small>`
+  );
+}
+
+async function fetchBusinessMetrics(customerId) {
+  const query = customerId && customerId !== 'all'
+    ? `?customerId=${encodeURIComponent(customerId)}`
+    : '';
+  const endpoints = [`/admin/api/analytics/business-metrics${query}`, `/api/analytics/business-metrics${query}`];
+
+  for (const endpoint of endpoints) {
+    const response = await fetch(endpoint);
+    if (response.ok) {
+      return response.json();
+    }
+    if (response.status !== 404) {
+      throw new Error('Failed to load analytics dashboard metrics.');
+    }
+  }
+
+  throw new Error('Analytics endpoint not available in this runtime.');
+}
+
+async function exportAnalyticsCsv(type) {
+  const response = await fetch('/admin/api/analytics/export-csv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: type || 'all' }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to export analytics CSV files.');
+  }
+
+  return response.json();
+}
+
+function renderAnalyticsCustomerScopeOptions() {
+  if (!analyticsCustomerScopeSelect) return;
+
+  const options = [
+    '<option value="all">All customers</option>',
+    ...customers.map((customer) => `<option value="${escapeHtml(customer.id)}">${escapeHtml(customer.name)} (${escapeHtml(customer.phone)})</option>`)
+  ];
+
+  analyticsCustomerScopeSelect.innerHTML = options.join('');
+  if (selectedAnalyticsCustomerId !== 'all' && !customers.some((customer) => String(customer.id) === String(selectedAnalyticsCustomerId))) {
+    selectedAnalyticsCustomerId = 'all';
+  }
+  analyticsCustomerScopeSelect.value = selectedAnalyticsCustomerId;
+}
+
+async function loadAnalyticsMetrics() {
+  try {
+    const [customerMetrics, marketMetrics] = await Promise.all([
+      fetchBusinessMetrics(selectedAnalyticsCustomerId),
+      fetchBusinessMetrics('all'),
+    ]);
+    renderAnalyticsDashboard(customerMetrics, marketMetrics);
+  } catch (error) {
+    renderAnalyticsDashboard({}, {});
+    analyticsRevenueByCategoryEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
+  }
+}
+
+function bindAnalyticsExports() {
+  const handleExportClick = async (type) => {
+    try {
+      const result = await exportAnalyticsCsv(type);
+      const exportedFileNames = (result.files || []).map((entry) => entry.file).join(', ');
+      setMessage(productCsvMessage, `Analytics CSV export generated: ${exportedFileNames}`, 'success');
+    } catch (error) {
+      setMessage(productCsvMessage, error.message, 'error');
+    }
+  };
+
+  exportCustomerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('customer'));
+  exportProducerAnalyticsCsvButton?.addEventListener('click', () => handleExportClick('producer'));
+  exportCombinedInsightsCsvButton?.addEventListener('click', () => handleExportClick('combined_insights'));
+}
+
+function bindAnalyticsScopeFilter() {
+  analyticsCustomerScopeSelect?.addEventListener('change', async () => {
+    selectedAnalyticsCustomerId = analyticsCustomerScopeSelect.value || 'all';
+    await loadAnalyticsMetrics();
+  });
 }
 
 function showSection(sectionName) {
@@ -275,12 +519,6 @@ function showSection(sectionName) {
 
   const target = document.getElementById(`section-${sectionName}`);
   if (target) target.classList.add('is-visible');
-
-  if (sectionName === 'products') {
-    productsPreviewSection.classList.add('is-visible');
-  } else {
-    productsPreviewSection.classList.remove('is-visible');
-  }
 
   sidebarButtons.forEach((button) => {
     button.classList.toggle('active', button.dataset.section === sectionName);
@@ -308,6 +546,8 @@ async function loadData() {
   renderCategoriesSection();
   renderInventoryTable();
   renderCustomersSection();
+  renderAnalyticsCustomerScopeOptions();
+  await loadAnalyticsMetrics();
 }
 
 function createProductPayload(formData) {
@@ -335,6 +575,13 @@ async function saveProduct(payload, productId) {
   }
 
   return response.json();
+}
+
+async function deleteCustomer(customerId) {
+  const response = await fetch(`/api/customers/${customerId}`, { method: 'DELETE' });
+  if (!response.ok) {
+    throw new Error('Unable to delete customer.');
+  }
 }
 
 async function handleProductSubmit(event) {
@@ -512,6 +759,20 @@ function bindFilters() {
   });
 }
 
+function bindInventoryFilters() {
+  [inventoryFilterSearch, inventoryFilterStatus, inventoryFilterStorefront].forEach((input) => {
+    input?.addEventListener('input', renderInventoryTable);
+    input?.addEventListener('change', renderInventoryTable);
+  });
+
+  inventoryResetFiltersButton?.addEventListener('click', () => {
+    if (inventoryFilterSearch) inventoryFilterSearch.value = '';
+    if (inventoryFilterStatus) inventoryFilterStatus.value = 'all';
+    if (inventoryFilterStorefront) inventoryFilterStorefront.value = 'all';
+    renderInventoryTable();
+  });
+}
+
 function bindInventoryRetireToggle() {
   document.addEventListener('change', async function (event) {
     const checkbox = event.target.closest('[data-action="toggle-retired"]');
@@ -541,6 +802,28 @@ function bindInventoryRetireToggle() {
   });
 }
 
+function bindCustomerActions() {
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-action="delete-customer"]');
+    if (!button) return;
+
+    const customerId = button.dataset.customerId;
+    const customer = customers.find((item) => String(item.id) === String(customerId));
+    if (!customer) return;
+
+    const confirmed = window.confirm(`Delete customer ${customer.name}? This permanently removes them from the database.`);
+    if (!confirmed) return;
+
+    try {
+      await deleteCustomer(customerId);
+      await loadData();
+      setMessage(productCsvMessage, `Deleted customer ${customer.name}.`, 'success');
+    } catch (error) {
+      setMessage(productCsvMessage, error.message, 'error');
+    }
+  });
+}
+
 sidebarNav.addEventListener('click', (event) => {
   const btn = event.target.closest('.nav-item');
   if (!btn) return;
@@ -552,12 +835,16 @@ importCsvButton.addEventListener('click', () => productCsvFileInput.click());
 exportCsvButton.addEventListener('click', handleCsvExport);
 productCsvFileInput.addEventListener('change', handleCsvImport);
 bindFilters();
+bindInventoryFilters();
 bindInventoryRetireToggle();
+bindCustomerActions();
+bindAnalyticsExports();
+bindAnalyticsScopeFilter();
 showSection('products');
 loadData().catch((error) => {
   tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   inventoryTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
-  customersTableBody.innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+  customersTableBody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
   categoriesList.innerHTML = `<p class="section-note">${escapeHtml(error.message)}</p>`;
   setMessage(productCsvMessage, error.message, 'error');
 });
