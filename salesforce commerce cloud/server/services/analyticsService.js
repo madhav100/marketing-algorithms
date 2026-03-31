@@ -219,6 +219,38 @@ class AnalyticsService {
     return session;
   }
 
+  trackCheckoutStart(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'checkout_start', {
+      cartItemCount: session.cartItemCount,
+      cartValue: session.cartValue,
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
+  trackPurchaseComplete(payload) {
+    const session = this.getOrCreateSession(payload);
+    session.hasPurchase = true;
+    session.cartAbandoned = false;
+    this.logEvent(session, 'purchase_complete', {
+      orderId: payload.orderId,
+      total: Number(payload.total || 0),
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
+  trackReturn(payload) {
+    const session = this.getOrCreateSession(payload);
+    this.logEvent(session, 'purchase_return', {
+      orderId: payload.orderId,
+      reason: payload.reason || '',
+      timestamp: payload.timestamp || this.nowIso(),
+    }, payload.timestamp);
+    return session;
+  }
+
   endSession(payload) {
     const session = this.getOrCreateSession(payload);
     const now = payload.timestamp || this.nowIso();
