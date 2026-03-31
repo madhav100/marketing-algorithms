@@ -402,11 +402,11 @@ class AnalyticsService {
       .map((item) => ({ ...item, insightReason: 'High sales velocity with low remaining inventory.' }))
       .sort((a, b) => b.salesVelocity - a.salesVelocity);
     const failingProducts = productInsights
-      .filter((item) => item.purchases <= 1 && item.returns >= 1 && item.conversion <= 0.05)
+      .filter((item) => item.views >= 3 && item.purchases <= 1 && item.returns >= 1 && item.conversion <= 0.1)
       .map((item) => ({ ...item, insightReason: 'Low sales with elevated returns and low conversion.' }))
       .sort((a, b) => b.returns - a.returns);
     const frictionProducts = productInsights
-      .filter((item) => item.views >= 1 && item.adds >= 1 && item.purchases === 0)
+      .filter((item) => item.views >= 5 && item.adds >= 2 && item.purchases === 0)
       .map((item) => ({ ...item, insightReason: 'Shoppers engage and add to cart, but purchases do not complete.' }))
       .sort((a, b) => b.adds - a.adds);
     const deadInventory = productInsights
@@ -419,14 +419,6 @@ class AnalyticsService {
       .filter((item) => item.purchases > 0)
       .sort((a, b) => (b.purchases / Math.max(1, b.inventory)) - (a.purchases / Math.max(1, a.inventory)))
       .map((item) => ({ ...item, insightReason: 'Potential restock watchlist based on sales-to-inventory ratio.' }));
-    const failingFallback = productInsights
-      .filter((item) => item.views > 0 || item.returns > 0)
-      .sort((a, b) => (b.returns - b.purchases) - (a.returns - a.purchases))
-      .map((item) => ({ ...item, insightReason: 'Candidate requiring review due to weaker performance signals.' }));
-    const frictionFallback = productInsights
-      .filter((item) => item.views > 0 && item.adds > 0)
-      .sort((a, b) => (b.adds - b.purchases) - (a.adds - a.purchases))
-      .map((item) => ({ ...item, insightReason: 'Candidate friction item where purchase completion lags intent.' }));
     const deadFallback = productInsights
       .sort((a, b) => (b.stockAgeDays - b.purchases) - (a.stockAgeDays - a.purchases))
       .map((item) => ({ ...item, insightReason: 'Potential stagnant inventory based on age and sales volume.' }));
@@ -468,8 +460,8 @@ class AnalyticsService {
       },
       combinedInsights: {
         urgentRestocks: fillIfEmpty(urgentRestocks, urgentRestocksFallback),
-        failingProducts: fillIfEmpty(failingProducts, failingFallback),
-        frictionProducts: fillIfEmpty(frictionProducts, frictionFallback),
+        failingProducts,
+        frictionProducts,
         deadInventory: fillIfEmpty(deadInventory, deadFallback),
       },
     };

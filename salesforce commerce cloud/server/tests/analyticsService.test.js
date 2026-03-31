@@ -68,6 +68,8 @@ test('computes consumer, producer, and combined business metrics', async () => {
   assert.equal(Array.isArray(metrics.combinedInsights.failingProducts), true);
   assert.equal(Array.isArray(metrics.combinedInsights.frictionProducts), true);
   assert.equal(Array.isArray(metrics.combinedInsights.deadInventory), true);
+  assert.equal(metrics.combinedInsights.failingProducts.length, 0);
+  assert.equal(metrics.combinedInsights.frictionProducts.length, 0);
 });
 
 test('exports analytics CSV files for data console ingestion', async () => {

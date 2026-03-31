@@ -1,0 +1,16 @@
+name,description,category,price,inventory,status
+Analytics Seed Footwear Sprint Elite,Seed product for analytics stress tests with high-intent naming.,Footwear,119.99,6,Low Stock
+Analytics Seed Footwear City Walk,Seed product for analytics stress tests with broad appeal.,Footwear,79.99,42,Active
+Analytics Seed Footwear Trail Flex,Seed product for analytics stress tests with repeat-buyer potential.,Footwear,99.99,8,Low Stock
+Analytics Seed Apparel Motion Tee,Seed product for analytics stress tests with high click-through behavior.,Apparel,29.99,55,Active
+Analytics Seed Apparel Recovery Hoodie,Seed product for analytics stress tests with premium margin.,Apparel,89.99,5,Low Stock
+Analytics Seed Apparel Rain Runner Shell,Seed product for analytics stress tests for seasonal demand.,Apparel,109.99,0,Draft
+Analytics Seed Electronics Smart Band X,Seed product for analytics stress tests and checkout funnel tracking.,Electronics,149.99,18,Active
+Analytics Seed Electronics Pulse Earbuds,Seed product for analytics stress tests with add-to-cart potential.,Electronics,69.99,4,Low Stock
+Analytics Seed Electronics Power Hub,Seed product for analytics stress tests and producer metrics.,Electronics,59.99,36,Active
+Analytics Seed Accessories Urban Tote,Seed product for analytics stress tests for category breadth.,Accessories,44.99,25,Active
+Analytics Seed Accessories Thermal Bottle,Seed product for analytics stress tests with stable reorder rate.,Accessories,24.99,3,Low Stock
+Analytics Seed Accessories Flex Wallet,Seed product for analytics stress tests and conversion checks.,Accessories,19.99,63,Active
+Analytics Seed Fitness Core Mat Max,Seed product for analytics stress tests with frequent product views.,Fitness,54.99,12,Active
+Analytics Seed Fitness Interval Rope Pro,Seed product for analytics stress tests with friction analysis coverage.,Fitness,34.99,2,Low Stock
+Analytics Seed Fitness Balance Board,Seed product for analytics stress tests with long-tail demand.,Fitness,64.99,31,Active
