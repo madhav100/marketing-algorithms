@@ -351,20 +351,21 @@ function renderSimpleList(element, items, formatter) {
   element.innerHTML = items.map((item) => `<li>${formatter(item)}</li>`).join('');
 }
 
-function renderAnalyticsDashboard(metrics) {
-  const consumer = metrics.consumer || {};
-  const producer = metrics.producer || {};
-  const combined = metrics.combinedInsights || {};
-  const scope = metrics.scope || {};
+function renderAnalyticsDashboard(customerMetrics, marketMetrics) {
+  const consumer = customerMetrics.consumer || {};
+  const producer = marketMetrics.producer || {};
+  const combined = marketMetrics.combinedInsights || {};
+  const customerScope = customerMetrics.scope || {};
+  const marketScope = marketMetrics.scope || {};
 
   if (analyticsScopeSummary) {
-    if (scope.customerId && scope.customerId !== 'all') {
-      const selectedCustomer = customers.find((customer) => String(customer.id) === String(scope.customerId));
+    if (customerScope.customerId && customerScope.customerId !== 'all') {
+      const selectedCustomer = customers.find((customer) => String(customer.id) === String(customerScope.customerId));
       analyticsScopeSummary.textContent = selectedCustomer
         ? `Showing analytics for ${selectedCustomer.name}.`
-        : `Showing analytics for customer ${scope.customerId}.`;
+        : `Showing analytics for customer ${customerScope.customerId}.`;
     } else {
-      analyticsScopeSummary.textContent = `All customers selected (${Number(scope.totalCustomers || customers.length || 0)} total customers).`;
+      analyticsScopeSummary.textContent = `All customers selected (${Number(marketScope.totalCustomers || customers.length || 0)} total customers).`;
     }
   }
 
@@ -429,9 +430,9 @@ function renderAnalyticsDashboard(metrics) {
   );
 }
 
-async function fetchBusinessMetrics() {
-  const query = selectedAnalyticsCustomerId && selectedAnalyticsCustomerId !== 'all'
-    ? `?customerId=${encodeURIComponent(selectedAnalyticsCustomerId)}`
+async function fetchBusinessMetrics(customerId) {
+  const query = customerId && customerId !== 'all'
+    ? `?customerId=${encodeURIComponent(customerId)}`
     : '';
   const endpoints = [`/admin/api/analytics/business-metrics${query}`, `/api/analytics/business-metrics${query}`];
 
@@ -479,10 +480,13 @@ function renderAnalyticsCustomerScopeOptions() {
 
 async function loadAnalyticsMetrics() {
   try {
-    const analyticsMetrics = await fetchBusinessMetrics();
-    renderAnalyticsDashboard(analyticsMetrics);
+    const [customerMetrics, marketMetrics] = await Promise.all([
+      fetchBusinessMetrics(selectedAnalyticsCustomerId),
+      fetchBusinessMetrics('all'),
+    ]);
+    renderAnalyticsDashboard(customerMetrics, marketMetrics);
   } catch (error) {
-    renderAnalyticsDashboard({});
+    renderAnalyticsDashboard({}, {});
     analyticsRevenueByCategoryEl.innerHTML = `<li class="empty-state">${escapeHtml(error.message)}</li>`;
   }
 }
