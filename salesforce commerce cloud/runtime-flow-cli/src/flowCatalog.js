@@ -29,4 +29,29 @@ const CORE_FLOW = [
   ['analyticsService.exportBusinessMetricsCsv', 'fs.writeFile(carts-analytics-*.csv)']
 ];
 
-module.exports = { CORE_FLOW };
+function buildLocalhostSeedFlow(endpoints) {
+  const {
+    storefrontBase,
+    serverBase,
+    adminBase,
+  } = endpoints;
+
+  return [
+    ['browser:http://localhost', `storefront:${storefrontBase}/walmart`],
+    [`storefront:${storefrontBase}/walmart`, `server:${serverBase}/api/products`],
+    [`storefront:${storefrontBase}/product/:id`, `server:${serverBase}/api/products`],
+    [`storefront:${storefrontBase}/cart`, `server:${serverBase}/api/orders`],
+    [`storefront:${storefrontBase}/checkout`, `server:${serverBase}/webhooks/stripe`],
+    ['browser:http://localhost', `admin-console:${adminBase}/admin`],
+    [`admin-console:${adminBase}/admin`, `server:${serverBase}/api/admin/products`],
+    [`admin-console:${adminBase}/admin`, `server:${serverBase}/api/admin/categories`],
+    [`admin-console:${adminBase}/admin`, `server:${serverBase}/api/admin/orders`],
+    [`server:${serverBase}/api/admin/products`, 'fileStore:admin-console/database/data/products.json'],
+    [`server:${serverBase}/api/admin/categories`, 'fileStore:admin-console/database/data/categories.json'],
+    [`server:${serverBase}/api/admin/orders`, 'fileStore:admin-console/database/data/orders.json'],
+    [`server:${serverBase}/api/products`, 'walmart:templates/default/home/homePage.html'],
+    [`server:${serverBase}/api/orders`, 'walmart:templates/default/checkout/checkoutPage.html']
+  ];
+}
+
+module.exports = { CORE_FLOW, buildLocalhostSeedFlow };
