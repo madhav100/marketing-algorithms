@@ -1,0 +1,14 @@
+{
+  "name": "runtime-flow-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "3D CLI animation for runtime file/function flow graphs",
+  "bin": {
+    "runtime-flow-3d": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "demo": "node src/index.js --topology hybrid --fps 24 --depth 4",
+    "check": "node src/index.js --dry-run"
+  }
+}
