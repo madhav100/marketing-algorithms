@@ -1,0 +1,19 @@
+metric,value
+customerId,cu1774964137722
+customerName,marie monroe
+sessionCount,3
+uniqueVisitorsOrCustomers,1
+productViewCount,3
+addToCartCount,3
+cartAbandonmentCount,2
+abandonedCartsCount,2
+checkoutStartCount,1
+completedPurchaseCount,1
+purchasesTotal,69.5
+repeatCustomerCount,0
+avgSessionDurationMinutes,8.94
+avgLoggedInMinutes,7.99
+loginEventCount,3
+logoutEventCount,3
+cartToCheckoutRate,0.3333
+checkoutToPurchaseRate,1

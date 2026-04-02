@@ -1,23 +1,5 @@
 [
   {
-    "id": "cu9001",
-    "name": "Ava Martinez",
-    "phone": "555-0101",
-    "address": "128 Market Street, Austin, TX",
-    "password": "ava123",
-    "created": "2026-03-12T09:00:00.000Z",
-    "updated": "2026-03-12T09:00:00.000Z"
-  },
-  {
-    "id": "cu9002",
-    "name": "Noah Johnson",
-    "phone": "555-0102",
-    "address": "44 Lakeview Avenue, Denver, CO",
-    "password": "noah123",
-    "created": "2026-03-12T10:00:00.000Z",
-    "updated": "2026-03-12T10:00:00.000Z"
-  },
-  {
     "id": "cu1774879082986",
     "created": "2026-03-30T13:58:02.986Z",
     "name": "hnhn",
@@ -25,5 +7,59 @@
     "address": "3 Rosewater St",
     "password": "asdfg",
     "updated": "2026-03-30T13:58:02.986Z"
+  },
+  {
+    "id": "cu1774951226376",
+    "created": "2026-03-31T10:00:26.376Z",
+    "name": "Mark Hughes",
+    "phone": "7826410132",
+    "address": "20 old park lane",
+    "password": "admin1234",
+    "updated": "2026-03-31T10:00:26.376Z"
+  },
+  {
+    "id": "cu1774955973896",
+    "created": "2026-03-31T11:19:33.896Z",
+    "name": "danny wilson",
+    "phone": "4567890987",
+    "address": "20 old park lane",
+    "password": "admin1234",
+    "updated": "2026-03-31T11:19:33.896Z"
+  },
+  {
+    "id": "cu1774956145093",
+    "created": "2026-03-31T11:22:25.093Z",
+    "name": "goer edv",
+    "phone": "4567890988",
+    "address": "3 Rosewater St",
+    "password": "123456",
+    "updated": "2026-03-31T11:22:25.093Z"
+  },
+  {
+    "id": "cu1774957280433",
+    "created": "2026-03-31T11:41:20.433Z",
+    "name": "Demo Customer 1",
+    "phone": "5550011653",
+    "address": "100 Market Street, Test City, TS 90000",
+    "password": "DemoPass!1A",
+    "updated": "2026-03-31T11:41:20.433Z"
+  },
+  {
+    "id": "cu1774957310974",
+    "created": "2026-03-31T11:41:50.974Z",
+    "name": "Demo Customer 2",
+    "phone": "5550020680",
+    "address": "101 Market Street, Test City, TS 90001",
+    "password": "DemoPass!2A",
+    "updated": "2026-03-31T11:41:50.974Z"
+  },
+  {
+    "id": "cu1774964137722",
+    "created": "2026-03-31T13:35:37.722Z",
+    "name": "marie monroe",
+    "phone": "4567890983",
+    "address": "Hermitage Road",
+    "password": "admin1234",
+    "updated": "2026-03-31T13:35:37.722Z"
   }
 ]
