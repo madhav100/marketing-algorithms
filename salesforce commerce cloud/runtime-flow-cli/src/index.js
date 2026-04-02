@@ -1,11 +1,27 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const { CORE_FLOW } = require('./flowCatalog');
+const http = require('http');
+const https = require('https');
+const { CORE_FLOW, buildLocalhostSeedFlow } = require('./flowCatalog');
 const { buildTopology } = require('./topologies');
 
+const DEFAULT_LOCALHOST_TRACE = path.join(__dirname, '../runtime-events.jsonl');
+
 function parseArgs(argv) {
-  const args = { topology: 'hybrid', fps: 20, depth: 3, trace: '', dryRun: false };
+  const args = {
+    topology: 'hybrid',
+    fps: 20,
+    depth: 3,
+    trace: '',
+    dryRun: false,
+    mode: 'localhost',
+    storefrontBase: process.env.STOREFRONT_BASE_URL || 'http://localhost:3000',
+    serverBase: process.env.SERVER_BASE_URL || 'http://localhost:3000',
+    adminBase: process.env.ADMIN_BASE_URL || 'http://localhost:4000',
+    timeoutMs: Number(process.env.LOCALHOST_PROBE_TIMEOUT_MS || 1200),
+  };
+
   for (let i = 2; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--topology') args.topology = argv[++i] || args.topology;
@@ -13,6 +29,11 @@ function parseArgs(argv) {
     else if (a === '--depth') args.depth = Number(argv[++i] || args.depth);
     else if (a === '--trace') args.trace = argv[++i] || '';
     else if (a === '--dry-run') args.dryRun = true;
+    else if (a === '--mode') args.mode = argv[++i] || args.mode;
+    else if (a === '--storefront-base') args.storefrontBase = argv[++i] || args.storefrontBase;
+    else if (a === '--server-base') args.serverBase = argv[++i] || args.serverBase;
+    else if (a === '--admin-base') args.adminBase = argv[++i] || args.adminBase;
+    else if (a === '--timeout-ms') args.timeoutMs = Number(argv[++i] || args.timeoutMs);
   }
   return args;
 }
@@ -57,13 +78,19 @@ function linePoints(x0, y0, x1, y1) {
     points.push([x, y]);
     if (x === x1 && y === y1) break;
     const e2 = 2 * err;
-    if (e2 > -dy) { err -= dy; x += sx; }
-    if (e2 < dx) { err += dx; y += sy; }
+    if (e2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y += sy;
+    }
   }
   return points;
 }
 
-function renderFrame(graph, positioned, frameNo, opts, liveEvents) {
+function renderFrame(graph, positioned, frameNo, opts, liveEvents, serviceStatus) {
   const width = process.stdout.columns || 140;
   const height = Math.max(30, (process.stdout.rows || 40) - 4);
   const grid = Array.from({ length: height }, () => Array(width).fill(' '));
@@ -78,7 +105,7 @@ function renderFrame(graph, positioned, frameNo, opts, liveEvents) {
     if (!a || !b) return;
 
     const isLive = edge.pulse > 0;
-    const char = isLive ? '*' : (Math.abs(a.depth - b.depth) > 6 ? ':' : '.');
+    const char = isLive ? '*' : Math.abs(a.depth - b.depth) > 6 ? ':' : '.';
     linePoints(a.sx, a.sy, b.sx, b.sy).forEach(([x, y]) => {
       if (x >= 0 && x < width && y >= 0 && y < height) grid[y][x] = char;
     });
@@ -94,7 +121,8 @@ function renderFrame(graph, positioned, frameNo, opts, liveEvents) {
     }
   });
 
-  const legend = ` Runtime Flow 3D | topology=${opts.topology} | nodes=${graph.nodes.length} edges=${graph.edges.length} | liveEvents=${liveEvents.length} `;
+  const statusLine = ` storefront=${serviceStatus.storefront || 'unknown'} | server=${serviceStatus.server || 'unknown'} | admin=${serviceStatus.admin || 'unknown'} `;
+  const legend = ` Runtime Flow 3D | mode=${opts.mode} | topology=${opts.topology} | nodes=${graph.nodes.length} edges=${graph.edges.length} | liveEvents=${liveEvents.length} |${statusLine}`;
   const top = legend.slice(0, width - 1);
   for (let i = 0; i < top.length; i += 1) grid[0][i] = top[i];
 
@@ -127,30 +155,105 @@ function tailTrace(tracePath, onEvent) {
     fs.closeSync(fd);
     cursor = stat.size;
 
-    chunk.toString('utf8').split('\n').filter(Boolean).forEach((line) => {
-      try {
-        const evt = JSON.parse(line);
-        if (evt.from && evt.to) onEvent(evt);
-      } catch (err) {
-        // ignore malformed lines
-      }
-    });
+    chunk
+      .toString('utf8')
+      .split('\n')
+      .filter(Boolean)
+      .forEach((line) => {
+        try {
+          const evt = JSON.parse(line);
+          if (evt.from && evt.to) onEvent(evt);
+        } catch (err) {
+          // ignore malformed lines
+        }
+      });
   }, 250);
 }
 
-function main() {
+function probeUrl(url, timeoutMs) {
+  return new Promise((resolve) => {
+    const target = new URL(url);
+    const client = target.protocol === 'https:' ? https : http;
+
+    const req = client.request(
+      {
+        method: 'GET',
+        host: target.hostname,
+        port: target.port || (target.protocol === 'https:' ? 443 : 80),
+        path: `${target.pathname}${target.search}`,
+      },
+      (res) => {
+        const ok = res.statusCode >= 200 && res.statusCode < 500;
+        resolve({ ok, statusCode: res.statusCode || 0 });
+        res.resume();
+      }
+    );
+
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error('timeout'));
+    });
+    req.on('error', () => resolve({ ok: false, statusCode: 0 }));
+    req.end();
+  });
+}
+
+async function buildLocalhostFlow(opts) {
+  const endpoints = {
+    storefrontBase: opts.storefrontBase,
+    serverBase: opts.serverBase,
+    adminBase: opts.adminBase,
+  };
+
+  const probes = [
+    { key: 'storefront', url: `${opts.storefrontBase}/walmart` },
+    { key: 'server', url: `${opts.serverBase}/api/products` },
+    { key: 'admin', url: `${opts.adminBase}/api/admin/health` },
+  ];
+
+  const statuses = {};
+  for (const probe of probes) {
+    const result = await probeUrl(probe.url, opts.timeoutMs);
+    statuses[probe.key] = result.ok ? `up(${result.statusCode})` : 'down';
+  }
+
+  const flow = buildLocalhostSeedFlow(endpoints);
+  return { flow, statuses };
+}
+
+async function main() {
   const opts = parseArgs(process.argv);
-  const graph = buildGraph(CORE_FLOW);
+  let serviceStatus = { storefront: 'n/a', server: 'n/a', admin: 'n/a' };
+  let baseFlow = CORE_FLOW;
+
+  if (opts.mode === 'localhost') {
+    if (!opts.trace) opts.trace = DEFAULT_LOCALHOST_TRACE;
+    const localhostFlow = await buildLocalhostFlow(opts);
+    baseFlow = localhostFlow.flow;
+    serviceStatus = localhostFlow.statuses;
+  }
+
+  const graph = buildGraph(baseFlow);
   let positioned = buildTopology(graph.nodes, opts.topology, opts.depth);
   const liveEvents = [];
 
   if (opts.dryRun) {
-    console.log(JSON.stringify({
-      topology: opts.topology,
-      nodes: graph.nodes.length,
-      edges: graph.edges.length,
-      trace: opts.trace || null,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          mode: opts.mode,
+          topology: opts.topology,
+          nodes: graph.nodes.length,
+          edges: graph.edges.length,
+          trace: opts.trace ? path.resolve(opts.trace) : null,
+          storefrontBase: opts.storefrontBase,
+          serverBase: opts.serverBase,
+          adminBase: opts.adminBase,
+          serviceStatus,
+        },
+        null,
+        2
+      )
+    );
     return;
   }
 
@@ -168,14 +271,23 @@ function main() {
   });
 
   let frame = 0;
-  const demoTimer = setInterval(() => {
-    const [from, to] = CORE_FLOW[frame % CORE_FLOW.length];
-    addOrPulseEdge(graph, from, to, 1);
-    renderFrame(graph, positioned, frame, opts, liveEvents);
+  const seedFlow = baseFlow.length > 0 ? baseFlow : CORE_FLOW;
+  const frameIntervalMs = Math.max(20, Math.floor(1000 / Math.max(2, opts.fps)));
+
+  const renderTimer = setInterval(() => {
+    renderFrame(graph, positioned, frame, opts, liveEvents, serviceStatus);
     frame += 1;
-  }, Math.max(20, Math.floor(1000 / Math.max(2, opts.fps))));
+  }, frameIntervalMs);
+
+  const demoTimer = opts.mode === 'demo'
+    ? setInterval(() => {
+      const [from, to] = seedFlow[frame % seedFlow.length];
+      addOrPulseEdge(graph, from, to, 1);
+    }, frameIntervalMs)
+    : null;
 
   process.on('exit', () => {
+    if (renderTimer) clearInterval(renderTimer);
     if (demoTimer) clearInterval(demoTimer);
     if (traceTimer) clearInterval(traceTimer);
   });
