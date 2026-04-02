@@ -16,12 +16,16 @@ node src/index.js --mode localhost --topology hybrid
 ```
 
 ## Localhost mode (recommended)
-By default, the visualizer now runs in `localhost` mode and seeds the graph with the real integration links:
+By default, the visualizer now runs in `localhost` mode and seeds the graph with the real integration links. In this mode, pulse activity comes from live trace events (not demo auto-pulsing):
 - `storefront` (`/walmart`, `/cart`, `/checkout`) 
 - shared `server` APIs (`/api/products`, `/api/orders`, `/api/admin/*`)
 - `admin-console` (`/admin`, `/api/admin/health`)
 
 The header also shows service probe status (`up(code)` or `down`) so you can confirm connectivity while the live stack is running.
+
+When running localhost mode, the CLI tails `runtime-flow-cli/runtime-events.jsonl` by default. This file is written by request middleware in:
+- `server/app.js` (integrated server on :3000)
+- `admin-console/node-express-backend/src/app.js` (standalone admin backend on :4000)
 
 ## Options
 - `--mode <name>`: `localhost|demo` (default: `localhost`)

@@ -6,6 +6,8 @@ const https = require('https');
 const { CORE_FLOW, buildLocalhostSeedFlow } = require('./flowCatalog');
 const { buildTopology } = require('./topologies');
 
+const DEFAULT_LOCALHOST_TRACE = path.join(__dirname, '../runtime-events.jsonl');
+
 function parseArgs(argv) {
   const args = {
     topology: 'hybrid',
@@ -224,6 +226,7 @@ async function main() {
   let baseFlow = CORE_FLOW;
 
   if (opts.mode === 'localhost') {
+    if (!opts.trace) opts.trace = DEFAULT_LOCALHOST_TRACE;
     const localhostFlow = await buildLocalhostFlow(opts);
     baseFlow = localhostFlow.flow;
     serviceStatus = localhostFlow.statuses;
@@ -241,7 +244,7 @@ async function main() {
           topology: opts.topology,
           nodes: graph.nodes.length,
           edges: graph.edges.length,
-          trace: opts.trace || null,
+          trace: opts.trace ? path.resolve(opts.trace) : null,
           storefrontBase: opts.storefrontBase,
           serverBase: opts.serverBase,
           adminBase: opts.adminBase,
@@ -269,14 +272,22 @@ async function main() {
 
   let frame = 0;
   const seedFlow = baseFlow.length > 0 ? baseFlow : CORE_FLOW;
-  const demoTimer = setInterval(() => {
-    const [from, to] = seedFlow[frame % seedFlow.length];
-    addOrPulseEdge(graph, from, to, 1);
+  const frameIntervalMs = Math.max(20, Math.floor(1000 / Math.max(2, opts.fps)));
+
+  const renderTimer = setInterval(() => {
     renderFrame(graph, positioned, frame, opts, liveEvents, serviceStatus);
     frame += 1;
-  }, Math.max(20, Math.floor(1000 / Math.max(2, opts.fps))));
+  }, frameIntervalMs);
+
+  const demoTimer = opts.mode === 'demo'
+    ? setInterval(() => {
+      const [from, to] = seedFlow[frame % seedFlow.length];
+      addOrPulseEdge(graph, from, to, 1);
+    }, frameIntervalMs)
+    : null;
 
   process.on('exit', () => {
+    if (renderTimer) clearInterval(renderTimer);
     if (demoTimer) clearInterval(demoTimer);
     if (traceTimer) clearInterval(traceTimer);
   });

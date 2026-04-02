@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const nunjucks = require('nunjucks');
 const { loadEnvLocal } = require('./utils/loadEnvLocal');
+const { logRuntimeEdge } = require('./utils/runtimeEventLogger');
 
 loadEnvLocal();
 
@@ -17,6 +18,24 @@ const customerRoutes = require('./routes/api/customers');
 
 const app = express();
 const PORT = 3000;
+
+function resolveRuntimeTarget(req) {
+  if (req.path === '/' || req.path === '/walmart') return 'walmart:home';
+  if (req.path.startsWith('/product/')) return 'walmart:product';
+  if (req.path === '/cart') return 'walmart:cart';
+  if (req.path === '/checkout') return 'walmart:checkout';
+  if (req.path === '/account') return 'walmart:account';
+  if (req.path === '/my-orders') return 'walmart:my-orders';
+  if (req.path.startsWith('/admin')) return 'admin-console:ui';
+  if (req.path.startsWith('/api/products')) return 'server-api:products';
+  if (req.path.startsWith('/api/categories')) return 'server-api:categories';
+  if (req.path.startsWith('/api/orders')) return 'server-api:orders';
+  if (req.path.startsWith('/api/customers')) return 'server-api:customers';
+  if (req.path.startsWith('/api/admin')) return 'server-api:admin';
+  if (req.path.startsWith('/webhooks/stripe')) return 'server-api:stripe-webhook';
+  return null;
+}
+
 const SERVER_BOOT_ID = String(Date.now());
 
 // Configure Nunjucks to render canonical Walmart storefront templates.
@@ -38,6 +57,18 @@ app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), Webhooks
 
 // Parse JSON bodies for API requests.
 app.use(express.json());
+
+// Capture live request edges for the runtime flow visualizer.
+app.use((req, res, next) => {
+  const target = resolveRuntimeTarget(req);
+  if (!target) return next();
+
+  const source = `browser:${req.method} ${req.path}`;
+  res.on('finish', () => {
+    logRuntimeEdge(source, target, 1, { status: res.statusCode });
+  });
+  next();
+});
 
 // Serve static assets for admin and Walmart storefront UIs.
 app.use('/admin', express.static(path.join(__dirname, '../admin-console/admin-console-panel')));
