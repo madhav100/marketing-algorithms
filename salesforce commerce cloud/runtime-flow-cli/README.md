@@ -23,6 +23,8 @@ By default, the visualizer now runs in `localhost` mode and seeds the graph with
 
 The header also shows service probe status (`up(code)` or `down`) so you can confirm connectivity while the live stack is running.
 
+The bottom of the terminal prints recent live edges with metadata (`file`, `fn`, `status`) so you can see which files/functions were involved in each action.
+
 When running localhost mode, the CLI tails `runtime-flow-cli/runtime-events.jsonl` by default. This file is written by request middleware in:
 - `server/app.js` (integrated server on :3000)
 - `admin-console/node-express-backend/src/app.js` (standalone admin backend on :4000)

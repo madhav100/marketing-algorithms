@@ -8,23 +8,40 @@ const app = express();
 
 
 function resolveAdminRuntimeTarget(req) {
-  if (req.path.startsWith('/admin')) return 'admin-console:ui';
-  if (req.path.startsWith('/api/admin/health')) return 'admin-backend:health';
-  if (req.path.startsWith('/api/admin/products')) return 'admin-backend:products';
-  if (req.path.startsWith('/api/admin/categories')) return 'admin-backend:categories';
-  if (req.path.startsWith('/api/admin/orders')) return 'admin-backend:orders';
+  if (req.path.startsWith('/admin')) {
+    return { target: 'admin-console:ui', file: 'admin-console/admin-console-panel/admin.js', fn: 'adminPanelBootstrap' };
+  }
+  if (req.path.startsWith('/api/admin/health')) {
+    return { target: 'admin-backend:health', file: 'admin-console/node-express-backend/src/routes/adminApiRoutes.js', fn: 'GET /health' };
+  }
+  if (req.path.startsWith('/api/admin/products')) {
+    return { target: 'admin-backend:products', file: 'admin-console/node-express-backend/src/routes/adminApiRoutes.js', fn: 'products handlers' };
+  }
+  if (req.path.startsWith('/api/admin/categories')) {
+    return { target: 'admin-backend:categories', file: 'admin-console/node-express-backend/src/routes/adminApiRoutes.js', fn: 'categories handlers' };
+  }
+  if (req.path.startsWith('/api/admin/orders')) {
+    return { target: 'admin-backend:orders', file: 'admin-console/node-express-backend/src/routes/adminApiRoutes.js', fn: 'orders handlers' };
+  }
   return null;
 }
 
 app.use(express.json());
 
 app.use((req, res, next) => {
-  const target = resolveAdminRuntimeTarget(req);
-  if (!target) return next();
+  const routeMeta = resolveAdminRuntimeTarget(req);
+  if (!routeMeta) return next();
 
   const source = `browser:${req.method} ${req.path}`;
   res.on('finish', () => {
-    logRuntimeEdge(source, target, 1, { status: res.statusCode, backend: 'admin-console' });
+    logRuntimeEdge(source, routeMeta.target, 1, {
+      status: res.statusCode,
+      backend: 'admin-console',
+      file: routeMeta.file,
+      fn: routeMeta.fn,
+      method: req.method,
+      path: req.path,
+    });
   });
   next();
 });

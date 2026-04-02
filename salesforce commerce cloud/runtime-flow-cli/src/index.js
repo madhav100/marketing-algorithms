@@ -90,6 +90,14 @@ function linePoints(x0, y0, x1, y1) {
   return points;
 }
 
+
+function summarizeEvent(evt) {
+  const file = evt.file ? ` | file=${evt.file}` : '';
+  const fn = evt.fn ? ` | fn=${evt.fn}` : '';
+  const status = evt.status ? ` | status=${evt.status}` : '';
+  return `${evt.from} -> ${evt.to}${status}${file}${fn}`;
+}
+
 function renderFrame(graph, positioned, frameNo, opts, liveEvents, serviceStatus) {
   const width = process.stdout.columns || 140;
   const height = Math.max(30, (process.stdout.rows || 40) - 4);
@@ -125,6 +133,14 @@ function renderFrame(graph, positioned, frameNo, opts, liveEvents, serviceStatus
   const legend = ` Runtime Flow 3D | mode=${opts.mode} | topology=${opts.topology} | nodes=${graph.nodes.length} edges=${graph.edges.length} | liveEvents=${liveEvents.length} |${statusLine}`;
   const top = legend.slice(0, width - 1);
   for (let i = 0; i < top.length; i += 1) grid[0][i] = top[i];
+
+  const recent = liveEvents.slice(-4).reverse();
+  recent.forEach((evt, idx) => {
+    const y = height - 1 - idx;
+    if (y <= 1) return;
+    const line = summarizeEvent(evt).slice(0, width - 1);
+    for (let i = 0; i < line.length; i += 1) grid[y][i] = line[i];
+  });
 
   const out = '\x1b[H' + grid.map((r) => r.join('')).join('\n');
   process.stdout.write(out);
@@ -266,6 +282,7 @@ async function main() {
 
   const traceTimer = tailTrace(opts.trace, (evt) => {
     liveEvents.push(evt);
+    if (liveEvents.length > 200) liveEvents.shift();
     addOrPulseEdge(graph, evt.from, evt.to, evt.weight || 1);
     positioned = buildTopology(graph.nodes, opts.topology, opts.depth);
   });
