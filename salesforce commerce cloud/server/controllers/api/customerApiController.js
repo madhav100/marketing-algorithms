@@ -1,8 +1,11 @@
 const customerService = require('../../services/customerService');
 const orderService = require('../../services/orderService');
+const { analyticsService } = require('../Analytics');
+const { emitRuntimeFlow } = require('../../utils/runtimeFlowTracer');
 
 async function getCustomers(req, res, next) {
   try {
+    emitRuntimeFlow('customerApiController.getCustomers', 'customerService.getCustomersWithStats', { channel: 'service_call' });
     const customers = await customerService.getCustomersWithStats();
     res.json(customers);
   } catch (error) {
@@ -12,6 +15,7 @@ async function getCustomers(req, res, next) {
 
 async function signUpCustomer(req, res, next) {
   try {
+    emitRuntimeFlow('customerApiController.signUpCustomer', 'customerService.createCustomer', { channel: 'service_call' });
     const customer = await customerService.createCustomer(req.body);
     res.status(201).json(customer);
   } catch (error) {
@@ -21,6 +25,7 @@ async function signUpCustomer(req, res, next) {
 
 async function signInCustomer(req, res, next) {
   try {
+    emitRuntimeFlow('customerApiController.signInCustomer', 'customerService.authenticateCustomer', { channel: 'service_call' });
     const customer = await customerService.authenticateCustomer(req.body.phone, req.body.password);
 
     if (!customer) {
@@ -35,12 +40,14 @@ async function signInCustomer(req, res, next) {
 
 async function getCustomerOrders(req, res, next) {
   try {
+    emitRuntimeFlow('customerApiController.getCustomerOrders', 'customerService.getCustomerById', { channel: 'service_call' });
     const customer = await customerService.getCustomerById(req.params.id);
 
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found.' });
     }
 
+    emitRuntimeFlow('customerApiController.getCustomerOrders', 'orderService.getOrdersByCustomerId', { channel: 'service_call' });
     const orders = await orderService.getOrdersByCustomerId(req.params.id);
     return res.json(orders);
   } catch (error) {
@@ -48,7 +55,22 @@ async function getCustomerOrders(req, res, next) {
   }
 }
 
+async function deleteCustomer(req, res, next) {
+  try {
+    emitRuntimeFlow('customerApiController.deleteCustomer', 'customerService.deleteCustomer', { channel: 'service_call' });
+    const removed = await customerService.deleteCustomer(req.params.id);
+    if (!removed) {
+      return res.status(404).json({ message: 'Customer not found.' });
+    }
+    analyticsService.purgeCustomerData(req.params.id);
+    return res.status(204).send();
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
+  deleteCustomer,
   getCustomerOrders,
   getCustomers,
   signInCustomer,

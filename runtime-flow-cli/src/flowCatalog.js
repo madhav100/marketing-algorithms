@@ -1,0 +1,32 @@
+const CORE_FLOW = [
+  ['storefrontRoutes:/checkout', 'checkoutPage.js:initCheckout'],
+  ['checkoutPage.js:initCheckout', 'stripeCheckout.js:initializeStripeCheckout'],
+  ['stripeCheckout.js:initializeStripeCheckout', 'Payments.createIntent'],
+  ['Payments.createIntent', 'orderService.createPaymentOrder'],
+  ['Payments.createIntent', 'paymentService.createPaymentIntent'],
+  ['stripeCheckout.js:initializeStripeCheckout', 'Payments.confirmIntent'],
+  ['Payments.confirmIntent', 'orderService.updateOrderPaymentStatus'],
+  ['storefrontRoutes:/my-orders', 'customerApiController.getCustomerOrders'],
+  ['customerApiController.getCustomerOrders', 'orderService.getOrdersByCustomerId'],
+  ['analyticsRoutes:/admin/api/analytics/business-metrics', 'AnalyticsController.getBusinessMetrics'],
+  ['AnalyticsController.getBusinessMetrics', 'analyticsService.getBusinessMetrics'],
+  ['analyticsService.getBusinessMetrics', 'fileStore.readJsonFile(orders.json)'],
+  ['analyticsService.getBusinessMetrics', 'fileStore.readJsonFile(customers.json)'],
+  ['accountPage.js:bindForms', 'customerApiController.signInCustomer'],
+  ['customerApiController.signInCustomer', 'customerService.authenticateCustomer'],
+  ['homePage.js:bindSignOut', 'sessionTracker.logout'],
+  ['sessionTracker.logout', 'AnalyticsController.logLogout'],
+  ['AnalyticsController.logLogout', 'analyticsService.logLogout'],
+  ['analyticsService.logLogout', 'analyticsService.logEvent(cart_abandon?)'],
+  ['customerApiController.deleteCustomer', 'customerService.deleteCustomer'],
+  ['customerService.deleteCustomer', 'customerService.pruneCustomerOperationalData'],
+  ['customerService.pruneCustomerOperationalData', 'fileStore.writeJsonFile(orders.json)'],
+  ['customerService.pruneCustomerOperationalData', 'fileStore.writeJsonFile(analytics-sessions.json)'],
+  ['customerService.pruneCustomerOperationalData', 'fileStore.writeJsonFile(analytics-events.json)'],
+  ['AnalyticsController.exportBusinessMetricsCsv', 'analyticsService.exportBusinessMetricsCsv'],
+  ['analyticsService.exportBusinessMetricsCsv', 'fileStore.readJsonFile(customers.json)'],
+  ['analyticsService.exportBusinessMetricsCsv', 'fs.writeFile(customer-analytics-*.csv)'],
+  ['analyticsService.exportBusinessMetricsCsv', 'fs.writeFile(carts-analytics-*.csv)']
+];
+
+module.exports = { CORE_FLOW };

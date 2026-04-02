@@ -67,6 +67,7 @@
         var isAuthenticated = Boolean(customer && customer.id);
         var guestLink = document.getElementById('account-link-guest');
         var authDropdown = document.getElementById('account-dropdown-auth');
+        var signOutNav = document.getElementById('home-sign-out-nav');
         var accountToggle = document.getElementById('account-dropdown-toggle');
         var accountDropdownMenu = document.getElementById('account-dropdown-menu');
         var welcomeUserName = document.getElementById('welcome-user-name');
@@ -77,6 +78,10 @@
 
         if (authDropdown) {
             authDropdown.hidden = !isAuthenticated;
+        }
+
+        if (signOutNav) {
+            signOutNav.hidden = !isAuthenticated;
         }
 
         if (accountToggle) {
@@ -260,22 +265,29 @@
         });
     }
 
+
     function bindSignOut() {
-        var signOutButton = document.getElementById('home-sign-out');
-        if (!signOutButton) {
+        var signOutButtons = [
+            document.getElementById('home-sign-out'),
+            document.getElementById('home-sign-out-nav')
+        ].filter(Boolean);
+
+        if (!signOutButtons.length) {
             return;
         }
 
-        signOutButton.addEventListener('click', function () {
-            var customer = getCurrentCustomer();
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
-                window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
-            }
-            if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
-                window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
-            }
-            clearCurrentCustomer();
-            window.location.reload();
+        signOutButtons.forEach(function (signOutButton) {
+            signOutButton.addEventListener('click', function () {
+                var customer = getCurrentCustomer();
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.logout === 'function') {
+                    window.SfraAnalyticsSession.logout(customer && customer.id ? customer.id : 'guest');
+                }
+                if (window.SfraAnalyticsSession && typeof window.SfraAnalyticsSession.end === 'function') {
+                    window.SfraAnalyticsSession.end(customer && customer.id ? customer.id : 'guest');
+                }
+                clearCurrentCustomer();
+                window.location.reload();
+            });
         });
     }
 

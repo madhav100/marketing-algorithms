@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const nunjucks = require('nunjucks');
 const { loadEnvLocal } = require('./utils/loadEnvLocal');
+const { ensureTraceDir, emitRuntimeFlow } = require('./utils/runtimeFlowTracer');
 
 loadEnvLocal();
 
@@ -30,6 +31,20 @@ app.locals.serverBootId = SERVER_BOOT_ID;
 
 app.use((req, res, next) => {
   res.locals.serverBootId = req.app.locals.serverBootId;
+  next();
+});
+
+ensureTraceDir().catch(() => {});
+
+app.use((req, res, next) => {
+  const source = req.path.startsWith('/admin') ? 'admin-console' : 'walmart-console';
+  const routeLabel = `express:${req.method} ${req.path}`;
+  emitRuntimeFlow(`${source}:browser`, routeLabel, { channel: 'http_request' });
+
+  res.on('finish', () => {
+    emitRuntimeFlow(routeLabel, `server:status:${res.statusCode}`, { channel: 'http_response' });
+  });
+
   next();
 });
 
