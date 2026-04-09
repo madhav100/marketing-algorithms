@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Console SIEM-Style Dashboard</title>
+    <style>
+      :root {
+        --bg: #050a14;
+        --panel: #0b1220;
+        --panel-2: #0f172a;
+        --border: #1e293b;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --success: #34d399;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #030712 0%, var(--bg) 100%);
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .dashboard {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 0.75rem;
+        padding: 0.75rem;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .panel {
+        background: linear-gradient(160deg, var(--panel), var(--panel-2));
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.8rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      }
+
+      .title {
+        font-size: 0.76rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .value {
+        margin-top: 0.3rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .ok { color: var(--success); }
+      .warn { color: var(--warning); }
+      .bad { color: var(--danger); }
+
+      .headline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .headline h1 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .tag {
+        font-size: 0.75rem;
+        border: 1px solid #1f3b53;
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 0.22rem 0.55rem;
+        background: rgba(56, 189, 248, 0.1);
+      }
+
+      .main {
+        display: grid;
+        grid-template-columns: 2.1fr 1.4fr 1.2fr;
+        gap: 0.75rem;
+      }
+
+      .stack {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .flow-wrap {
+        min-height: 290px;
+      }
+
+      svg { width: 100%; height: auto; }
+      .link { stroke: #1f3b53; stroke-width: 2; fill: none; }
+      .node { fill: #0a101d; stroke: #2a3d55; stroke-width: 1.2; }
+      .node-title { fill: #dbeafe; font-size: 12px; font-weight: 600; }
+      .node-sub { fill: #93c5fd; font-size: 10px; }
+      .pulse { fill: #38bdf8; filter: drop-shadow(0 0 4px rgba(56,189,248,0.8)); }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 0.55rem;
+        border-bottom: 1px solid #1f2937;
+      }
+
+      th {
+        color: #7dd3fc;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      tr:last-child td { border-bottom: none; }
+
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+      .legend {
+        color: var(--muted);
+        font-size: 0.82rem;
+        margin-top: 0.4rem;
+      }
+
+      @media (max-width: 1200px) {
+        .topbar { grid-template-columns: repeat(2, 1fr); }
+        .main { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <section class="topbar">
+        <article class="panel">
+          <div class="headline">
+            <h1>Data Console • Pipeline Ops</h1>
+            <span class="tag">SIEM layout</span>
+          </div>
+          <div class="legend">Horizontal monitoring view for CSV streams, governance, and object-lake output.</div>
+        </article>
+        <article class="panel">
+          <div class="title">Active CSV Streams</div>
+          <div class="value">5</div>
+        </article>
+        <article class="panel">
+          <div class="title">Objects in Lake</div>
+          <div class="value">19</div>
+        </article>
+        <article class="panel">
+          <div class="title">Pipeline Health</div>
+          <div class="value ok">HEALTHY</div>
+        </article>
+        <article class="panel">
+          <div class="title">Governance Alerts</div>
+          <div class="value warn">0 BLOCKING</div>
+        </article>
+      </section>
+
+      <section class="main">
+        <article class="panel flow-wrap">
+          <div class="title">Horizontal Data Flow Map</div>
+          <svg viewBox="0 0 980 300" role="img" aria-label="horizontal siem-style data pipeline">
+            <path id="l1" class="link" d="M 140 70 C 250 70, 250 70, 340 70" />
+            <path id="l2" class="link" d="M 140 140 C 250 140, 250 140, 340 140" />
+            <path id="l3" class="link" d="M 140 210 C 250 210, 250 210, 340 210" />
+            <path id="l4" class="link" d="M 460 140 C 560 140, 560 140, 660 140" />
+            <path id="l5" class="link" d="M 780 140 C 860 140, 860 220, 920 220" />
+
+            <rect class="node" x="10" y="35" width="130" height="50" rx="8"/>
+            <text class="node-title" x="20" y="58">customer_profiles</text>
+            <text class="node-sub" x="20" y="74">csv export</text>
+
+            <rect class="node" x="10" y="105" width="130" height="50" rx="8"/>
+            <text class="node-title" x="20" y="128">customer_orders</text>
+            <text class="node-sub" x="20" y="144">csv export</text>
+
+            <rect class="node" x="10" y="175" width="130" height="50" rx="8"/>
+            <text class="node-title" x="20" y="198">cust_returns/subs/tix</text>
+            <text class="node-sub" x="20" y="214">csv export</text>
+
+            <rect class="node" x="340" y="100" width="120" height="80" rx="8"/>
+            <text class="node-title" x="352" y="128">csvDataStream</text>
+            <text class="node-sub" x="352" y="146">parse + map</text>
+
+            <rect class="node" x="660" y="100" width="120" height="80" rx="8"/>
+            <text class="node-title" x="672" y="128">DataObjectsLake</text>
+            <text class="node-sub" x="672" y="146">upsert entities</text>
+
+            <rect class="node" x="820" y="200" width="150" height="80" rx="8"/>
+            <text class="node-title" x="832" y="230">lake-summary.json</text>
+            <text class="node-sub" x="832" y="248">ops + counts</text>
+
+            <circle class="pulse" r="4"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#l1"/></animateMotion></circle>
+            <circle class="pulse" r="4"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#l2"/></animateMotion></circle>
+            <circle class="pulse" r="4"><animateMotion dur="6s" repeatCount="indefinite"><mpath href="#l3"/></animateMotion></circle>
+            <circle class="pulse" r="4"><animateMotion dur="3.2s" repeatCount="indefinite"><mpath href="#l4"/></animateMotion></circle>
+            <circle class="pulse" r="4"><animateMotion dur="3.6s" repeatCount="indefinite"><mpath href="#l5"/></animateMotion></circle>
+          </svg>
+          <div class="legend">Flow: CSV exports → stream parser → objects lake → summary output.</div>
+        </article>
+
+        <section class="stack">
+          <article class="panel">
+            <div class="title">Entity Relationship Tracker</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Entity</th>
+                  <th>Key</th>
+                  <th>Relationship</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>customer_profiles</td>
+                  <td class="mono">id</td>
+                  <td>root customer object</td>
+                </tr>
+                <tr>
+                  <td>customer_orders</td>
+                  <td class="mono">orderId</td>
+                  <td class="mono">customerId → customer_profiles.id</td>
+                </tr>
+                <tr>
+                  <td>customer_returns</td>
+                  <td class="mono">returnId</td>
+                  <td class="mono">orderId + customerId links</td>
+                </tr>
+                <tr>
+                  <td>customer_subscriptions</td>
+                  <td class="mono">subscriptionId</td>
+                  <td class="mono">customerId → customer_profiles.id</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="panel">
+            <div class="title">Data Governance Status</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Control</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Required IDs</td>
+                  <td class="ok">PASS</td>
+                </tr>
+                <tr>
+                  <td>Numeric Revenue Fields</td>
+                  <td class="ok">PASS</td>
+                </tr>
+                <tr>
+                  <td>Date Format (YYYY-MM-DD)</td>
+                  <td class="ok">PASS</td>
+                </tr>
+                <tr>
+                  <td>Revenue Integrity Rules</td>
+                  <td class="ok">PASS</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+        </section>
+
+        <article class="panel">
+          <div class="title">SOC-Style Event Feed</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">05:41:19</td>
+                <td>Watch trigger: customer_orders.csv updated</td>
+                <td class="warn">MED</td>
+              </tr>
+              <tr>
+                <td class="mono">05:41:20</td>
+                <td>Ingestion rebuild completed (5 files)</td>
+                <td class="ok">LOW</td>
+              </tr>
+              <tr>
+                <td class="mono">05:41:20</td>
+                <td>Governance checks passed</td>
+                <td class="ok">LOW</td>
+              </tr>
+              <tr>
+                <td class="mono">05:41:21</td>
+                <td>lake-summary.json refreshed</td>
+                <td class="ok">INFO</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="legend" style="margin-top: 0.9rem;">
+            Explorer template: <span class="mono">/dashboard%20view/data-explorer-template.html</span>
+          </div>
+        </article>
+      </section>
+    </div>
+  </body>
+</html>
