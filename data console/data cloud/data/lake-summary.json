@@ -1,0 +1,23 @@
+{
+  "processedCsvFiles": [
+    "customers.csv",
+    "orders.csv"
+  ],
+  "entityCounts": {
+    "customers": 3,
+    "orders": 3
+  },
+  "metadata": {
+    "lastUpdatedAt": "2026-03-27T04:35:54.666Z",
+    "ingestedFiles": [
+      {
+        "fileName": "customers.csv",
+        "ingestedAt": "2026-03-27T04:35:54.664Z"
+      },
+      {
+        "fileName": "orders.csv",
+        "ingestedAt": "2026-03-27T04:35:54.666Z"
+      }
+    ]
+  }
+}
