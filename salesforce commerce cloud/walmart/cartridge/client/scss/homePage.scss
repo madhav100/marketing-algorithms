@@ -441,13 +441,42 @@ input,
     width: 100%;
     height: 160px;
     margin-bottom: 12px;
+    position: relative;
+    perspective: 1100px;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -40%;
+      width: 45%;
+      height: 140%;
+      background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.45) 48%, transparent 100%);
+      transform: translateX(-160%) skewX(-18deg);
+      pointer-events: none;
+      transition: transform 450ms ease;
+    }
   }
 
   .category-card__icon {
-    width: min(100%, 140px);
-    height: min(100%, 140px);
+    width: min(100%, 112px);
+    height: min(100%, 112px);
     object-fit: contain;
     display: block;
+    transform: rotateY(-10deg) rotateX(6deg);
+    transform-origin: center;
+    filter: drop-shadow(0 16px 16px rgba(0, 0, 0, 0.22)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.4));
+    transition: transform var(--transition-base), filter var(--transition-base);
+  }
+
+  .feature-box:hover .category-card__icon {
+    transform: rotateY(-4deg) rotateX(3deg) translateY(-3px) scale(1.02);
+    filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.26)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.5));
+  }
+
+  .feature-box:hover .category-card__icon-wrap::after {
+    transform: translateX(340%) skewX(-18deg);
   }
 
   .feature-box__label {
