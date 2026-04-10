@@ -57,32 +57,23 @@
       <p id="welcome-user-name" class="welcome-intro__name" hidden></p>
     </section>
 
-    <section class="section featured-boxes-section" aria-label="Featured products">
+    <section class="section featured-boxes-section" aria-label="Shop categories">
+      {% set featuredCategoryCards = [
+        { name: 'Footwear', icon: '/client/default/icons/categories/footwear.svg', boxClass: 'box-b1', slug: 'footwear' },
+        { name: 'Apparel', icon: '/client/default/icons/categories/apparel.svg', boxClass: 'box-b2', slug: 'apparel' },
+        { name: 'Electronics (Phone)', icon: '/client/default/icons/categories/electronics-phone.svg', boxClass: 'box-b3', slug: 'electronics' },
+        { name: 'Electronics (Laptop)', icon: '/client/default/icons/categories/electronics-laptop.svg', boxClass: 'box-b4', slug: 'electronics' },
+        { name: 'Accessories', icon: '/client/default/icons/categories/accessories.svg', boxClass: 'box-b5', slug: 'accessories' },
+        { name: 'Fitness', icon: '/client/default/icons/categories/fitness.svg', boxClass: 'box-b6', slug: 'fitness' }
+      ] %}
       <div class="featured-boxes-grid">
-        {% set boxCount = 0 %}
-        {% for category in categorySections %}
-          {% for product in category.products %}
-            {% if boxCount < 6 %}
-              {% if boxCount == 0 %}
-                <article class="card wm-card feature-box box-b1">
-              {% elif boxCount == 1 %}
-                <article class="card wm-card feature-box box-b2">
-              {% elif boxCount == 2 %}
-                <article class="card wm-card feature-box box-b3">
-              {% elif boxCount == 3 %}
-                <article class="card wm-card feature-box box-b4">
-              {% elif boxCount == 4 %}
-                <article class="card wm-card feature-box box-b5">
-              {% else %}
-                <article class="card wm-card feature-box box-b6">
-              {% endif %}
-                <div class="hero-3d-media">
-                  <img class="hero-3d-image" src="{{product.image}}" alt="{{product.categoryName}} category" width="260" height="160" />
-                </div>
-              </article>
-              {% set boxCount = boxCount + 1 %}
-            {% endif %}
-          {% endfor %}
+        {% for card in featuredCategoryCards %}
+          <a class="card wm-card feature-box {{card.boxClass}}" href="/category?category={{card.slug}}" aria-label="{{card.name}}">
+            <div class="category-card__icon-wrap">
+              <img class="category-card__icon" src="{{card.icon}}" alt="{{card.name}}" />
+            </div>
+            <p class="feature-box__label">{{card.name}}</p>
+          </a>
         {% endfor %}
       </div>
     </section>

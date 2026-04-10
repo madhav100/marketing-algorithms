@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+  <title>Accessories</title>
+  <rect width="200" height="200" rx="20" fill="#E8F4FD"/>
+  <rect x="56" y="78" width="88" height="84" rx="10" fill="#0071CE"/>
+  <path d="M76 78c0-13 11-24 24-24s24 11 24 24" fill="none" stroke="#0058A3" stroke-width="10"/>
+  <circle cx="100" cy="114" r="7" fill="#FFC220"/>
+</svg>

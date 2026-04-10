@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+  <title>Electronics Phone</title>
+  <rect width="200" height="200" rx="20" fill="#E8F4FD"/>
+  <rect x="64" y="36" width="72" height="128" rx="12" fill="#0071CE"/>
+  <rect x="74" y="52" width="52" height="90" rx="6" fill="#fff"/>
+  <circle cx="100" cy="150" r="5" fill="#FFC220"/>
+</svg>
