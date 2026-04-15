@@ -1,0 +1,42 @@
+[
+  {
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "isLoggedIn": false,
+    "startedAt": "2026-04-02T19:02:40.750Z",
+    "endedAt": "2026-04-02T19:02:51.829Z",
+    "status": "ended",
+    "categoryClickCount": 0,
+    "productClickCount": 0,
+    "addToCartCount": 0,
+    "cartItemCount": 0,
+    "cartValue": 0,
+    "cartAbandoned": false,
+    "hasPurchase": false,
+    "lastCartUpdateAt": null,
+    "lastActivityAt": "2026-04-02T19:02:51.829Z",
+    "lastLoginAt": null,
+    "loggedInMinutes": 0.19,
+    "sessionDurationMinutes": 0.18
+  },
+  {
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "isLoggedIn": false,
+    "startedAt": "2026-04-05T15:32:59.312Z",
+    "endedAt": "2026-04-08T00:28:24.272Z",
+    "status": "ended",
+    "categoryClickCount": 0,
+    "productClickCount": 1,
+    "addToCartCount": 1,
+    "cartItemCount": 0,
+    "cartValue": 0,
+    "cartAbandoned": false,
+    "hasPurchase": true,
+    "lastCartUpdateAt": "2026-04-05T15:33:06.813Z",
+    "lastActivityAt": "2026-04-08T00:28:24.272Z",
+    "lastLoginAt": null,
+    "loggedInMinutes": 2.91,
+    "sessionDurationMinutes": 3415.42
+  }
+]

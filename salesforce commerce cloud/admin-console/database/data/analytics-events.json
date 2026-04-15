@@ -1,0 +1,362 @@
+[
+  {
+    "id": "evt_1",
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-02T19:02:40.750Z"
+  },
+  {
+    "id": "evt_2",
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.15,
+      "loggedInMinutes": 0.15
+    },
+    "createdAt": "2026-04-02T19:02:49.571Z"
+  },
+  {
+    "id": "evt_3",
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-02T19:02:49.625Z"
+  },
+  {
+    "id": "evt_4",
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "eventType": "logout",
+    "eventData": {
+      "loggedInMinutes": 0.19
+    },
+    "createdAt": "2026-04-02T19:02:51.825Z"
+  },
+  {
+    "id": "evt_5",
+    "sessionId": "sess_1774966012093_82578",
+    "customerId": "cu1774964137722",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.18,
+      "loggedInMinutes": 0.19
+    },
+    "createdAt": "2026-04-02T19:02:51.829Z"
+  },
+  {
+    "id": "evt_1",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "login",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:32:59.312Z"
+  },
+  {
+    "id": "evt_2",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0,
+      "loggedInMinutes": 0
+    },
+    "createdAt": "2026-04-05T15:32:59.321Z"
+  },
+  {
+    "id": "evt_3",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:32:59.364Z"
+  },
+  {
+    "id": "evt_4",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.1,
+      "loggedInMinutes": 0.1
+    },
+    "createdAt": "2026-04-05T15:33:05.240Z"
+  },
+  {
+    "id": "evt_5",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:05.285Z"
+  },
+  {
+    "id": "evt_6",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "product_click",
+    "eventData": {
+      "productId": "p1003",
+      "productName": "Smart Fitness Watch",
+      "sourcePage": "product",
+      "sourceSection": "product-detail",
+      "timestamp": "2026-04-05T15:33:05.285Z"
+    },
+    "createdAt": "2026-04-05T15:33:05.285Z"
+  },
+  {
+    "id": "evt_7",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "add_to_cart",
+    "eventData": {
+      "productId": "p1003",
+      "productName": "Smart Fitness Watch",
+      "quantity": 1,
+      "price": 199,
+      "timestamp": "2026-04-05T15:33:06.813Z"
+    },
+    "createdAt": "2026-04-05T15:33:06.813Z"
+  },
+  {
+    "id": "evt_8",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.2,
+      "loggedInMinutes": 0.2
+    },
+    "createdAt": "2026-04-05T15:33:11.390Z"
+  },
+  {
+    "id": "evt_9",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:11.418Z"
+  },
+  {
+    "id": "evt_10",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.22,
+      "loggedInMinutes": 0.22
+    },
+    "createdAt": "2026-04-05T15:33:12.492Z"
+  },
+  {
+    "id": "evt_11",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:12.554Z"
+  },
+  {
+    "id": "evt_12",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "checkout_start",
+    "eventData": {
+      "cartItemCount": 1,
+      "cartValue": 199,
+      "timestamp": "2026-04-05T15:33:12.977Z"
+    },
+    "createdAt": "2026-04-05T15:33:12.977Z"
+  },
+  {
+    "id": "evt_13",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "purchase_complete",
+    "eventData": {
+      "orderId": "ord_live_1775403192558_6371",
+      "total": 199,
+      "timestamp": "2026-04-05T15:33:28.820Z"
+    },
+    "createdAt": "2026-04-05T15:33:28.820Z"
+  },
+  {
+    "id": "evt_14",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.49,
+      "loggedInMinutes": 0.49
+    },
+    "createdAt": "2026-04-05T15:33:28.833Z"
+  },
+  {
+    "id": "evt_15",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:28.872Z"
+  },
+  {
+    "id": "evt_16",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.54,
+      "loggedInMinutes": 0.53
+    },
+    "createdAt": "2026-04-05T15:33:31.553Z"
+  },
+  {
+    "id": "evt_17",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:31.582Z"
+  },
+  {
+    "id": "evt_18",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.58,
+      "loggedInMinutes": 0.57
+    },
+    "createdAt": "2026-04-05T15:33:34.202Z"
+  },
+  {
+    "id": "evt_19",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:34.246Z"
+  },
+  {
+    "id": "evt_20",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.71,
+      "loggedInMinutes": 0.69
+    },
+    "createdAt": "2026-04-05T15:33:41.617Z"
+  },
+  {
+    "id": "evt_21",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:33:41.667Z"
+  },
+  {
+    "id": "evt_22",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.78,
+      "loggedInMinutes": 0.76
+    },
+    "createdAt": "2026-04-05T15:33:45.919Z"
+  },
+  {
+    "id": "evt_23",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 0.82,
+      "loggedInMinutes": 0.76
+    },
+    "createdAt": "2026-04-05T15:33:48.615Z"
+  },
+  {
+    "id": "evt_24",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 1.01,
+      "loggedInMinutes": 0.76
+    },
+    "createdAt": "2026-04-05T15:34:00.092Z"
+  },
+  {
+    "id": "evt_25",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-05T15:34:07.204Z"
+  },
+  {
+    "id": "evt_26",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 3.02,
+      "loggedInMinutes": 2.65
+    },
+    "createdAt": "2026-04-05T15:36:00.525Z"
+  },
+  {
+    "id": "evt_1",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-08T00:28:08.708Z"
+  },
+  {
+    "id": "evt_2",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 3415.28,
+      "loggedInMinutes": 2.77
+    },
+    "createdAt": "2026-04-08T00:28:15.818Z"
+  },
+  {
+    "id": "evt_3",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_start",
+    "eventData": {},
+    "createdAt": "2026-04-08T00:28:15.873Z"
+  },
+  {
+    "id": "evt_4",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "logout",
+    "eventData": {
+      "loggedInMinutes": 2.91
+    },
+    "createdAt": "2026-04-08T00:28:24.264Z"
+  },
+  {
+    "id": "evt_5",
+    "sessionId": "sess_1775156571872_17271",
+    "customerId": "cu1775403179301",
+    "eventType": "session_end",
+    "eventData": {
+      "sessionDurationMinutes": 3415.42,
+      "loggedInMinutes": 2.91
+    },
+    "createdAt": "2026-04-08T00:28:24.272Z"
+  }
+]
