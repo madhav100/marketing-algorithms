@@ -1,6 +1,96 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
   <title>Footwear</title>
-  <rect width="200" height="200" rx="20" fill="#E8F4FD"/>
-  <path d="M40 120c12 0 22-10 30-18l14-14 20 20c10 10 24 16 38 16h18v20H40z" fill="#0071CE"/>
-  <path d="M52 134h96" stroke="#FFC220" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Background -->
+  <rect width="200" height="200" rx="24" fill="#EAF5FF"/>
+
+  <!-- Soft shadow -->
+  <ellipse cx="104" cy="138" rx="58" ry="12" fill="#B9D8F2" opacity="0.35"/>
+
+  <!-- Sole -->
+  <path d="M42 124
+           C54 124 64 120 74 113
+           L92 100
+           C97 96 104 97 109 101
+           L126 115
+           C133 121 143 124 153 124
+           L162 124
+           C166 124 170 127 170 132
+           C170 139 164 144 156 144
+           H55
+           C45 144 38 138 38 131
+           C38 126 40 124 42 124Z"
+        fill="#FFC220"/>
+
+  <!-- Midsole -->
+  <path d="M44 118
+           C56 118 67 113 78 105
+           L93 94
+           C98 90 104 90 109 94
+           L128 108
+           C136 114 145 118 154 118
+           H160
+           C165 118 168 121 168 126
+           C168 130 165 133 160 133
+           H49
+           C43 133 39 129 39 124
+           C39 120 41 118 44 118Z"
+        fill="#FFFFFF"/>
+
+  <!-- Main shoe body -->
+  <path d="M46 116
+           C57 116 66 108 75 100
+           L88 88
+           C94 82 103 81 110 86
+           L126 97
+           C133 102 140 106 149 107
+           L159 108
+           C165 109 168 113 168 118
+           L168 120
+           H48
+           C43 120 40 118 40 114
+           C40 111 42 116 46 116Z"
+        fill="#0071CE"/>
+
+  <!-- Heel panel -->
+  <path d="M121 95
+           L135 104
+           C140 107 145 109 151 110
+           L151 120
+           H124
+           C122 111 121 103 121 95Z"
+        fill="#005DAA"/>
+
+  <!-- Toe highlight -->
+  <path d="M49 113
+           C59 113 67 107 75 100
+           L84 92
+           L92 100
+           C84 108 72 115 58 118
+           H48
+           C47 116 47 114 49 113Z"
+        fill="#2A8BE8" opacity="0.95"/>
+
+  <!-- Laces -->
+  <path d="M93 95h24" stroke="#EAF5FF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M97 102h24" stroke="#EAF5FF" stroke-width="4" stroke-linecap="round"/>
+  <path d="M101 109h22" stroke="#EAF5FF" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Accent stripe -->
+  <path d="M86 89
+           C92 91 100 95 107 101
+           C111 104 115 106 120 108"
+        stroke="#FFC220"
+        stroke-width="6"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Sole line -->
+  <path d="M53 134h99" stroke="#0071CE" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Tread details -->
+  <path d="M64 140v4M79 140v4M94 140v4M109 140v4M124 140v4M139 140v4"
+        stroke="#D89D00"
+        stroke-width="3"
+        stroke-linecap="round"/>
 </svg>

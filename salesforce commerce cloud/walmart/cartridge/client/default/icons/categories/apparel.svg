@@ -1,6 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 300 300" role="img" aria-labelledby="title">
   <title>Apparel</title>
-  <rect width="200" height="200" rx="20" fill="#E8F4FD"/>
-  <path d="M72 58 52 74l14 26 18-10v62h32V90l18 10 14-26-20-16-14 12H86z" fill="#0071CE"/>
-  <path d="M88 70h24" stroke="#FFC220" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Background -->
+  <rect width="200" height="200" rx="24" fill="#EAF5FF"/>
+
+  <!-- Soft shadow -->
+  <ellipse cx="100" cy="150" rx="42" ry="10" fill="#BCD6EA" opacity="0.35"/>
+
+  <!-- Shirt body -->
+  <path d="M78 56
+           C84 50 91 47 100 47
+           C109 47 116 50 122 56
+           L136 68
+           L154 80
+           L143 102
+           L126 93
+           V146
+           C126 150 123 153 119 153
+           H81
+           C77 153 74 150 74 146
+           V93
+           L57 102
+           L46 80
+           L64 68
+           Z"
+        fill="#0071CE"/>
+
+  <!-- Sleeves -->
+  <path d="M64 68 46 80 57 102 74 93 74 84Z" fill="#005DAA"/>
+  <path d="M136 68 154 80 143 102 126 93 126 84Z" fill="#005DAA"/>
+
+  <!-- Collar outer -->
+  <path d="M84 56
+           C88 62 93 65 100 65
+           C107 65 112 62 116 56
+           L110 52
+           C107 56 104 58 100 58
+           C96 58 93 56 90 52Z"
+        fill="#FFFFFF"/>
+
+  <!-- Collar inner -->
+  <path d="M91 54
+           C94 58 97 60 100 60
+           C103 60 106 58 109 54"
+        stroke="#D9ECFF"
+        stroke-width="3"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Center fold -->
+  <path d="M100 74V145" stroke="#2A8BE8" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+
+  <!-- Chest accent -->
+  <path d="M87 78h26" stroke="#FFC220" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Small fabric highlights -->
+  <path d="M76 90c4-3 8-4 12-4" stroke="#2A8BE8" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <path d="M124 90c-4-3-8-4-12-4" stroke="#2A8BE8" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- Hem -->
+  <path d="M80 145h40" stroke="#005DAA" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
 </svg>
