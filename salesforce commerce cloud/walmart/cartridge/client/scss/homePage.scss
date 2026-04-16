@@ -445,7 +445,7 @@ input,
     margin-bottom: 12px;
     position: relative;
     perspective: 1100px;
-    overflow: hidden;
+    overflow: visible;
 
     &::after {
       content: '';
