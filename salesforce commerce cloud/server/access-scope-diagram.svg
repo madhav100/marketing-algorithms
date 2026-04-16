@@ -1,0 +1,96 @@
+<svg width="1500" height="900" viewBox="0 0 1500 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">3D Depth Model: Storefront to Admin to Data Console with Server Block</title>
+  <desc id="desc">Single 3D space where Storefront is closest, Admin is behind it, and Data Console is deepest. Server is shown as a block and connects bi-directionally to a round Data Lake inside the space.</desc>
+
+  <defs>
+    <style>
+      .title { font: 700 22px Arial, sans-serif; fill: #0F172A; }
+      .sub { font: 500 14px Arial, sans-serif; fill: #334155; }
+      .label { font: 700 16px Arial, sans-serif; fill: #0F172A; }
+      .meta { font: 600 12px Arial, sans-serif; fill: #475569; }
+      .flowText { font: 600 13px Arial, sans-serif; fill: #1E293B; }
+    </style>
+
+    <linearGradient id="spaceFace" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="spaceTop" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+
+    <!-- Smaller arrow heads -->
+    <marker id="arrowStore" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowAdmin" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#7C3AED"/>
+    </marker>
+    <marker id="arrowData" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#0D9488"/>
+    </marker>
+    <marker id="arrowLake" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto">
+      <path d="M0,0 L7,3.5 L0,7 Z" fill="#16A34A"/>
+    </marker>
+  </defs>
+
+  <rect width="1500" height="900" fill="#F8FAFC"/>
+
+  <!-- One main 3D space block -->
+  <polygon points="130,150 1180,150 1250,95 200,95" fill="url(#spaceTop)"/>
+  <polygon points="1180,150 1180,750 1250,695 1250,95" fill="#D6DEE8"/>
+  <rect x="130" y="150" width="1050" height="600" fill="url(#spaceFace)" stroke="#94A3B8" stroke-width="2.5"/>
+
+  <text x="150" y="62" class="title">3D Space: front to back depth (Storefront → Admin → Data Console)</text>
+  <text x="150" y="86" class="sub">Server is a block; Data Lake is round and inside the grey space.</text>
+
+  <!-- Storefront block (closest / largest) -->
+  <polygon points="260,500 520,500 545,480 285,480" fill="#BFDBFE"/>
+  <polygon points="520,500 520,645 545,625 545,480" fill="#93C5FD"/>
+  <rect x="260" y="500" width="260" height="145" rx="12" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.8"/>
+  <text x="284" y="544" class="label">Storefront</text>
+  <text x="284" y="568" class="sub">customer interactions</text>
+  <text x="284" y="592" class="meta">closest depth | storefront data</text>
+
+  <!-- Admin block (middle depth / medium) -->
+  <polygon points="560,385 780,385 802,368 582,368" fill="#DDD6FE"/>
+  <polygon points="780,385 780,510 802,493 802,368" fill="#C4B5FD"/>
+  <rect x="560" y="385" width="220" height="125" rx="12" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.8"/>
+  <text x="582" y="425" class="label">Admin Console</text>
+  <text x="582" y="448" class="sub">catalog + order ops</text>
+  <text x="582" y="470" class="meta">middle depth | admin data</text>
+
+  <!-- Data Console block (deepest / smallest) -->
+  <polygon points="820,275 1000,275 1018,261 838,261" fill="#CCFBF1"/>
+  <polygon points="1000,275 1000,380 1018,366 1018,261" fill="#99F6E4"/>
+  <rect x="820" y="275" width="180" height="105" rx="12" fill="#FFFFFF" stroke="#0D9488" stroke-width="2.8"/>
+  <text x="840" y="310" class="label">Data Console</text>
+  <text x="840" y="332" class="sub">analytics views</text>
+  <text x="840" y="353" class="meta">deepest depth</text>
+
+  <!-- Server block (replacing dot) -->
+  <polygon points="640,548 790,548 808,534 658,534" fill="#BBF7D0"/>
+  <polygon points="790,548 790,628 808,614 808,534" fill="#86EFAC"/>
+  <rect x="640" y="548" width="150" height="80" rx="10" fill="#FFFFFF" stroke="#16A34A" stroke-width="2.8"/>
+  <text x="692" y="592" class="label">Server</text>
+
+  <!-- Inbound arrows to server -->
+  <path d="M 520 580 C 575 578, 620 577, 640 575" fill="none" stroke="#2563EB" stroke-width="3.5" marker-end="url(#arrowStore)"/>
+  <text x="532" y="563" class="flowText">storefront data →</text>
+
+  <path d="M 690 510 C 690 526, 690 540, 690 548" fill="none" stroke="#7C3AED" stroke-width="3.5" marker-end="url(#arrowAdmin)"/>
+  <text x="610" y="505" class="flowText">admin data →</text>
+
+  <path d="M 905 380 C 860 450, 820 525, 790 568" fill="none" stroke="#0D9488" stroke-width="3.5" marker-end="url(#arrowData)"/>
+  <text x="885" y="418" class="flowText">customer data events →</text>
+
+  <!-- Round Data Lake inside grey block -->
+  <circle cx="960" cy="660" r="62" fill="#ECFDF5" stroke="#16A34A" stroke-width="2.8"/>
+  <ellipse cx="960" cy="660" rx="36" ry="16" fill="none" stroke="#16A34A" stroke-width="2"/>
+  <text x="924" y="665" class="label">Data Lake</text>
+
+  <!-- Bidirectional arrow between server and data lake -->
+  <path d="M 790 596 C 850 610, 900 628, 902 640" fill="none" stroke="#16A34A" stroke-width="3.5" marker-start="url(#arrowLake)" marker-end="url(#arrowLake)"/>
+  <text x="804" y="632" class="flowText">bi-directional link</text>
+</svg>
