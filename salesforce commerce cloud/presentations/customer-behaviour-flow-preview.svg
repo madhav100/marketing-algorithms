@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800" role="img" aria-label="Preview of 10-slide deck">
+  <defs>
+    <style>
+      .bg { fill: #f5f8ff; }
+      .title { font: 700 34px Arial, sans-serif; fill: #0b2a5b; }
+      .card { fill: #ffffff; stroke: #c9d7ef; stroke-width: 2; rx: 12; }
+      .slide-title { font: 700 20px Arial, sans-serif; fill: #0b2a5b; }
+      .bullet { font: 15px Arial, sans-serif; fill: #284566; }
+      .num { font: 700 18px Arial, sans-serif; fill: #ffffff; }
+      .badge { fill: #2f6fed; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1400" height="1800"/>
+  <text class="title" x="70" y="70">Preview: Customer Behaviour Flow Across the Commerce System</text>
+
+  <!-- row 1 -->
+  <g transform="translate(70,120)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">1</text>
+    <text class="slide-title" x="70" y="42">Title &amp; Objective</text>
+    <text class="bullet" x="40" y="90">• Storefront + Admin Console + Data Cloud flow</text>
+    <text class="bullet" x="40" y="120">• Technical-business audience context</text>
+    <text class="bullet" x="40" y="150">• Goal: client outcomes from behaviour data</text>
+  </g>
+  <g transform="translate(720,120)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">2</text>
+    <text class="slide-title" x="70" y="42">Executive Summary</text>
+    <text class="bullet" x="40" y="90">• Closed-loop optimization model</text>
+    <text class="bullet" x="40" y="120">• Engagement, control, and intelligence layers</text>
+    <text class="bullet" x="40" y="150">• Business impact orientation</text>
+  </g>
+
+  <!-- row 2 -->
+  <g transform="translate(70,440)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">3</text>
+    <text class="slide-title" x="70" y="42">System Landscape</text>
+    <text class="bullet" x="40" y="90">• Storefront (Walmart)</text>
+    <text class="bullet" x="40" y="120">• Admin Console</text>
+    <text class="bullet" x="40" y="150">• Data Cloud</text>
+  </g>
+  <g transform="translate(720,440)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">4</text>
+    <text class="slide-title" x="70" y="42">Storefront Layer</text>
+    <text class="bullet" x="40" y="90">• Behavioural event capture</text>
+    <text class="bullet" x="40" y="120">• Journey visibility and conversion insights</text>
+    <text class="bullet" x="40" y="150">• Client UX value</text>
+  </g>
+
+  <!-- row 3 -->
+  <g transform="translate(70,760)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">5</text>
+    <text class="slide-title" x="70" y="42">Admin Console Layer</text>
+    <text class="bullet" x="40" y="90">• Merchandising and promotion controls</text>
+    <text class="bullet" x="40" y="120">• Operational governance</text>
+    <text class="bullet" x="40" y="150">• Controlled experimentation</text>
+  </g>
+  <g transform="translate(720,760)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">6</text>
+    <text class="slide-title" x="70" y="42">Data Cloud Layer</text>
+    <text class="bullet" x="40" y="90">• Identity + telemetry unification</text>
+    <text class="bullet" x="40" y="120">• Segments and propensity intelligence</text>
+    <text class="bullet" x="40" y="150">• Activation and reporting</text>
+  </g>
+
+  <!-- row 4 -->
+  <g transform="translate(70,1080)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">7</text>
+    <text class="slide-title" x="70" y="42">End-to-End Flow</text>
+    <text class="bullet" x="40" y="90">• Customer action → admin logic → data insight</text>
+    <text class="bullet" x="40" y="120">• Feedback loop into next interaction</text>
+    <text class="bullet" x="40" y="150">• Continuous improvement model</text>
+  </g>
+  <g transform="translate(720,1080)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">8</text>
+    <text class="slide-title" x="70" y="42">Client-Centric Outcomes</text>
+    <text class="bullet" x="40" y="90">• Revenue lift</text>
+    <text class="bullet" x="40" y="120">• Experience lift</text>
+    <text class="bullet" x="40" y="150">• Governance lift</text>
+  </g>
+
+  <!-- row 5 -->
+  <g transform="translate(70,1400)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="28" y="41">9</text>
+    <text class="slide-title" x="70" y="42">Key Success Factors</text>
+    <text class="bullet" x="40" y="90">• Tracking taxonomy quality</text>
+    <text class="bullet" x="40" y="120">• Biz + engineering operating cadence</text>
+    <text class="bullet" x="40" y="150">• Shared KPI scorecard</text>
+  </g>
+  <g transform="translate(720,1400)">
+    <rect class="card" width="610" height="280"/>
+    <circle class="badge" cx="34" cy="34" r="20"/><text class="num" x="24" y="41">10</text>
+    <text class="slide-title" x="70" y="42">Roadmap &amp; Next Steps</text>
+    <text class="bullet" x="40" y="90">• Phase 1/2/3 rollout plan</text>
+    <text class="bullet" x="40" y="120">• Pilot cohort and KPI approval</text>
+    <text class="bullet" x="40" y="150">• Scale across categories and regions</text>
+  </g>
+</svg>
