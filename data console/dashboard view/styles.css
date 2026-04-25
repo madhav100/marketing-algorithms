@@ -1,0 +1,191 @@
+:root {
+  --bg: #050a14;
+  --panel: #0b1220;
+  --panel-2: #0f172a;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --success: #34d399;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(circle at 20% 0%, #0a1b36 0%, #050a14 55%);
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  filter: blur(50px);
+  z-index: -1;
+  opacity: 0.35;
+  animation: drift 18s infinite ease-in-out;
+}
+
+body::before {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.7), rgba(56, 189, 248, 0));
+  top: -10vw;
+  left: -8vw;
+}
+
+body::after {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.6), rgba(168, 85, 247, 0));
+  right: -8vw;
+  bottom: -12vw;
+  animation-delay: -9s;
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -25px) scale(1.08); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.panel {
+  background: linear-gradient(160deg, rgba(11, 18, 32, 0.88), rgba(15, 23, 42, 0.9));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem;
+  backdrop-filter: blur(8px);
+}
+
+.title {
+  font-size: 0.76rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.value {
+  margin-top: 0.3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.ok { color: var(--success); }
+.warn { color: var(--warning); }
+.bad { color: var(--danger); }
+
+.topbar { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 0.75rem; }
+.main-single { display: grid; grid-template-columns: 1.8fr 1.3fr 1.4fr; gap: 0.75rem; }
+
+.headline { display: flex; align-items: center; justify-content: space-between; }
+.headline h1 { margin: 0; font-size: 1.2rem; }
+.legend { color: var(--muted); font-size: .82rem; margin-top: .4rem; }
+
+.run-btn {
+  margin-top: 0.65rem;
+  border: 1px solid #1f3b53;
+  background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+  color: #f8fafc;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.run-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.process-panel { display: grid; gap: 0.75rem; }
+.process-steps {
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  background: rgba(7, 12, 24, 0.6);
+}
+
+.step-box {
+  border: 1px solid #26364d;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #bfdbfe;
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.14), rgba(14, 165, 233, 0.02));
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.step-box.running {
+  border-color: #22d3ee;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
+  transform: translateY(-1px);
+  animation: pulse 0.6s infinite alternate;
+}
+
+.step-box.done {
+  border-color: #34d399;
+  box-shadow: 0 0 9px rgba(52, 211, 153, 0.35);
+}
+
+@keyframes pulse {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.25); }
+}
+
+.gauge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.gauge-card { text-align: center; }
+.gauge-label { color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+.gauge-value { margin-top: .3rem; font-size: 1rem; font-weight: 700; }
+
+svg.gauge { width: 100%; max-width: 190px; height: auto; }
+.track { fill: none; stroke: #1f2937; stroke-width: 10; }
+.fill { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 300ms ease; }
+
+.records-graph {
+  width: 100%;
+  height: auto;
+  background: transparent;
+}
+
+.records-graph .axis line {
+  stroke: rgba(148, 163, 184, 0.45);
+  stroke-width: 1;
+}
+
+.records-graph .line {
+  fill: none;
+  stroke: #60a5fa;
+  stroke-width: 3;
+}
+
+.records-graph .dot {
+  fill: #22d3ee;
+}
+
+.records-graph .label {
+  fill: #94a3b8;
+  font-size: 12px;
+}
+
+@media (max-width: 1200px) {
+  .topbar { grid-template-columns: repeat(2, 1fr); }
+  .main-single { grid-template-columns: 1fr; }
+  .gauge-grid { grid-template-columns: 1fr; }
+  .process-steps { grid-template-columns: repeat(2, 1fr); }
+}
